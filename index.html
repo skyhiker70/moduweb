@@ -1048,6 +1048,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
       <a data-p="builder" onclick="go('builder')" style="color:rgba(255,255,255,.65)">빌더 체험</a>
       <a data-p="login" id="navLoginLink" onclick="go('login')" class="nlo">로그인</a>
       <div id="navUserInfo" style="display:none;align-items:center;gap:8px;margin-right:4px;">
+        <button onclick="go('dashboard')" style="font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;cursor:pointer;color:var(--fg);font-family:inherit;display:flex;align-items:center;gap:5px;">🏠 내 홈페이지</button>
         <div class="credit-badge" onclick="openPayModal('charge')" id="navCreditBadge" title="크레딧 충전">
           <span class="credit-ic">⚡</span><span id="navCreditAmt">0</span>cr
         </div>
@@ -1524,6 +1525,51 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
     </div>
   </div>
 </div>
+</div>
+
+<!-- ══════════ DASHBOARD ══════════ -->
+<div class="page" id="page-dashboard">
+  <div style="max-width:1100px;margin:0 auto;padding:100px 32px 80px;">
+    <!-- 헤더 -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;flex-wrap:wrap;gap:16px;">
+      <div>
+        <h1 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:6px;">내 홈페이지</h1>
+        <p style="font-size:15px;color:var(--mu);">클라우드에 저장된 내 사이트를 관리하세요</p>
+      </div>
+      <button onclick="go('builder')" style="padding:12px 24px;background:var(--a);color:var(--fg);border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px;">+ 새 홈페이지 만들기</button>
+    </div>
+
+    <!-- 플랜/크레딧 현황 -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:36px;" id="dashStatCards">
+      <div style="background:#fff;border:1.5px solid var(--bd);border-radius:14px;padding:20px;">
+        <div style="font-size:12px;font-weight:700;color:var(--mu);margin-bottom:6px;text-transform:uppercase;">현재 플랜</div>
+        <div style="font-size:22px;font-weight:900;color:#111;" id="dashPlanName">무료</div>
+        <button onclick="openPayModal('plan')" style="margin-top:10px;font-size:12px;color:var(--a);font-weight:700;border:none;background:none;cursor:pointer;padding:0;">업그레이드 →</button>
+      </div>
+      <div style="background:#fff;border:1.5px solid var(--bd);border-radius:14px;padding:20px;">
+        <div style="font-size:12px;font-weight:700;color:var(--mu);margin-bottom:6px;text-transform:uppercase;">보유 크레딧</div>
+        <div style="font-size:22px;font-weight:900;color:#111;">⚡ <span id="dashCredits">0</span>cr</div>
+        <button onclick="openPayModal('charge')" style="margin-top:10px;font-size:12px;color:var(--a);font-weight:700;border:none;background:none;cursor:pointer;padding:0;">충전하기 →</button>
+      </div>
+      <div style="background:#fff;border:1.5px solid var(--bd);border-radius:14px;padding:20px;">
+        <div style="font-size:12px;font-weight:700;color:var(--mu);margin-bottom:6px;text-transform:uppercase;">내 사이트</div>
+        <div style="font-size:22px;font-weight:900;color:#111;" id="dashSiteCount">0개</div>
+        <div style="margin-top:10px;font-size:12px;color:var(--mu);">저장된 사이트</div>
+      </div>
+    </div>
+
+    <!-- 내 사이트 목록 -->
+    <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;">
+      <h2 style="font-size:18px;font-weight:800;">저장된 사이트</h2>
+    </div>
+    <div id="dashSiteGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
+    <div id="dashSiteEmpty" style="display:none;text-align:center;padding:60px;background:#fff;border:1.5px dashed var(--bd);border-radius:16px;">
+      <div style="font-size:48px;margin-bottom:16px;">🏗️</div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:8px;">아직 만든 사이트가 없어요</div>
+      <div style="font-size:15px;color:var(--mu);margin-bottom:20px;">빌더에서 첫 번째 홈페이지를 만들어보세요!</div>
+      <button onclick="go('builder')" style="padding:12px 28px;background:var(--a);color:var(--fg);border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">지금 만들기 →</button>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════ BUILDER ══════════ -->
@@ -2085,7 +2131,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 
 <script>
 // ═══ ROUTER ═══
-const pages = ['home','features','modules','pricing','login','builder','superadmin','siteadmin','pay-success','pay-fail','templates','showcase','terms','privacy','bizinfo'];
+const pages = ['home','features','modules','pricing','login','builder','dashboard','superadmin','siteadmin','pay-success','pay-fail','templates','showcase','terms','privacy','bizinfo'];
 function go(p){
   if(!pages.includes(p)) p='home';
   pages.forEach(id=>{
@@ -2106,6 +2152,7 @@ function go(p){
   if(p==='templates') initTemplates();
   if(p==='showcase') initShowcasePage();
   if(p==='builder') initBuilder();
+  if(p==='dashboard') initDashboard();
   if(p==='superadmin') initSuperAdmin();
   if(p==='siteadmin') initSiteAdmin();
   location.hash = p==='home'?'':p;
@@ -2162,7 +2209,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
     updateNavAuth();
     if (event === 'SIGNED_IN') {
       await loadOrCreateSite();
-      go('builder');
+      go('dashboard');
     }
   } else {
     currentProfile = null;
@@ -2249,6 +2296,105 @@ async function sbSignOut() {
 // ══════════════════════════════════════════
 // BUILDER — 저장 / 불러오기
 // ══════════════════════════════════════════
+// ══════════════════════════════════════════
+// 🏠 대시보드 (내 홈페이지)
+// ══════════════════════════════════════════
+async function initDashboard(){
+  if(!currentUser){ go('login'); return; }
+
+  // 플랜/크레딧 표시
+  const planLabels = {free:'무료',starter:'스타터',pro:'프로',agency:'에이전시'};
+  document.getElementById('dashPlanName').textContent = planLabels[currentProfile?.plan||'free'];
+  document.getElementById('dashCredits').textContent = currentProfile?.credits||0;
+
+  // 내 사이트 목록 로드
+  const grid = document.getElementById('dashSiteGrid');
+  const empty = document.getElementById('dashSiteEmpty');
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--mu);">불러오는 중...</div>';
+
+  if(!SUPABASE_READY){
+    // 로컬스토리지 임시저장 확인
+    const draft = localStorage.getItem('modusite_draft');
+    document.getElementById('dashSiteCount').textContent = draft ? '1개 (임시저장)' : '0개';
+    if(draft){
+      grid.innerHTML = `
+        <div style="background:#fff;border:1.5px solid var(--bd);border-radius:14px;overflow:hidden;">
+          <div style="height:160px;background:linear-gradient(135deg,#FFFBF0,#FFD966);display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;"><div style="font-size:36px;margin-bottom:8px;">🏠</div><div style="font-size:13px;font-weight:700;color:#92400E;">임시저장된 사이트</div></div>
+          </div>
+          <div style="padding:16px;">
+            <div style="font-size:16px;font-weight:800;margin-bottom:4px;">내 회사 홈페이지</div>
+            <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">로컬에 임시저장됨</div>
+            <div style="display:flex;gap:8px;">
+              <button onclick="go('builder')" style="flex:1;padding:9px;background:var(--a);color:var(--fg);border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">편집하기</button>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+    }
+    return;
+  }
+
+  try {
+    const { data: sites } = await sb.from('sites')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('updated_at', {ascending:false});
+
+    document.getElementById('dashSiteCount').textContent = `${sites?.length||0}개`;
+
+    if(!sites || !sites.length){
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+
+    empty.style.display = 'none';
+    grid.innerHTML = sites.map(site => {
+      const updated = new Date(site.updated_at).toLocaleDateString('ko-KR');
+      const isLive = site.published;
+      const viewUrl = `/viewer.html?id=${site.id}`;
+      return `
+        <div style="background:#fff;border:1.5px solid var(--bd);border-radius:14px;overflow:hidden;transition:all .2s;" onmouseover="this.style.boxShadow='0 8px 32px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow='none'">
+          <div style="height:160px;background:linear-gradient(135deg,#FFFBF0,#FFD966);display:flex;align-items:center;justify-content:center;position:relative;">
+            <div style="text-align:center;"><div style="font-size:36px;margin-bottom:8px;">🏠</div><div style="font-size:13px;font-weight:700;color:#92400E;">${site.name||'내 회사 홈페이지'}</div></div>
+            <div style="position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:800;background:${isLive?'#DCFCE7':'#F3F4F6'};color:${isLive?'#15803D':'#6B7280'};">${isLive?'🟢 라이브':'⚪ 초안'}</div>
+          </div>
+          <div style="padding:16px;">
+            <div style="font-size:16px;font-weight:800;margin-bottom:4px;color:#111;">${site.name||'내 회사 홈페이지'}</div>
+            <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">최근 수정: ${updated}</div>
+            <div style="display:flex;gap:8px;">
+              <button onclick="loadSiteAndEdit('${site.id}')" style="flex:2;padding:9px;background:var(--a);color:var(--fg);border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">✏️ 편집</button>
+              ${isLive ? `<button onclick="window.open('${viewUrl}','_blank')" style="flex:1;padding:9px;background:#fff;border:1.5px solid var(--bd);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">↗ 보기</button>` : ''}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch(e) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--mu);">사이트를 불러올 수 없습니다.</div>';
+  }
+}
+
+async function loadSiteAndEdit(siteId){
+  // 해당 사이트 불러와서 빌더 열기
+  if(SUPABASE_READY){
+    try {
+      const { data: site } = await sb.from('sites').select('*').eq('id', siteId).single();
+      if(site){
+        currentSiteId = site.id;
+        if(site.config?.modules) bdrState.modules = site.config.modules;
+        if(site.config?.theme) bdrState.theme = site.config.theme;
+        if(site.name) document.getElementById('bdrSiteName').value = site.name;
+        bdrInited = false;
+      }
+    } catch(e) {}
+  }
+  go('builder');
+}
+
 async function loadOrCreateSite() {
   if (!currentUser) return;
   // 기존 사이트 불러오기
