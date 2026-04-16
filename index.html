@@ -2210,6 +2210,14 @@ sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN') {
       await loadOrCreateSite();
       go('dashboard');
+    } else if (event === 'INITIAL_SESSION') {
+      // 페이지 새로고침 시 기존 로그인 복원
+      await loadOrCreateSite();
+      // 현재 페이지가 홈이면 대시보드로, 아니면 그대로
+      const curHash = location.hash.replace('#','');
+      if(!curHash || curHash === 'home') {
+        // 그대로 홈 유지 (강제 이동 안 함)
+      }
     }
   } else {
     currentProfile = null;
@@ -2217,6 +2225,24 @@ sb.auth.onAuthStateChange(async (event, session) => {
     updateNavAuth();
   }
 });
+
+// ── 페이지 로드 시 세션 복원 ──
+(async function restoreSession() {
+  if (!SUPABASE_READY) return;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      currentUser = session.user;
+      const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+      currentProfile = data;
+      updateNavAuth();
+      await loadOrCreateSite();
+      // 대시보드 페이지에 있으면 다시 렌더
+      const curHash = location.hash.replace('#','');
+      if(curHash === 'dashboard') initDashboard();
+    }
+  } catch(e) { console.error('세션 복원 오류:', e); }
+})();
 
 function updateNavAuth() {
   const loginLink = document.getElementById('navLoginLink');
@@ -2300,6 +2326,13 @@ async function sbSignOut() {
 // 🏠 대시보드 (내 홈페이지)
 // ══════════════════════════════════════════
 async function initDashboard(){
+  // 세션 복원 대기 (최대 2초)
+  if(!currentUser && SUPABASE_READY) {
+    for(let i=0; i<10; i++){
+      await new Promise(r=>setTimeout(r,200));
+      if(currentUser) break;
+    }
+  }
   if(!currentUser){ go('login'); return; }
 
   // 플랜/크레딧 표시
@@ -2311,6 +2344,7 @@ async function initDashboard(){
   const grid = document.getElementById('dashSiteGrid');
   const empty = document.getElementById('dashSiteEmpty');
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--mu);">불러오는 중...</div>';
+  empty.style.display = 'none';
 
   if(!SUPABASE_READY){
     // 로컬스토리지 임시저장 확인
