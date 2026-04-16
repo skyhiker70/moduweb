@@ -5517,7 +5517,7 @@ function showToast(msg){
                 </div>
               </div>
               <!-- 라이브러리 그리드 -->
-              <div id="adminLibGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-height:500px;overflow-y:auto;"></div>
+              <div id="adminLibGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-height:560px;overflow-y:auto;padding:4px;"></div>
               <div id="adminLibEmpty" style="display:none;text-align:center;padding:48px;color:var(--mu);font-size:13px;">
                 이미지가 없습니다. 위의 업로드 버튼으로 추가해주세요.
               </div>
@@ -5950,25 +5950,24 @@ function saNav(sec,el){
   if(sec==='library') renderAdminLibrary();
 }
 async function renderSaDashboard(){
-  // 실 데이터 시도, 실패 시 목업
-  let users = saUsers, sites = saSites;
+  // 실제 DB에서 데이터 로드
+  let realUsers = [], realSites = [];
   try {
-    const realUsers = await dbGetAllUsers();
-    if(realUsers && realUsers.length) users = realUsers.map(u=>({
-      name: u.name||u.email?.split('@')[0]||'사용자',
-      email: u.email||'',
-      plan: u.plan||'무료',
-      joinDate: new Date(u.created_at).toLocaleDateString('ko-KR'),
-      sites: u.sites?.[0]?.count||0,
-      status: '활성'
-    }));
+    const { data: ud } = await sb.from('profiles').select('*').order('created_at', {ascending:false});
+    if(ud && ud.length) realUsers = ud;
+    const { data: sd } = await sb.from('sites').select('*, profiles(name,email)').order('updated_at', {ascending:false});
+    if(sd && sd.length) realSites = sd;
   } catch(e) {}
-  const totalRev=saBilling.filter(b=>b.status==='완료').reduce((s,b)=>s+parseInt(b.amount.replace(/[₩,]/g,'')),0);
+
+  const displayUsers = realUsers.length ? realUsers : saUsers;
+  const displaySites = realSites.length ? realSites : saSites;
+
+  // 통계 카드
   const cards=[
-    {ic:'👤',val:saUsers.length,lbl:'전체 회원',diff:'↑ 이번달 +3명',cls:'up',color:'blue'},
-    {ic:'🌐',val:saSites.length,lbl:'활성 사이트',diff:'↑ 전월 대비 +2',cls:'up',color:'green'},
-    {ic:'💳',val:'₩'+totalRev.toLocaleString(),lbl:'이번달 매출',diff:'↑ 전월 대비 +18%',cls:'up',color:'amber'},
-    {ic:'✨',val:'100',lbl:'AI 호출 (이번달)',diff:'↓ 한도 대비 58%',cls:'dn',color:'red'},
+    {ic:'👤', val:displayUsers.length, lbl:'전체 회원', diff:`↑ 이번달 신규 ${displayUsers.filter(u=>new Date(u.created_at)>new Date(Date.now()-30*86400000)).length}명`, cls:'up', color:'blue'},
+    {ic:'🌐', val:displaySites.filter(s=>s.published).length, lbl:'활성 사이트', diff:`전체 ${displaySites.length}개 중`, cls:'up', color:'green'},
+    {ic:'💳', val:'집계 중', lbl:'이번달 매출', diff:'결제 연동 후 표시', cls:'up', color:'amber'},
+    {ic:'✨', val:displayUsers.reduce((s,u)=>s+(u.ai_used_month||0),0), lbl:'AI 호출 (이번달)', diff:'전체 합산', cls:'dn', color:'red'},
   ];
   document.getElementById('saStatCards').innerHTML=cards.map(c=>`
     <div class="adm-stat" data-color="${c.color}">
@@ -5977,51 +5976,94 @@ async function renderSaDashboard(){
       <div class="adm-stat-lbl">${c.lbl}</div>
       <div class="adm-stat-diff ${c.cls}">${c.diff}</div>
     </div>`).join('');
+
+  // 월별 가입자 차트 (실제 데이터)
   const months=['10월','11월','12월','1월','2월','3월','4월'];
-  const vals=[8,12,15,19,23,28,34];
-  const maxV=Math.max(...vals);
-  document.getElementById('saBars').innerHTML=vals.map((v,i)=>`<div class="adm-bar" style="height:${(v/maxV*100)}%;background:${i===vals.length-1?'var(--a)':'#3B82F6'};opacity:${i===vals.length-1?'1':'0.65'};"></div>`).join('');
+  const now = new Date();
+  const vals = months.map((_,i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (6-i), 1);
+    return displayUsers.filter(u => {
+      const cd = new Date(u.created_at);
+      return cd.getFullYear()===d.getFullYear() && cd.getMonth()===d.getMonth();
+    }).length;
+  });
+  const maxV = Math.max(...vals, 1);
+  document.getElementById('saBars').innerHTML=vals.map((v,i)=>`<div class="adm-bar" style="height:${Math.max(4,(v/maxV*100))}%;background:${i===vals.length-1?'var(--a)':'#3B82F6'};opacity:${i===vals.length-1?'1':'0.65'};"></div>`).join('');
   document.getElementById('saBarLabels').innerHTML=months.map(m=>`<div class="adm-bar-lbl">${m}</div>`).join('');
-  const planCnt={무료:0,스타터:0,비즈니스:0,에이전시:0};
-  saUsers.forEach(u=>planCnt[u.plan]=(planCnt[u.plan]||0)+1);
-  const planColors={무료:'#6B7280',스타터:'#3B82F6',비즈니스:'#8B5CF6',에이전시:'#F59E0B'};
+
+  // 플랜별 분포
+  const planCnt={무료:0,스타터:0,프로:0,에이전시:0};
+  displayUsers.forEach(u=>{
+    const p = u.plan==='starter'?'스타터':u.plan==='pro'?'프로':u.plan==='agency'?'에이전시':'무료';
+    planCnt[p]=(planCnt[p]||0)+1;
+  });
+  const planColors={무료:'#6B7280',스타터:'#3B82F6',프로:'#8B5CF6',에이전시:'#F59E0B'};
+  const total = displayUsers.length || 1;
   document.getElementById('saPlanDist').innerHTML=Object.entries(planCnt).map(([plan,cnt])=>`
     <div style="margin-bottom:10px;">
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
         <span style="font-weight:600;">${plan}</span><span style="color:var(--mu);">${cnt}명</span>
       </div>
       <div style="background:#F3F4F6;border-radius:4px;height:8px;">
-        <div style="width:${(cnt/saUsers.length*100)}%;background:${planColors[plan]};border-radius:4px;height:100%;transition:width .5s;"></div>
+        <div style="width:${(cnt/total*100)}%;background:${planColors[plan]};border-radius:4px;height:100%;transition:width .5s;"></div>
       </div>
     </div>`).join('');
+
+  // 최근 가입자
   document.getElementById('saRecentUsers').innerHTML=`
     <thead><tr><th>이름</th><th>이메일</th><th>플랜</th><th>가입일</th><th>상태</th></tr></thead>
-    <tbody>${saUsers.slice(0,5).map(u=>`<tr><td><b>${u.name}</b></td><td style="color:var(--mu)">${u.email}</td><td>${planBadge(u.plan)}</td><td style="color:var(--mu)">${u.joinDate}</td><td>${statusBadge(u.status)}</td></tr>`).join('')}</tbody>`;
+    <tbody>${displayUsers.slice(0,5).map(u=>`<tr>
+      <td><b>${u.name||'미설정'}</b></td>
+      <td style="color:var(--mu)">${u.email||''}</td>
+      <td>${planBadge(u.plan==='starter'?'스타터':u.plan==='pro'?'프로':u.plan==='agency'?'에이전시':'무료')}</td>
+      <td style="color:var(--mu)">${new Date(u.created_at).toLocaleDateString('ko-KR')}</td>
+      <td>${statusBadge('활성')}</td>
+    </tr>`).join('')}</tbody>`;
 }
-function renderSaUsers(){
+
+async function renderSaUsers(){
   const filter=document.getElementById('saUserFilter')?.value||'';
-  const list=filter?saUsers.filter(u=>u.plan===filter):saUsers;
-  document.getElementById('saUsersBody').innerHTML=list.map(u=>`
+  let list = [];
+  try {
+    const { data } = await sb.from('profiles').select('*').order('created_at',{ascending:false});
+    if(data && data.length) list = data;
+  } catch(e) { list = saUsers; }
+  if(!list.length) list = saUsers;
+
+  const planKo = p => p==='starter'?'스타터':p==='pro'?'프로':p==='agency'?'에이전시':'무료';
+  const filtered = filter ? list.filter(u=>u.plan===filter||(filter==='스타터'&&u.plan==='starter')||(filter==='프로'&&u.plan==='pro')||(filter==='에이전시'&&u.plan==='agency')) : list;
+
+  document.getElementById('saUsersBody').innerHTML=filtered.map(u=>`
     <tr>
-      <td><b>${u.name}</b></td>
-      <td style="color:var(--mu)">${u.email}</td>
-      <td>${planBadge(u.plan)}</td>
-      <td style="color:var(--mu)">${u.joinDate}</td>
-      <td style="text-align:center">${u.sites}</td>
-      <td>${statusBadge(u.status)}</td>
-      <td><button class="adm-btn" style="font-size:11px;padding:4px 10px;" onclick="showToast('${u.name}님 관리')">관리</button></td>
+      <td><b>${u.name||'미설정'}</b></td>
+      <td style="color:var(--mu)">${u.email||''}</td>
+      <td>${planBadge(planKo(u.plan))}</td>
+      <td style="color:var(--mu)">${new Date(u.created_at).toLocaleDateString('ko-KR')}</td>
+      <td style="text-align:center">-</td>
+      <td>${statusBadge(u.role==='superadmin'?'관리자':'활성')}</td>
+      <td><button class="adm-btn" style="font-size:11px;padding:4px 10px;" onclick="showToast('${u.name||u.email}님')">관리</button></td>
     </tr>`).join('');
 }
-function renderSaSites(){
-  document.getElementById('saSitesBody').innerHTML=saSites.map(s=>`
+async function renderSaSites(){
+  let list = [];
+  try {
+    const { data } = await sb.from('sites')
+      .select('*, profiles(name,email,plan)')
+      .order('updated_at',{ascending:false});
+    if(data && data.length) list = data;
+  } catch(e) { list = saSites; }
+  if(!list.length) list = saSites;
+
+  const planKo = p => p==='starter'?'스타터':p==='pro'?'프로':p==='agency'?'에이전시':'무료';
+  document.getElementById('saSitesBody').innerHTML=list.map(s=>`
     <tr>
-      <td><b>${s.name}</b></td>
-      <td style="color:#3B82F6;font-size:12px;">${s.url}</td>
-      <td>${s.owner}</td>
-      <td>${planBadge(s.plan)}</td>
-      <td>${statusBadge(s.status)}</td>
-      <td>${s.visitors.toLocaleString()}</td>
-      <td style="color:var(--mu)">${s.modified}</td>
+      <td><b>${s.name||'이름없음'}</b></td>
+      <td style="color:#3B82F6;font-size:12px;cursor:pointer;" onclick="window.open('/viewer.html?id=${s.id}','_blank')">${s.slug||s.id?.slice(0,8)+'...'}</td>
+      <td>${s.profiles?.name||s.profiles?.email||'-'}</td>
+      <td>${planBadge(planKo(s.profiles?.plan))}</td>
+      <td>${statusBadge(s.published?'라이브':'초안')}</td>
+      <td>-</td>
+      <td style="color:var(--mu)">${new Date(s.updated_at).toLocaleDateString('ko-KR')}</td>
     </tr>`).join('');
 }
 // ── 관리자 이미지 라이브러리 ──
@@ -6050,11 +6092,11 @@ function renderAdminLibGrid(){
   if(list.length===0){grid.style.display='none';empty.style.display='block';return;}
   grid.style.display='grid';empty.style.display='none';
   grid.innerHTML=list.map((img,i)=>`
-    <div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:#E5E7EB;group">
-      <img src="${img.url}" alt="${img.title}" style="width:100%;height:100%;object-fit:cover;display:block;">
+    <div style="position:relative;width:100%;padding-top:100%;border-radius:8px;overflow:hidden;background:#E5E7EB;">
+      <img src="${img.url}" alt="${img.title}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;">
       <div style="position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .2s;display:flex;flex-direction:column;justify-content:space-between;padding:6px;"
-           onmouseover="this.style.background='rgba(0,0,0,.5)';this.querySelector('.lib-act').style.opacity='1'"
-           onmouseout="this.style.background='rgba(0,0,0,0)';this.querySelector('.lib-act').style.opacity='0'">
+           onmouseover="this.style.background='rgba(0,0,0,.5)';this.querySelectorAll('.lib-act').forEach(e=>e.style.opacity='1')"
+           onmouseout="this.style.background='rgba(0,0,0,0)';this.querySelectorAll('.lib-act').forEach(e=>e.style.opacity='0')">
         <div class="lib-act" style="opacity:0;transition:opacity .2s;">
           <span style="background:rgba(255,255,255,.15);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;">${getCatKo(img.cat)}</span>
         </div>
