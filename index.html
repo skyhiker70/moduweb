@@ -6130,18 +6130,64 @@ function handleLibAdminUpload(e){
 }
 
 function confirmLibUpload(){
-  const cat=document.getElementById('libUploadCat').value;
-  const titleBase=document.getElementById('libUploadTitle').value.trim();
-  pendingLibFiles.forEach((file,i)=>{
-    const r=new FileReader();
-    r.onload=ev=>{
-      const title=titleBase||(file.name.replace(/\.[^.]+$/,''));
-      adminAddLibraryImage(ev.target.result, cat, title);
-    };
-    r.readAsDataURL(file);
+  const cat = document.getElementById('libUploadCat').value;
+  const titleBase = document.getElementById('libUploadTitle').value.trim();
+
+  if(!pendingLibFiles.length) return;
+
+  pendingLibFiles.forEach(async (file) => {
+    const title = titleBase || file.name.replace(/\.[^.]+$/, '');
+
+    if(SUPABASE_READY && currentProfile?.role === 'superadmin') {
+      // Supabase Storage에 업로드
+      try {
+        const ext = file.name.split('.').pop();
+        const path = `library/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+        const { data, error } = await sb.storage.from('images').upload(path, file, {
+          cacheControl: '3600', upsert: false
+        });
+        if(error) throw error;
+
+        // 공개 URL 가져오기
+        const { data: urlData } = sb.storage.from('images').getPublicUrl(path);
+        const publicUrl = urlData.publicUrl;
+
+        // DB에 저장
+        await sb.from('library_images').insert({
+          url: publicUrl, cat, title, uploaded_by: currentUser.id
+        });
+
+        // 로컬에도 추가
+        customLibrary.push({id:'custom_'+Date.now(), cat, title, url: publicUrl, isCustom:true});
+        localStorage.setItem('modusite_library', JSON.stringify(customLibrary));
+        showToast(`"${title}" 업로드 완료 ✓`);
+        renderAdminLibGrid();
+        const cc = document.getElementById('customLibCount');
+        if(cc) cc.textContent = customLibrary.length;
+
+      } catch(err) {
+        console.error('업로드 실패:', err);
+        // Storage 버킷이 없을 경우 base64로 로컬 저장
+        _saveAsBase64(file, cat, title);
+      }
+    } else {
+      // 비연결 시 base64로 로컬만 저장
+      _saveAsBase64(file, cat, title);
+    }
   });
+
   cancelLibUpload();
-  setTimeout(()=>{renderAdminLibGrid();const cc=document.getElementById('customLibCount');if(cc)cc.textContent=customLibrary.length;},300);
+}
+
+function _saveAsBase64(file, cat, title){
+  const r = new FileReader();
+  r.onload = ev => {
+    adminAddLibraryImage(ev.target.result, cat, title);
+    renderAdminLibGrid();
+    const cc = document.getElementById('customLibCount');
+    if(cc) cc.textContent = customLibrary.length;
+  };
+  r.readAsDataURL(file);
 }
 
 function cancelLibUpload(){
