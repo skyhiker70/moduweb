@@ -3745,25 +3745,25 @@ let imgTarget=null, selectedImgUrl='', imgAiCat='office';
 function openImgPicker(mi,fi){
   imgTarget={mi,fi};
   selectedImgUrl='';
-  document.getElementById('imgApplyBtn').disabled=true;
-  document.getElementById('imgAiGallery').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--mu);font-size:13px;">카테고리를 선택하고 검색하기를 누르세요</div>';
+  const applyBtn = document.getElementById('imgApplyBtn');
+  if(applyBtn) applyBtn.disabled=true;
   // 업로드 탭 리셋
   const uploadImg=document.getElementById('imgUploadPreviewImg');
   const uploadEmpty=document.getElementById('imgUploadEmpty');
   if(uploadImg){uploadImg.src='';uploadImg.style.display='none';}
   if(uploadEmpty) uploadEmpty.style.display='block';
   // URL 탭 리셋
-  document.getElementById('imgUrlInput').value='';
+  const urlInput=document.getElementById('imgUrlInput');
+  if(urlInput) urlInput.value='';
   const urlImg=document.getElementById('imgUrlPreviewImg');
   const urlEmpty=document.getElementById('imgUrlEmpty');
   if(urlImg){urlImg.src='';urlImg.style.display='none';}
   if(urlEmpty) urlEmpty.style.display='block';
-  // 기본 키워드 세팅
-  const qInput=document.getElementById('googleQuery');
-  if(qInput) qInput.value=(imgKeywords[imgAiCat]||imgKeywords.office).g;
   switchImgTab(0);
   document.body.style.overflow='hidden';
-  document.getElementById('imgModal').classList.add('open');
+  const modal = document.getElementById('imgModal');
+  document.body.appendChild(modal);
+  modal.classList.add('open');
 }
 
 function closeImgModal(){
@@ -4506,7 +4506,9 @@ function openLinkModal(mi,fi){
   document.getElementById('linkHint').textContent=linkHints[type];
   document.getElementById('linkModalTitle').textContent=f.lbl;
   updateLinkPreview(val);
-  document.getElementById('linkModal').classList.add('open');
+  const lm = document.getElementById('linkModal');
+  document.body.appendChild(lm);
+  lm.classList.add('open');
 }
 
 function closeLinkModal(){document.getElementById('linkModal').classList.remove('open');linkTarget=null;}
