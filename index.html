@@ -5493,8 +5493,9 @@ const CAT_KO = {
   it:'IT/스타트업', delivery:'음식/배달'
 };
 const CAT_COLOR = {
-  business:'#2563EB', food:'#92400E', medical:'#0F766E', education:'#6D28D9',
-  beauty:'#BE185D', realestate:'#1E40AF', it:'#0EA5E9', delivery:'#EA580C'
+  business:'#0F1C35', food:'#4A1505', medical:'#062A2A', education:'#1A0A3C',
+  beauty:'#2D0A20', realestate:'#0A1628', it:'#031524', delivery:'#3D0E00',
+  all:'#1A1A1A'
 };
 const CAT_EMOJI = {
   business:'🏢', food:'☕', medical:'🏥', education:'📚',
@@ -5533,16 +5534,30 @@ async function loadShowcaseSites() {
   }
   // Supabase 미연결 시 샘플 데이터
   _showcaseData = [
-    { id:'s1', name:'강남 인테리어', cat:'realestate', desc:'프리미엄 인테리어 전문', url:'#', emoji:'🏠', tplId:'realestate-pro' },
-    { id:'s2', name:'맛있는 삼겹살', cat:'food', desc:'30년 전통 삼겹살 맛집', url:'#', emoji:'🍖', tplId:'cafe-warm' },
-    { id:'s3', name:'밝은 소아과', cat:'medical', desc:'아이들을 위한 따뜻한 병원', url:'#', emoji:'🏥', tplId:'hospital-clean' },
-    { id:'s4', name:'코딩 부트캠프', cat:'it', desc:'3개월 완성 개발자 양성', url:'#', emoji:'💻', tplId:'startup-it' },
-    { id:'s5', name:'헤어살롱 모아', cat:'beauty', desc:'트렌디한 헤어&뷰티', url:'#', emoji:'💄', tplId:'beauty-salon' },
-    { id:'s6', name:'강북 영어학원', cat:'education', desc:'수능 1등급 전문 학원', url:'#', emoji:'📚', tplId:'academy-edu' },
-    { id:'s7', name:'마케팅 스튜디오', cat:'business', desc:'B2B 마케팅 전문 에이전시', url:'#', emoji:'📊', tplId:'corp-basic' },
-    { id:'s8', name:'피자가 좋아', cat:'delivery', desc:'당일 반죽 수제피자 배달', url:'#', emoji:'🍕', tplId:'food-delivery' },
-    { id:'s9', name:'크리에이터 포트폴리오', cat:'business', desc:'디자이너·프리랜서 포트폴리오', url:'#', emoji:'🎨', tplId:'portfolio-creative' },
+    { id:'s1', name:'블루밍 인테리어', cat:'realestate', emoji:'🏛️', desc:'공간의 가치를 높이는 프리미엄 인테리어', url:'#', tplId:'realestate-pro' },
+    { id:'s2', name:'온기 한식당', cat:'food', emoji:'🍱', desc:'정성으로 끓인 매일 당일 조리 한식', url:'#', tplId:'cafe-warm' },
+    { id:'s3', name:'서울 정형외과', cat:'medical', emoji:'⚕️', desc:'20년 경력 전문의의 정밀 진료', url:'#', tplId:'hospital-clean' },
+    { id:'s4', name:'Dev.School', cat:'it', emoji:'💻', desc:'실무 중심 3개월 풀스택 개발 과정', url:'#', tplId:'startup-it' },
+    { id:'s5', name:'MUSE 살롱', cat:'beauty', emoji:'✂️', desc:'트렌드를 선도하는 헤어&스킨케어', url:'#', tplId:'beauty-salon' },
+    { id:'s6', name:'The English', cat:'education', emoji:'📖', desc:'원어민 강사와 함께하는 영어 회화', url:'#', tplId:'academy-edu' },
+    { id:'s7', name:'Nexus 컨설팅', cat:'business', emoji:'📊', desc:'데이터 기반 B2B 마케팅 전략', url:'#', tplId:'corp-basic' },
+    { id:'s8', name:'도쿄라멘 본점', cat:'delivery', emoji:'🍜', desc:'직수입 재료로 매일 끓이는 정통 라멘', url:'#', tplId:'food-delivery' },
+    { id:'s9', name:'Studio K.', cat:'business', emoji:'🎨', desc:'브랜드 아이덴티티 전문 크리에이터', url:'#', tplId:'portfolio-creative' },
   ];
+  // 슈퍼어드민이 선택한 노출 순서 적용
+  const savedOrder = localStorage.getItem('sc_home_order');
+  if(savedOrder) {
+    try {
+      const order = JSON.parse(savedOrder);
+      _showcaseData.sort((a,b) => {
+        const ai = order.indexOf(a.id), bi = order.indexOf(b.id);
+        if(ai===-1 && bi===-1) return 0;
+        if(ai===-1) return 1;
+        if(bi===-1) return -1;
+        return ai - bi;
+      });
+    } catch(e){}
+  }
 }
 
 // 홈 랜딩 가로 스크롤 쇼케이스
@@ -5574,67 +5589,65 @@ function renderScTrack(cat) {
 }
 
 function buildScCard(s) {
-  const color = CAT_COLOR[s.cat] || '#6B7280';
+  const color = CAT_COLOR[s.cat] || '#0F1C35';
   const emoji = s.emoji || CAT_EMOJI[s.cat] || '🌐';
-  const tplId = s.tplId || null; // 연결된 TEMPLATES id
+  const catLabel = CAT_KO[s.cat] || s.cat;
+  const clickAction = s.tplId
+    ? `applyTemplateById('${s.tplId}');showToast('${s.name} 템플릿을 적용합니다')`
+    : `showToast('준비 중인 샘플입니다')`;
 
-  // 웹 미리보기 (작은 mock)
-  const webPreview = `
-    <div style="flex:1;background:#fff;border-radius:6px;border:1.5px solid #e5e7eb;overflow:hidden;min-width:0;">
-      <div style="height:14px;background:${color};display:flex;align-items:center;padding:0 6px;gap:3px;">
-        <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.6);"></div>
-        <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.6);"></div>
-        <div style="flex:1;height:5px;background:rgba(255,255,255,.3);border-radius:3px;margin-left:4px;"></div>
+  // 고급 색상 그라디언트 (어두운 베이스 + 약간 밝은 포인트)
+  const colorLight = color.replace('#','');
+  
+  // 웹 미리보기 (풀 사이즈)
+  const webMock = `
+    <div style="flex:1;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.25);">
+      <div style="height:20px;background:${color};display:flex;align-items:center;padding:0 8px;gap:4px;">
+        <div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);"></div>
+        <div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);"></div>
+        <div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);"></div>
+        <div style="flex:1;height:6px;background:rgba(255,255,255,.15);border-radius:3px;margin-left:6px;"></div>
       </div>
-      <div style="padding:6px;">
-        <div style="height:28px;background:${color}22;border-radius:3px;margin-bottom:4px;display:flex;align-items:center;justify-content:center;">
-          <span style="font-size:10px;font-weight:800;color:${color};">${emoji} ${s.name}</span>
+      <div style="padding:10px 10px 12px;">
+        <div style="height:44px;background:${color};border-radius:5px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
+          <span style="font-size:14px;">${emoji}</span>
+          <span style="font-size:13px;font-weight:800;color:rgba(255,255,255,.9);">${s.name}</span>
         </div>
-        <div style="height:4px;background:#f3f4f6;border-radius:2px;margin-bottom:3px;width:90%;"></div>
-        <div style="height:4px;background:#f3f4f6;border-radius:2px;margin-bottom:3px;width:70%;"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:4px;">
-          <div style="height:20px;background:${color}15;border-radius:3px;"></div>
-          <div style="height:20px;background:${color}15;border-radius:3px;"></div>
+        <div style="height:6px;background:#f0f0f0;border-radius:2px;margin-bottom:5px;width:90%;"></div>
+        <div style="height:6px;background:#f0f0f0;border-radius:2px;margin-bottom:10px;width:65%;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px;">
+          <div style="height:32px;background:${color}18;border-radius:5px;"></div>
+          <div style="height:32px;background:${color}18;border-radius:5px;"></div>
         </div>
+        <div style="height:6px;background:#f0f0f0;border-radius:2px;width:80%;"></div>
+        <div style="height:6px;background:#f0f0f0;border-radius:2px;margin-top:4px;width:55%;"></div>
       </div>
     </div>`;
 
   // 모바일 미리보기
-  const mobilePreview = `
-    <div style="width:52px;flex-shrink:0;background:#fff;border-radius:6px;border:1.5px solid #e5e7eb;overflow:hidden;">
-      <div style="height:8px;background:${color};"></div>
-      <div style="padding:4px;">
-        <div style="height:16px;background:${color}22;border-radius:2px;margin-bottom:3px;display:flex;align-items:center;justify-content:center;">
-          <span style="font-size:7px;color:${color};">${emoji}</span>
+  const mobileMock = `
+    <div style="width:70px;flex-shrink:0;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.2);">
+      <div style="height:12px;background:${color};"></div>
+      <div style="padding:6px 5px 8px;">
+        <div style="height:26px;background:${color}20;border-radius:4px;margin-bottom:5px;display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:13px;">${emoji}</span>
         </div>
-        <div style="height:3px;background:#f3f4f6;border-radius:1px;margin-bottom:2px;"></div>
-        <div style="height:3px;background:#f3f4f6;border-radius:1px;margin-bottom:2px;width:80%;"></div>
-        <div style="height:12px;background:${color}15;border-radius:2px;margin-top:3px;"></div>
+        <div style="height:4px;background:#f0f0f0;border-radius:1px;margin-bottom:3px;"></div>
+        <div style="height:4px;background:#f0f0f0;border-radius:1px;margin-bottom:3px;width:75%;"></div>
+        <div style="height:20px;background:${color}18;border-radius:3px;margin-top:5px;"></div>
       </div>
     </div>`;
 
-  const clickAction = tplId
-    ? `applyTemplateById('${tplId}');showToast('${s.name} 템플릿 적용 후 빌더로 이동합니다')`
-    : s.url && s.url !== '#'
-      ? `window.open('${s.url}','_blank')`
-      : `showToast('준비 중인 샘플입니다')`;
-
   return `
-    <div class="sc-card" onclick="${clickAction}" style="width:300px;">
-      <!-- 미리보기: 모바일 + 웹 나란히 -->
-      <div style="background:${color}10;padding:16px 14px 12px;display:flex;gap:8px;align-items:flex-end;min-height:140px;">
-        ${mobilePreview}
-        ${webPreview}
-      </div>
-      <div class="sc-info">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
-          <div class="sc-site-name">${s.name}</div>
-          <span style="font-size:10px;font-weight:800;color:${color};background:${color}18;padding:2px 8px;border-radius:100px;">${CAT_KO[s.cat]||s.cat}</span>
-        </div>
-        <div class="sc-site-desc">${s.desc || '이 업종으로 시작하기'}</div>
-        <div style="margin-top:10px;padding:7px 12px;background:var(--a);border-radius:7px;text-align:center;font-size:12px;font-weight:800;color:var(--fg);">
-          ${tplId ? '이 디자인으로 시작하기 →' : '방문하기 ↗'}
-        </div>
+    <div class="sc-card-item" onclick="${clickAction}" style="flex-shrink:0;width:360px;border-radius:18px;overflow:hidden;cursor:pointer;transition:all .3s;background:${color};position:relative;"
+      onmouseover="this.style.transform='translateY(-8px) scale(1.02)';this.style.boxShadow='0 24px 60px rgba(0,0,0,.35)'"
+      onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 4px 20px rgba(0,0,0,.15)'">
+      <!-- 업종 뱃지 -->
+      <div style="position:absolute;top:14px;left:14px;z-index:2;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);color:rgba(255,255,255,.9);font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;letter-spacing:.05em;border:1px solid rgba(255,255,255,.15);">${catLabel}</div>
+      <!-- 미리보기만 -->
+      <div style="padding:44px 18px 20px;display:flex;gap:10px;align-items:flex-end;min-height:220px;">
+        ${mobileMock}
+        ${webMock}
       </div>
     </div>`;
 }
@@ -6053,6 +6066,7 @@ function showToast(msg){
         <div class="adm-nav-item" onclick="saNav('billing',this)"><span class="adm-nav-ic">💳</span><span class="adm-nav-lbl">결제 / 매출</span></div>
         <div class="adm-nav-item" onclick="saNav('aistats',this)"><span class="adm-nav-ic">✨</span><span class="adm-nav-lbl">AI 사용량</span></div>
         <div class="adm-nav-item" onclick="saNav('library',this)"><span class="adm-nav-ic">🗂️</span><span class="adm-nav-lbl">이미지 라이브러리</span></div>
+        <div class="adm-nav-item" onclick="saNav('showcase_order',this)"><span class="adm-nav-ic">🏠</span><span class="adm-nav-lbl">홈 쇼케이스 관리</span></div>
         <div class="adm-nav-sec">시스템</div>
         <div class="adm-nav-item" onclick="saNav('settings',this)"><span class="adm-nav-ic">⚙️</span><span class="adm-nav-lbl">시스템 설정</span></div>
       </div>
@@ -6205,6 +6219,20 @@ function showToast(msg){
               <div style="font-size:11px;color:var(--mu);margin-top:12px;padding-top:12px;border-top:1px solid var(--bd);">
                 * 샘플 이미지 <b>${SAMPLE_LIBRARY.length}장</b> 기본 제공 · 관리자 추가 이미지 <b id="customLibCount">0</b>장
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 홈 쇼케이스 관리 -->
+        <div class="adm-section" id="sa-showcase_order">
+          <div class="adm-card">
+            <div class="adm-card-head" style="display:flex;align-items:center;justify-content:space-between;">
+              <span class="adm-card-title">🏠 홈 쇼케이스 노출 순서 관리</span>
+              <button class="adm-btn primary" onclick="saScSaveOrder()">저장하기</button>
+            </div>
+            <div style="padding:16px 20px;">
+              <p style="font-size:13px;color:var(--mu);margin-bottom:20px;">드래그해서 순서를 변경하세요. 위에 있는 카드가 홈 페이지에 먼저 노출됩니다.</p>
+              <div id="saScOrderList" style="display:flex;flex-direction:column;gap:10px;"></div>
             </div>
           </div>
         </div>
@@ -6621,7 +6649,7 @@ function saNav(sec,el){
   if(el) el.classList.add('on');
   document.querySelectorAll('#page-superadmin .adm-section').forEach(s=>s.classList.remove('on'));
   document.getElementById('sa-'+sec)?.classList.add('on');
-  const titles={dashboard:'현황 개요',users:'회원 목록',sites:'사이트 목록',billing:'결제 / 매출',aistats:'AI 사용량',settings:'시스템 설정'};
+  const titles={dashboard:'현황 개요',users:'회원 목록',sites:'사이트 목록',billing:'결제 / 매출',aistats:'AI 사용량',settings:'시스템 설정',library:'이미지 라이브러리',showcase_order:'홈 쇼케이스 관리'};
   document.getElementById('saTopTitle').textContent=titles[sec]||sec;
   if(sec==='dashboard') renderSaDashboard();
   if(sec==='users') renderSaUsers();
@@ -6629,6 +6657,71 @@ function saNav(sec,el){
   if(sec==='billing') renderSaBilling();
   if(sec==='aistats') renderSaAi();
   if(sec==='library') renderAdminLibrary();
+  if(sec==='showcase_order') renderSaShowcaseOrder();
+}
+
+function renderSaShowcaseOrder(){
+  const FULL_LIST = [
+    { id:'s1', name:'블루밍 인테리어', cat:'realestate', emoji:'🏛️', desc:'공간의 가치를 높이는 프리미엄 인테리어' },
+    { id:'s2', name:'온기 한식당', cat:'food', emoji:'🍱', desc:'정성으로 끓인 매일 당일 조리 한식' },
+    { id:'s3', name:'서울 정형외과', cat:'medical', emoji:'⚕️', desc:'20년 경력 전문의의 정밀 진료' },
+    { id:'s4', name:'Dev.School', cat:'it', emoji:'💻', desc:'실무 중심 3개월 풀스택 개발 과정' },
+    { id:'s5', name:'MUSE 살롱', cat:'beauty', emoji:'✂️', desc:'트렌드를 선도하는 헤어&스킨케어' },
+    { id:'s6', name:'The English', cat:'education', emoji:'📖', desc:'원어민 강사와 함께하는 영어 회화' },
+    { id:'s7', name:'Nexus 컨설팅', cat:'business', emoji:'📊', desc:'데이터 기반 B2B 마케팅 전략' },
+    { id:'s8', name:'도쿄라멘 본점', cat:'delivery', emoji:'🍜', desc:'직수입 재료로 매일 끓이는 정통 라멘' },
+    { id:'s9', name:'Studio K.', cat:'business', emoji:'🎨', desc:'브랜드 아이덴티티 전문 크리에이터' },
+  ];
+  const CAT_KO_LOCAL = {business:'비즈니스',food:'음식/카페',medical:'의료/병원',education:'교육/학원',beauty:'뷰티/패션',realestate:'부동산/건설',it:'IT/스타트업',delivery:'음식/배달'};
+  const CAT_COL = {business:'#0F1C35',food:'#4A1505',medical:'#062A2A',education:'#1A0A3C',beauty:'#2D0A20',realestate:'#0A1628',it:'#031524',delivery:'#3D0E00'};
+
+  const saved = localStorage.getItem('sc_home_order');
+  let order = FULL_LIST.map(x=>x.id);
+  if(saved) { try { order = JSON.parse(saved); } catch(e){} }
+  const sorted = [...order.map(id=>FULL_LIST.find(x=>x.id===id)).filter(Boolean),
+    ...FULL_LIST.filter(x=>!order.includes(x.id))];
+
+  const cont = document.getElementById('saScOrderList');
+  if(!cont) return;
+  cont.innerHTML = sorted.map((s,i) => `
+    <div class="sa-sc-row" data-id="${s.id}" draggable="true"
+      style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--w);border:1.5px solid var(--bd);border-radius:10px;cursor:grab;user-select:none;">
+      <div style="font-size:18px;color:var(--mu);cursor:grab;">⠿</div>
+      <div style="width:36px;height:36px;border-radius:8px;background:${CAT_COL[s.cat]||'#1A1A1A'};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${s.emoji}</div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;">${s.name}</div>
+        <div style="font-size:12px;color:var(--mu);">${CAT_KO_LOCAL[s.cat]||s.cat} · ${s.desc}</div>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--mu);background:var(--bg);padding:3px 10px;border-radius:100px;">${i+1}위</div>
+    </div>`).join('');
+
+  // 드래그 앤 드롭
+  let dragEl = null;
+  cont.querySelectorAll('.sa-sc-row').forEach(row => {
+    row.addEventListener('dragstart', () => { dragEl = row; row.style.opacity='.4'; });
+    row.addEventListener('dragend', () => { row.style.opacity='1'; dragEl=null; updateRanks(); });
+    row.addEventListener('dragover', e => { e.preventDefault(); if(dragEl && dragEl!==row) {
+      const bounding = row.getBoundingClientRect();
+      const offset = e.clientY - bounding.top;
+      if(offset > bounding.height/2) row.after(dragEl);
+      else row.before(dragEl);
+    }});
+  });
+
+  function updateRanks(){
+    cont.querySelectorAll('.sa-sc-row').forEach((r,i)=>{
+      const rankEl = r.querySelector('div:last-child');
+      if(rankEl) rankEl.textContent = (i+1)+'위';
+    });
+  }
+}
+
+function saScSaveOrder(){
+  const cont = document.getElementById('saScOrderList');
+  if(!cont) return;
+  const order = [...cont.querySelectorAll('.sa-sc-row')].map(r=>r.dataset.id);
+  localStorage.setItem('sc_home_order', JSON.stringify(order));
+  showToast('홈 쇼케이스 순서가 저장됐습니다 ✓ (새로고침 후 반영)');
 }
 async function renderSaDashboard(){
   // 실제 DB에서 데이터 로드
