@@ -2118,16 +2118,36 @@ function gateLogin(){
 
   <!-- Publish Modal -->
   <div class="bdr-publish-modal" id="pubModal">
-    <div class="bdr-pm-box">
+    <!-- Step 1: 슬러그 입력 -->
+    <div class="bdr-pm-box" id="pubStep1">
+      <div class="bdr-pm-icon">🚀</div>
+      <div class="bdr-pm-title">사이트 주소 설정</div>
+      <div class="bdr-pm-sub">사용할 주소를 입력하세요 (영문·숫자·하이픈만 가능)</div>
+      <div style="margin:20px 0;">
+        <div style="display:flex;align-items:center;background:#F3F4F6;border:1.5px solid #E5E7EB;border-radius:10px;overflow:hidden;padding:0 12px;gap:4px;">
+          <span style="font-size:13px;color:#6B7280;white-space:nowrap;">moduweb.co.kr/</span>
+          <input id="pubSlugInput" type="text" placeholder="내가게이름"
+            style="flex:1;border:none;background:transparent;font-size:14px;font-weight:700;color:#111;outline:none;padding:13px 0;font-family:inherit;"
+            oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'').replace(/--+/g,'-')">
+        </div>
+        <div id="pubSlugHint" style="font-size:12px;color:#9CA3AF;margin-top:6px;padding-left:4px;">예: my-shop → moduweb.co.kr/my-shop</div>
+      </div>
+      <div class="bdr-pm-btns">
+        <div class="bdr-pm-btn bdr-pm-close" onclick="closePublishModal()">취소</div>
+        <div class="bdr-pm-btn bdr-pm-go" onclick="doPublish()">배포하기 →</div>
+      </div>
+    </div>
+    <!-- Step 2: 완료 -->
+    <div class="bdr-pm-box" id="pubStep2" style="display:none;">
       <div class="bdr-pm-icon">🎉</div>
       <div class="bdr-pm-title">배포 완료!</div>
-      <div class="bdr-pm-sub">사이트가 moduweb 서버에 호스팅되었습니다.<br>아래 주소로 누구나 접속할 수 있어요.</div>
-      <div class="bdr-pm-url" id="pubUrl" onclick="copyPubUrl(this)" title="클릭해서 복사" style="cursor:pointer;">
-        <span id="pubUrlText">https://moduweb.kr/site?id=...</span>
+      <div class="bdr-pm-sub">아래 주소로 누구나 접속할 수 있어요.</div>
+      <div class="bdr-pm-url" onclick="copyPubUrl(this)" title="클릭해서 복사" style="cursor:pointer;">
+        <span id="pubUrlText">https://moduweb.co.kr/...</span>
         <span style="font-size:11px;color:#6B7280;display:block;margin-top:4px;">클릭해서 주소 복사</span>
       </div>
       <div class="bdr-steps">
-        <div class="bdr-step-row"><div class="bdr-step-ic">✓</div>Supabase DB에 사이트 저장 완료</div>
+        <div class="bdr-step-row"><div class="bdr-step-ic">✓</div>DB에 사이트 저장 완료</div>
         <div class="bdr-step-row"><div class="bdr-step-ic">✓</div>공개 URL 생성 완료</div>
         <div class="bdr-step-row"><div class="bdr-step-ic">✓</div>실시간 업데이트 지원</div>
       </div>
@@ -3326,6 +3346,13 @@ let bdrState = {
       {key:'cta_link', lbl:'버튼 링크',     type:'link',     val:'#contact'},
       {key:'img',      lbl:'배경 이미지',   type:'image',    val:'', cat:'office'},
     ]},
+    {id:'contact',  ic:'📍', bg:'#ECFDF5', n:'연락처 + 지도',  on:true,  fields:[
+      {key:'title',    lbl:'섹션 제목',     type:'text',     val:'연락처'},
+      {key:'addr',     lbl:'주소 (지도 검색용)', type:'text', val:'서울특별시 강남구 테헤란로 123'},
+      {key:'tel',      lbl:'전화번호',      type:'link',     val:'tel:02-1234-5678'},
+      {key:'email',    lbl:'이메일',        type:'link',     val:'mailto:hello@company.com'},
+      {key:'hours',    lbl:'운영시간',      type:'text',     val:'평일 09:00 ~ 18:00'},
+    ]},
     {id:'about',    ic:'🏢', bg:'#EFF6FF', n:'회사소개',       on:true,  fields:[
       {key:'title',    lbl:'섹션 제목',     type:'text',     val:'회사 소개'},
       {key:'body',     lbl:'소개 내용',     type:'textarea', val:'저희 회사는 2015년 설립 이래 고객의 성공을 최우선으로 생각하며 성장해왔습니다. 다양한 분야의 전문가들이 모여 최고의 서비스를 제공합니다.', ai:true},
@@ -3355,13 +3382,6 @@ let bdrState = {
       {key:'insta',    lbl:'인스타그램',    type:'link',     val:'https://instagram.com/'},
       {key:'naver',    lbl:'네이버블로그',  type:'link',     val:'https://blog.naver.com/'},
       {key:'youtube',  lbl:'유튜브',        type:'link',     val:''},
-    ]},
-    {id:'contact',  ic:'📍', bg:'#ECFDF5', n:'연락처 + 지도',  on:true,  fields:[
-      {key:'title',    lbl:'섹션 제목',     type:'text',     val:'연락처'},
-      {key:'addr',     lbl:'주소 (지도 검색용)', type:'text', val:'서울특별시 강남구 테헤란로 123'},
-      {key:'tel',      lbl:'전화번호',      type:'link',     val:'tel:02-1234-5678'},
-      {key:'email',    lbl:'이메일',        type:'link',     val:'mailto:hello@company.com'},
-      {key:'hours',    lbl:'운영시간',      type:'text',     val:'평일 09:00 ~ 18:00'},
     ]},
     {id:'team',     ic:'👥', bg:'#EFF6FF', n:'팀 소개',        on:false, fields:[
       {key:'title',    lbl:'섹션 제목',     type:'text',     val:'우리 팀을 소개합니다'},
@@ -5042,18 +5062,36 @@ function closePublishModal(){document.getElementById('pubModal').classList.remov
 
 // ── Publish / HTML 내보내기 ──
 async function publishSite(){
-  const btn=document.querySelector('.bdr-publish');
-  btn.textContent='생성 중... 🔄'; btn.disabled=true;
+  // Step1: 슬러그 입력 모달 열기
+  const sn = document.getElementById('bdrSiteName').value || '내 회사';
+  const defaultSlug = sn.replace(/\s+/g,'-').toLowerCase().replace(/[^a-z0-9-]/g,'');
+  const inp = document.getElementById('pubSlugInput');
+  if(inp) inp.value = defaultSlug;
+  document.getElementById('pubStep1').style.display = '';
+  document.getElementById('pubStep2').style.display = 'none';
+  document.getElementById('pubModal').classList.add('open');
+}
+
+async function doPublish(){
+  const btn = document.querySelector('.bdr-publish');
+  const slugInput = document.getElementById('pubSlugInput');
+  let slug = slugInput?.value?.trim() || '';
+  if(!slug){ showToast('사이트 주소를 입력해주세요'); slugInput?.focus(); return; }
+  slug = slug.replace(/[^a-z0-9-]/g,'').replace(/--+/g,'-').replace(/^-|-$/g,'');
+  if(!slug){ showToast('영문·숫자·하이픈만 사용 가능합니다'); return; }
+
+  document.getElementById('pubStep1').style.display = 'none';
+  if(btn){ btn.textContent='배포 중... 🔄'; btn.disabled=true; }
+
   await saveBuilder();
-  const sn=document.getElementById('bdrSiteName').value||'내 회사';
-  const slug=sn.replace(/\s+/g,'-').toLowerCase();
-  const tc=bdrState.theme.color;
-  const seoTitle=document.getElementById('seoTitle')?.value||sn;
-  const seoDesc=document.getElementById('seoDesc')?.value||'';
-  const ogImage=document.getElementById('ogImage')?.value||'';
-  let sectionsHtml=bdrState.modules.filter(m=>m.on).map(m=>buildSectionHtml(m,tc,sn)).join('\n');
-  const navLinks=bdrState.modules.filter(m=>m.on&&m.id!=='hero').map(m=>`<a class="s-nav-link" href="#s-${m.id}">${m.n}</a>`).join('');
-  const siteHtml=`<!DOCTYPE html>
+  const sn = document.getElementById('bdrSiteName').value || '내 회사';
+  const tc = bdrState.theme.color;
+  const seoTitle = document.getElementById('seoTitle')?.value || sn;
+  const seoDesc = document.getElementById('seoDesc')?.value || '';
+  const ogImage = document.getElementById('ogImage')?.value || '';
+  let sectionsHtml = bdrState.modules.filter(m=>m.on).map(m=>buildSectionHtml(m,tc,sn)).join('\n');
+  const navLinks = bdrState.modules.filter(m=>m.on&&m.id!=='hero').map(m=>`<a class="s-nav-link" href="#s-${m.id}">${m.n}</a>`).join('');
+  const siteHtml = `<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -5076,10 +5114,10 @@ a{text-decoration:none;color:inherit;}:root{--a:${tc};--mu:#6B7280;--bd:#E5E7EB;
 .s-nav-link{font-size:13px;font-weight:500;color:#6B7280;padding:6px 12px;border-radius:7px;cursor:pointer;transition:all .15s;}
 .s-nav-link:hover{color:#0D0F14;background:#F3F4F6;}
 section{padding:72px 24px;}.s-in{max-width:1100px;margin:0 auto;}
-.s-tag{font-size:11px;font-weight:700;color:var(--a);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
-.s-h1{font-size:clamp(32px,5vw,60px);font-weight:800;line-height:1.1;letter-spacing:-1.5px;margin-bottom:16px;}
-.s-h2{font-size:clamp(22px,3vw,36px);font-weight:800;line-height:1.2;letter-spacing:-1px;margin-bottom:14px;}
-.s-p{font-size:15px;color:#6B7280;line-height:1.8;}
+.s-tag{font-size:13px;font-weight:700;color:var(--a);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+.s-h1{font-size:clamp(38px,5.5vw,72px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px;}
+.s-h2{font-size:clamp(26px,3.5vw,44px);font-weight:900;line-height:1.15;letter-spacing:-1.2px;margin-bottom:16px;}
+.s-p{font-size:17px;color:#6B7280;line-height:1.85;}
 .s-btn{display:inline-flex;align-items:center;background:var(--a);color:#fff;font-size:14px;font-weight:700;padding:12px 26px;border-radius:9px;border:none;cursor:pointer;margin-top:20px;text-decoration:none;}
 .s-hero{min-height:88vh;display:flex;align-items:center;padding-top:100px;position:relative;overflow:hidden;text-align:center;justify-content:center;}
 .s-hero-dot{position:absolute;inset:0;background-image:radial-gradient(circle,#E5E7EB 1px,transparent 1px);background-size:28px 28px;opacity:.5;}
@@ -5195,45 +5233,32 @@ kakao.maps.load(()=>{
 <\/script>
 </body></html>`;
 
-  // ── 호스팅 방식: 다운로드 대신 Supabase 저장 + 공개 URL 생성 ──
   let pubUrl = '';
-
   if (SUPABASE_READY && currentSiteId) {
-    // Supabase에 사이트 config + 생성된 HTML 저장
     await sb.from('sites').update({
       published: true,
       config: { modules: bdrState.modules, theme: bdrState.theme },
-      seo: {
-        title: seoTitle,
-        desc: seoDesc,
-        ogImage,
-        keywords: document.getElementById('seoKeywords')?.value || ''
-      },
+      seo: { title: seoTitle, desc: seoDesc, ogImage, keywords: document.getElementById('seoKeywords')?.value||'' },
       name: sn,
       slug: slug
     }).eq('id', currentSiteId);
-    pubUrl = `${location.origin}/viewer.html?id=${currentSiteId}`;
+    pubUrl = `${location.origin}/viewer.html?slug=${slug}`;
   } else {
-    // 비로그인 or Supabase 미설정: 로컬 미리보기 URL
     const blob = new Blob([siteHtml], {type:'text/html;charset=utf-8'});
-    const blobUrl = URL.createObjectURL(blob);
-    pubUrl = blobUrl;
-    // 5분 후 blob URL 해제
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 300000);
+    pubUrl = URL.createObjectURL(blob);
+    setTimeout(()=>URL.revokeObjectURL(pubUrl), 300000);
   }
 
-  btn.textContent='배포하기 🚀'; btn.disabled=false;
-  bdrState.published=true;
-  document.getElementById('bdrStatus').textContent='라이브';
+  if(btn){ btn.textContent='배포하기 🚀'; btn.disabled=false; }
+  bdrState.published = true;
+  document.getElementById('bdrStatus').textContent = '라이브';
   document.getElementById('bdrStatus').classList.add('live');
 
-  // 모달에 URL 표시
   _currentPubUrl = pubUrl;
   document.getElementById('pubUrlText').textContent = pubUrl;
-  document.getElementById('pubModal').classList.add('open');
-  showToast(currentUser ? '사이트가 성공적으로 배포되었습니다 🎉' : '미리보기 URL이 생성됐습니다 (로그인 시 실제 호스팅)');
+  document.getElementById('pubStep2').style.display = '';
+  showToast(currentUser ? '🎉 배포 완료! 사이트가 공개됐습니다' : '미리보기 URL 생성 (로그인 시 실제 호스팅)');
 }
-
 let _currentPubUrl = '';
 function copyPubUrl(el){
   navigator.clipboard.writeText(_currentPubUrl).then(()=>{
@@ -5250,17 +5275,17 @@ function buildSectionHtml(m,tc,sn){
   const f=key=>m.fields.find(x=>x.key===key)?.val||'';
   if(m.id==='hero'){
     const img=f('img');
-    return `<section id="s-hero" class="s-hero" style="${img?`background:url('${img}') center/cover;`:'background:#fff;'}">
-      ${img?'<div style="position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:0;"></div>':'<div class="s-hero-dot"></div>'}
+    return `<section id="s-hero" class="s-hero" style="${img?`background:url('${img}') center/cover;`:'background:linear-gradient(135deg,#0A1628 0%,#1A2F5A 100%);'}">
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,${img?'.45':'.2'});z-index:0;"></div>
       <div style="position:relative;z-index:1;max-width:760px;">
         <div class="s-tag" style="color:${tc};background:${tc}22;border:1px solid ${tc}44;display:inline-block;padding:4px 12px;border-radius:100px;margin-bottom:16px;">환영합니다</div>
-        <div class="s-h1" style="${img?'color:#fff;':''}">${f('title')}</div>
-        <p class="s-p" style="${img?'color:rgba(255,255,255,.7);':''}max-width:480px;margin:0 auto;">${f('sub')}</p>
+        <div class="s-h1" style="color:#fff;">${f('title')}</div>
+        <p class="s-p" style="color:rgba(255,255,255,.75);max-width:520px;margin:0 auto;">${f('sub')}</p>
         <a href="${f('cta_link')||'#s-contact'}" class="s-btn" style="background:${tc};">${f('cta')}</a>
       </div>
     </section>`;
   }
-  if(m.id==='about'){const img=f('img');return `<section id="s-about" style="padding:72px 24px;background:#fff;"><div class="s-in"><div style="display:grid;grid-template-columns:${img?'1fr 1fr':'1fr'};gap:40px;align-items:center;"><div><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">${sn}</div><p class="s-p">${f('body')}</p><div style="display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:8px 16px;border-radius:9px;background:#F5F3FF;font-size:13px;font-weight:700;color:#534AB7;">🎯 ${f('vision')}</div></div>${img?`<img src="${img}" alt="" style="width:100%;height:280px;object-fit:cover;border-radius:12px;">`:''}</div></div></section>`;}  if(m.id==='product'){const items=[{name:f('p1name'),desc:f('p1desc'),img:f('p1img'),link:f('p1link')},{name:f('p2name'),desc:f('p2desc'),img:f('p2img'),link:f('p2link')}];return `<section id="s-product" style="padding:72px 24px;background:#F9F9F9;"><div class="s-in"><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">제품 및 서비스</div><div class="s-cards">${items.map(it=>`<div class="s-card">${it.img?`<img src="${it.img}" alt="" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-bottom:12px;">`:'<div class="s-card-ic">📦</div>'}<div class="s-card-t">${it.name}</div><div class="s-card-d">${it.desc}</div>${it.link?`<a href="${it.link}" style="display:inline-block;margin-top:10px;font-size:12px;color:${tc};font-weight:700;">자세히 보기 →</a>`:''}</div>`).join('')}</div></div></section>`;}
+  if(m.id==='about'){const img=f('img');return `<section id="s-about" style="padding:72px 24px;background:#FAFAFA;"><div class="s-in"><div style="display:grid;grid-template-columns:${img?'1fr 1fr':'1fr'};gap:40px;align-items:center;"><div><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">${sn}</div><p class="s-p">${f('body')}</p><div style="display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:8px 16px;border-radius:9px;background:#F5F3FF;font-size:13px;font-weight:700;color:#534AB7;">🎯 ${f('vision')}</div></div>${img?`<img src="${img}" alt="" style="width:100%;height:280px;object-fit:cover;border-radius:12px;">`:''}</div></div></section>`;}  if(m.id==='product'){const items=[{name:f('p1name'),desc:f('p1desc'),img:f('p1img'),link:f('p1link')},{name:f('p2name'),desc:f('p2desc'),img:f('p2img'),link:f('p2link')}];return `<section id="s-product" style="padding:72px 24px;background:#fff;"><div class="s-in"><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">제품 및 서비스</div><div class="s-cards">${items.map(it=>`<div class="s-card">${it.img?`<img src="${it.img}" alt="" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-bottom:12px;">`:'<div class="s-card-ic">📦</div>'}<div class="s-card-t">${it.name}</div><div class="s-card-d">${it.desc}</div>${it.link?`<a href="${it.link}" style="display:inline-block;margin-top:10px;font-size:12px;color:${tc};font-weight:700;">자세히 보기 →</a>`:''}</div>`).join('')}</div></div></section>`;}
   if(m.id==='team'){const mb=[{n:f('m1name'),r:f('m1role'),d:f('m1desc'),img:f('m1img')},{n:f('m2name'),r:f('m2role'),d:f('m2desc'),img:f('m2img')},{n:f('m3name'),r:f('m3role'),d:f('m3desc'),img:f('m3img')}];return `<section id="s-team" style="padding:72px 24px;background:#fff;"><div class="s-in"><div class="s-tag" style="color:${tc}">OUR TEAM</div><div class="s-h2">${f('title')}</div><div class="s-team">${mb.map(x=>`<div class="s-member"><div class="s-member-avatar">${x.img?`<img src="${x.img}" alt="">`:'👤'}</div><div class="s-member-name">${x.n}</div><div class="s-member-role" style="color:${tc}">${x.r}</div><div class="s-member-desc">${x.d}</div></div>`).join('')}</div></div></section>`;}
   if(m.id==='faq'){const pairs=[{q:f('q1'),a:f('a1')},{q:f('q2'),a:f('a2')},{q:f('q3'),a:f('a3')},{q:f('q4'),a:f('a4')}].filter(p=>p.q);return `<section id="s-faq" style="padding:72px 24px;background:#F9F9F9;"><div class="s-in" style="max-width:760px;margin:0 auto;"><div class="s-tag" style="color:${tc}">FAQ</div><div class="s-h2">${f('title')}</div><div class="s-faq">${pairs.map((p,i)=>`<div class="s-faq-item${i===0?' open':''}"><div class="s-faq-q">${p.q}<span>${i===0?'−':'+'}</span></div><div class="s-faq-a">${p.a}</div></div>`).join('')}</div></div></section>`;}
   if(m.id==='portfolio'){const works=[{t:f('p1title'),c:f('p1cat'),img:f('p1img'),l:f('p1link')},{t:f('p2title'),c:f('p2cat'),img:f('p2img'),l:f('p2link')},{t:f('p3title'),c:f('p3cat'),img:f('p3img'),l:f('p3link')}].filter(w=>w.t);return `<section id="s-portfolio" style="padding:72px 24px;background:#F9F9F9;"><div class="s-in"><div class="s-tag" style="color:${tc}">PORTFOLIO</div><div class="s-h2">${f('title')}</div><div class="s-port">${works.map(w=>`<div class="s-port-item"${w.l?` onclick="window.open('${w.l}','_blank')" style="cursor:pointer;"`:``}>${w.img?`<img src="${w.img}" alt="">`:'<div style="width:100%;height:100%;background:#E5E7EB;display:flex;align-items:center;justify-content:center;font-size:32px;">🖼️</div>'}<div class="s-port-overlay"><div class="s-port-cat">${w.c}</div><div class="s-port-title">${w.t}</div></div></div>`).join('')}</div></div></section>`;}
