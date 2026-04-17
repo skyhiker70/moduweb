@@ -2135,14 +2135,20 @@ function gateLogin(){
     </div>
     <!-- Step 2: 완료 -->
     <div class="bdr-pm-box" id="pubStep2" style="display:none;">
-      <div class="bdr-pm-icon">🎉</div>
-      <div class="bdr-pm-title">배포 완료!</div>
-      <div class="bdr-pm-sub">아래 주소로 누구나 접속할 수 있어요.</div>
+      <div class="bdr-pm-icon" id="pubResultIcon">🎉</div>
+      <div class="bdr-pm-title" id="pubResultTitle">배포 완료!</div>
+      <div class="bdr-pm-sub" id="pubResultSub">아래 주소로 누구나 접속할 수 있어요.</div>
       <div class="bdr-pm-url" onclick="copyPubUrl(this)" title="클릭해서 복사" style="cursor:pointer;">
         <span id="pubUrlText">https://moduweb.co.kr/...</span>
-        <span style="font-size:11px;color:#6B7280;display:block;margin-top:4px;">클릭해서 주소 복사</span>
+        <span style="font-size:11px;color:#6B7280;display:block;margin-top:4px;" id="pubUrlHint">클릭해서 주소 복사</span>
       </div>
-      <div class="bdr-steps">
+      <!-- 비로그인 안내 -->
+      <div id="pubLoginNotice" style="display:none;background:#FFF8E7;border:1px solid #FFE066;border-radius:10px;padding:14px 16px;margin:12px 0;text-align:left;">
+        <div style="font-size:13px;font-weight:700;color:#856404;margin-bottom:6px;">⚠️ 로그인이 필요해요</div>
+        <div style="font-size:12px;color:#856404;line-height:1.6;">로그인하면 <b>moduweb.co.kr/내주소</b> 로 실제 배포할 수 있어요.<br>현재는 임시 미리보기만 가능합니다.</div>
+        <button onclick="closePublishModal();go('login')" style="margin-top:10px;padding:7px 16px;background:#FFB500;color:#111;border:none;border-radius:7px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">로그인하러 가기 →</button>
+      </div>
+      <div class="bdr-steps" id="pubSteps">
         <div class="bdr-step-row"><div class="bdr-step-ic">✓</div>DB에 사이트 저장 완료</div>
         <div class="bdr-step-row"><div class="bdr-step-ic">✓</div>공개 URL 생성 완료</div>
         <div class="bdr-step-row"><div class="bdr-step-ic">✓</div>실시간 업데이트 지원</div>
@@ -5239,6 +5245,7 @@ kakao.maps.load(()=>{
     }).eq('id', currentSiteId);
     pubUrl = `${location.origin}/viewer.html?slug=${slug}`;
   } else {
+    // 비로그인: blob URL + 로그인 안내
     const blob = new Blob([siteHtml], {type:'text/html;charset=utf-8'});
     pubUrl = URL.createObjectURL(blob);
     setTimeout(()=>URL.revokeObjectURL(pubUrl), 300000);
@@ -5247,12 +5254,61 @@ kakao.maps.load(()=>{
   if(btn){ btn.textContent='배포하기 🚀'; btn.disabled=false; }
   bdrState.published = true;
   const _bs=document.getElementById('bdrStatus'); if(_bs) _bs.textContent = '라이브';
-  document.getElementById('bdrStatus').classList.add('live');
+  const _bsc = document.getElementById('bdrStatus'); if(_bsc) _bsc.classList.add('live');
 
   _currentPubUrl = pubUrl;
-  const _put=document.getElementById('pubUrlText'); if(_put) _put.textContent = pubUrl;
-  document.getElementById('pubStep2').style.display = '';
-  showToast(currentUser ? '🎉 배포 완료! 사이트가 공개됐습니다' : '미리보기 URL 생성 (로그인 시 실제 호스팅)');
+
+  // URL 표시 - 로그인 시에는 slug URL, 비로그인은 안내 메시지
+  const urlBox = document.getElementById('pubUrlText');
+  if(urlBox){
+    if(currentUser && currentSiteId){
+      urlBox.textContent = pubUrl;
+      urlBox.style.color = '';
+    } else {
+      urlBox.textContent = '로그인 후 배포하면 moduweb.co.kr/' + slug + ' 주소가 생성됩니다';
+      urlBox.style.color = '#888';
+    }
+  }
+
+  // 완료 단계 표시
+  const step1 = document.getElementById('pubStep1');
+  const step2 = document.getElementById('pubStep2');
+  if(step1) step1.style.display = 'none';
+  if(step2) step2.style.display = '';
+
+  // 로그인 여부에 따라 모달 내용 변경
+  const loginNotice = document.getElementById('pubLoginNotice');
+  const pubSteps = document.getElementById('pubSteps');
+  const pubResultIcon = document.getElementById('pubResultIcon');
+  const pubResultTitle = document.getElementById('pubResultTitle');
+  const pubResultSub = document.getElementById('pubResultSub');
+  if(!currentUser || !currentSiteId){
+    if(loginNotice) loginNotice.style.display = 'block';
+    if(pubSteps) pubSteps.style.display = 'none';
+    if(pubResultIcon) pubResultIcon.textContent = '👀';
+    if(pubResultTitle) pubResultTitle.textContent = '미리보기 생성됨';
+    if(pubResultSub) pubResultSub.textContent = '로그인하면 실제 URL로 배포됩니다.';
+  } else {
+    if(loginNotice) loginNotice.style.display = 'none';
+    if(pubSteps) pubSteps.style.display = '';
+    if(pubResultIcon) pubResultIcon.textContent = '🎉';
+    if(pubResultTitle) pubResultTitle.textContent = '배포 완료!';
+    if(pubResultSub) pubResultSub.textContent = '아래 주소로 누구나 접속할 수 있어요.';
+  }
+
+  // 방문 버튼
+  const visitBtn = document.getElementById('pubVisitBtn');
+  if(visitBtn){
+    if(currentUser && currentSiteId){
+      visitBtn.style.display = '';
+      visitBtn.textContent = '사이트 방문하기 →';
+    } else {
+      visitBtn.textContent = '미리보기 열기 →';
+      visitBtn.style.display = '';
+    }
+  }
+
+  showToast(currentUser ? '🎉 배포 완료! 사이트가 공개됐습니다' : '⚠️ 로그인하면 실제 URL로 배포됩니다');
 }
 let _currentPubUrl = '';
 function copyPubUrl(el){
