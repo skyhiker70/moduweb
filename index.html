@@ -772,20 +772,22 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 /* 햄버거 메뉴 */
 #navHamBtn{display:none;flex-direction:column;gap:5px;width:36px;height:36px;border:1.5px solid var(--bd);border-radius:8px;background:transparent;cursor:pointer;align-items:center;justify-content:center;}
 #navHamBtn span{width:16px;height:1.5px;background:var(--fg);border-radius:1px;transition:all .2s;}
-.nav-mobile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:298;opacity:0;pointer-events:none;transition:opacity .25s;}
+.nav-mobile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:298;opacity:0;pointer-events:none;transition:opacity .25s;}
 .nav-mobile-overlay.open{opacity:1;pointer-events:all;}
-.nav-mobile-menu{position:fixed;top:0;right:0;bottom:0;width:280px;background:#fff;z-index:299;transform:translateX(100%);transition:transform .3s cubic-bezier(.25,.1,.25,1);flex-direction:column;display:flex;box-shadow:-8px 0 40px rgba(0,0,0,.12);}
+.nav-mobile-menu{position:fixed;top:0;right:0;bottom:0;width:300px;background:#111;z-index:299;transform:translateX(100%);transition:transform .3s cubic-bezier(.25,.1,.25,1);flex-direction:column;display:flex;}
 .nav-mobile-menu.open{transform:translateX(0);}
-.nav-mobile-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #F0F0F0;}
-.nav-mobile-logo{font-size:15px;font-weight:800;color:var(--fg);}
-.nav-mobile-logo span{color:var(--a);}
-.nav-mobile-close{width:32px;height:32px;border:none;background:none;cursor:pointer;font-size:20px;color:var(--mu);display:flex;align-items:center;justify-content:center;border-radius:6px;}
-.nav-mobile-close:hover{background:var(--bg);}
-.nav-mobile-body{flex:1;overflow-y:auto;padding:8px 0;}
-.nav-mobile-item{padding:14px 20px;font-size:15px;font-weight:600;color:var(--fg);cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s;}
-.nav-mobile-item:hover{background:var(--bg);}
-.nav-mobile-item.accent{color:var(--a);}
-.nav-mobile-foot{padding:16px 20px;border-top:1px solid #F0F0F0;}
+.nav-mobile-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid #222;}
+.nav-mobile-logo{font-size:15px;font-weight:900;color:#fff;letter-spacing:-.3px;}
+.nav-mobile-logo span{color:#FFB500;}
+.nav-mobile-close{width:34px;height:34px;border:1.5px solid #333;background:transparent;border-radius:8px;cursor:pointer;font-size:16px;color:#888;display:flex;align-items:center;justify-content:center;}
+.nav-mobile-close:hover{border-color:#FFB500;color:#FFB500;}
+.nav-mobile-body{flex:1;overflow-y:auto;padding:12px 0;}
+.nav-mobile-item{padding:13px 22px;font-size:15px;font-weight:600;color:rgba(255,255,255,.75);cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .15s;border-left:3px solid transparent;}
+.nav-mobile-item:hover{background:rgba(255,255,255,.06);color:#fff;border-left-color:#FFB500;}
+.nav-mobile-item .nm-ic{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.nav-mobile-item.accent{color:#FFB500;}
+.nav-mobile-divider{height:1px;background:#222;margin:8px 22px;}
+.nav-mobile-foot{padding:16px 22px;border-top:1px solid #222;}
 /* 어드민 오버레이 */
 .adm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;}
 .adm-overlay.open{display:block;}
@@ -1152,17 +1154,33 @@ function gateLogin(){
     <button class="nav-mobile-close" onclick="toggleMobileNav()">✕</button>
   </div>
   <div class="nav-mobile-body">
-    <div class="nav-mobile-item" onclick="go('showcase');toggleMobileNav()">🏠 업종별홈페이지</div>
-    <div class="nav-mobile-item" id="mobileMyPage" onclick="go('dashboard');toggleMobileNav()" style="display:none;">📋 내홈페이지관리</div>
-    <div class="nav-mobile-item" onclick="go('aistudio');toggleMobileNav()">✨ AI스튜디오</div>
-    <div class="nav-mobile-item" onclick="go('features');toggleMobileNav()">⚡ 기능 소개</div>
-    <div class="nav-mobile-item" onclick="go('modules');toggleMobileNav()">🧩 모듈 목록</div>
-    <div class="nav-mobile-item" onclick="go('pricing');toggleMobileNav()">💳 요금제</div>
-    <div class="nav-mobile-item" onclick="go('templates');toggleMobileNav()">🎨 템플릿</div>
+    <div class="nav-mobile-item" onclick="go('showcase');toggleMobileNav()">
+      <div class="nm-ic">🏠</div>업종별홈페이지
+    </div>
+    <div class="nav-mobile-item" id="mobileMyPage" onclick="go('dashboard');toggleMobileNav()" style="display:none;">
+      <div class="nm-ic">📋</div>내홈페이지관리
+    </div>
+    <div class="nav-mobile-item" onclick="go('aistudio');toggleMobileNav()" style="color:#FFB500;">
+      <div class="nm-ic" style="background:rgba(255,181,0,.12);">✨</div>AI스튜디오
+    </div>
+    <div class="nav-mobile-divider"></div>
+    <div class="nav-mobile-item" onclick="go('features');toggleMobileNav()">
+      <div class="nm-ic">⚡</div>기능 소개
+    </div>
+    <div class="nav-mobile-item" onclick="go('modules');toggleMobileNav()">
+      <div class="nm-ic">🧩</div>모듈 목록
+    </div>
+    <div class="nav-mobile-item" onclick="go('pricing');toggleMobileNav()">
+      <div class="nm-ic">💳</div>요금제
+    </div>
+    <div class="nav-mobile-item" onclick="go('templates');toggleMobileNav()">
+      <div class="nm-ic">🎨</div>템플릿
+    </div>
   </div>
   <div class="nav-mobile-foot">
-    <div class="nav-mobile-item accent" onclick="go('login');toggleMobileNav()" style="padding:0;margin-bottom:10px;">로그인</div>
-    <button onclick="go('builder');toggleMobileNav()" style="width:100%;padding:13px;background:var(--a);color:var(--fg);border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">무료로 시작하기 →</button>
+    <div style="color:rgba(255,255,255,.4);font-size:12px;margin-bottom:10px;padding-left:2px;">계정</div>
+    <button onclick="go('login');toggleMobileNav()" style="width:100%;padding:11px;background:transparent;color:rgba(255,255,255,.6);border:1.5px solid #333;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;">로그인</button>
+    <button onclick="go('builder');toggleMobileNav()" style="width:100%;padding:12px;background:#FFB500;color:#111;border:none;border-radius:8px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">무료로 시작하기 →</button>
   </div>
 </div>
 
@@ -1569,34 +1587,6 @@ function gateLogin(){
 </div>
 
 </div>
-<section class="sec" style="background:var(--w);"><div class="si">
-  <div class="stag">상세 비교</div><h2 class="stitle">플랜별 기능<br>전체 비교</h2>
-  <div style="overflow-x:auto;"><table class="fctbl">
-    <thead><tr><th>기능</th><th>무료</th><th class="hl">스타터</th><th>프로</th><th>에이전시</th></tr></thead>
-    <tbody>
-      <tr class="gr"><td colspan="5">기본</td></tr>
-      <tr><td>사이트 수</td><td>1</td><td class="hl">1</td><td>1</td><td>10</td></tr>
-      <tr><td>모듈 수</td><td>3개</td><td class="hl">전체</td><td>전체</td><td>전체</td></tr>
-      <tr><td>방문자 수</td><td>500명/월</td><td class="hl">무제한</td><td>무제한</td><td>무제한</td></tr>
-      <tr><td>moduweb 워터마크</td><td><span class="cy">✓</span></td><td class="hl"><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td></tr>
-      <tr class="gr"><td colspan="5">도메인 & 배포</td></tr>
-      <tr><td>modusite.kr 서브도메인</td><td><span class="cy">✓</span></td><td class="hl"><span class="cy">✓</span></td><td><span class="cy">✓</span></td><td><span class="cy">✓</span></td></tr>
-      <tr><td>커스텀 도메인</td><td><span class="cn">✗</span></td><td class="hl">1개</td><td>3개</td><td>무제한</td></tr>
-      <tr><td>SSL 인증서</td><td><span class="cy">✓</span></td><td class="hl"><span class="cy">✓</span></td><td><span class="cy">✓</span></td><td><span class="cy">✓</span></td></tr>
-      <tr class="gr"><td colspan="5">AI 기능</td></tr>
-      <tr><td>AI 콘텐츠 생성</td><td><span class="cn">✗</span></td><td class="hl">10회/월</td><td>20회/월</td><td>100회/월</td></tr>
-      <tr><td>AI SEO 메타 생성</td><td><span class="cn">✗</span></td><td class="hl"><span class="cy">✓</span></td><td><span class="cy">✓</span></td><td><span class="cy">✓</span></td></tr>
-      <tr class="gr"><td colspan="5">동적 모듈</td></tr>
-      <tr><td>공지사항</td><td><span class="cn">✗</span></td><td class="hl"><span class="cy">✓</span></td><td><span class="cy">✓</span></td><td><span class="cy">✓</span></td></tr>
-      <tr><td>커뮤니티 게시판</td><td><span class="cn">✗</span></td><td class="hl"><span class="cy">✓</span></td><td><span class="cy">✓</span></td><td><span class="cy">✓</span></td></tr>
-      <tr class="gr"><td colspan="5">분석 & 지원</td></tr>
-      <tr><td>방문자 통계</td><td><span class="cn">✗</span></td><td class="hl">기본</td><td>전체</td><td>전체</td></tr>
-      <tr><td>화이트라벨</td><td><span class="cn">✗</span></td><td class="hl"><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✓</span></td></tr>
-      <tr><td>API 액세스</td><td><span class="cn">✗</span></td><td class="hl"><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✓</span></td></tr>
-      <tr><td>고객 지원</td><td>커뮤니티</td><td class="hl">이메일</td><td>이메일</td><td class="tac">전담 지원</td></tr>
-    </tbody>
-  </table></div>
-</div></section>
 <section class="sec"><div class="si" style="max-width:760px;margin:0 auto;">
   <div class="stag" style="text-align:center;">FAQ</div><h2 class="stitle" style="text-align:center;margin-bottom:36px;">자주 묻는<br>질문</h2>
   <div id="faqList"></div>
