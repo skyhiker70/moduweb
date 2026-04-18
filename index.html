@@ -2627,8 +2627,16 @@ sb.auth.onAuthStateChange(async (event, session) => {
       // 새 로그인 (이전에 로그인 안 된 상태)
       _dashLoaded = false;
       await loadOrCreateSite();
-      go('dashboard');
-      showToast('로그인 완료! 내 홈페이지를 불러왔어요 ✓');
+      // 빌더에서 로그인했으면 빌더로, 아니면 대시보드로
+      const curHash = location.hash.replace('#','');
+      if(curHash === 'builder' || document.getElementById('page-builder')?.classList.contains('active')){
+        bdrInited = false; // 빌더 재초기화로 저장 버튼 복구
+        go('builder');
+        showToast('로그인 완료! 클라우드 저장이 활성화됐어요 ✓');
+      } else {
+        go('dashboard');
+        showToast('로그인 완료! 내 홈페이지를 불러왔어요 ✓');
+      }
     }
   } else {
     currentProfile = null;
@@ -2683,8 +2691,32 @@ async function sbSignIn() {
   const btn   = document.getElementById('loginBtn');
   if (!email || !pw) { errEl.textContent = '이메일과 비밀번호를 입력해주세요.'; return; }
   btn.textContent = '로그인 중...'; btn.disabled = true;
+  errEl.textContent = '';
   const { error } = await sb.auth.signInWithPassword({ email, password: pw });
-  if (error) { errEl.textContent = '이메일 또는 비밀번호가 올바르지 않습니다.'; btn.textContent = '로그인 →'; btn.disabled = false; }
+  if (error) {
+    btn.textContent = '로그인 →'; btn.disabled = false;
+    const msg = error.message || '';
+    if(msg.includes('Email not confirmed') || msg.includes('email_not_confirmed')){
+      errEl.style.color='#D97706';
+      errEl.textContent = '📧 이메일 인증이 필요합니다. 가입 시 보낸 인증 메일을 확인해주세요.';
+    } else if(msg.includes('Invalid login') || msg.includes('invalid_credentials') || msg.includes('Invalid email or password')){
+      errEl.style.color='#DC2626';
+      errEl.textContent = '이메일 또는 비밀번호가 올바르지 않습니다.';
+    } else if(msg.includes('rate') || msg.includes('security') || msg.includes('seconds')){
+      errEl.style.color='#D97706';
+      errEl.textContent = '잠시 후 다시 시도해주세요. (보안 정책상 연속 요청이 제한됩니다)';
+    } else if(msg.includes('network') || msg.includes('fetch') || msg.includes('Failed to fetch')){
+      errEl.style.color='#DC2626';
+      errEl.textContent = '네트워크 오류입니다. 인터넷 연결을 확인해주세요.';
+    } else if(msg.includes('User not found') || msg.includes('user_not_found')){
+      errEl.style.color='#DC2626';
+      errEl.textContent = '가입된 이메일이 없습니다. 먼저 회원가입을 해주세요.';
+    } else {
+      errEl.style.color='#DC2626';
+      errEl.textContent = '로그인 실패: ' + msg;
+    }
+  }
+  // 성공 시 onAuthStateChange가 자동으로 처리
 }
 
 // 이메일 회원가입
@@ -3788,27 +3820,45 @@ function setLayout(l){bdrState.theme.layout=l;renderDesignPanel();markUnsaved();
 // ── Preview ──
 function getField(m,key){return m.fields.find(f=>f.key===key)?.val||'';}
 function initPvLeafMaps(){
+  function renderAddrCard(el, addr){
+    el.innerHTML='<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#E8EFF7,#D4E4F0);cursor:pointer;border-radius:inherit;" onclick="window.open(\'https://maps.google.com/?q='+encodeURIComponent(addr)+'\',\'_blank\')">'
+      +'<div style="font-size:28px;">📍</div>'
+      +'<div style="font-size:12px;font-weight:700;color:#374151;text-align:center;max-width:180px;line-height:1.4;">'+addr+'</div>'
+      +'<div style="font-size:11px;color:#6B7280;background:#fff;padding:4px 12px;border-radius:100px;border:1px solid #D1D5DB;">지도에서 보기 →</div>'
+      +'</div>';
+  }
   function doInit(){
-    document.querySelectorAll('.pv-leafmap').forEach(function(el){
+    document.querySelectorAll('.pv-leafmap[data-addr]').forEach(function(el){
       if(el._leafInit) return;
       el._leafInit = true;
       var addr = el.dataset.addr||'';
       if(!addr){el.innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:13px;">주소를 입력하세요</div>';return;}
-      fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(addr)+'&format=json&limit=1')
+      // 즉시 주소카드 표시
+      renderAddrCard(el, addr);
+      // Leaflet으로 업그레이드 시도
+      fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(addr)+'&format=json&limit=1&accept-language=ko')
         .then(function(r){return r.json();}).then(function(d){
-          if(!d||!d[0]){el.innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:#6B7280;font-size:12px;padding:16px;text-align:center;"><div style="font-size:22px;">📍</div><div>'+addr+'</div><a href="https://maps.google.com/?q='+encodeURIComponent(addr)+'" target="_blank" style="color:#3B82F6;text-decoration:underline;font-size:11px;">지도에서 보기</a></div>';return;}
+          if(!d||!d[0]) return; // 주소카드 유지
           var lat=parseFloat(d[0].lat),lon=parseFloat(d[0].lon);
+          el.innerHTML='';
           el.style.cssText='position:absolute;inset:0;';
-          var map=L.map(el,{zoomControl:false,scrollWheelZoom:false}).setView([lat,lon],15);
+          var map=L.map(el,{zoomControl:true,scrollWheelZoom:false}).setView([lat,lon],15);
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(map);
           L.marker([lat,lon]).addTo(map);
-        }).catch(function(){el.innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:12px;">지도를 불러오는 중...</div>';});
+        }).catch(function(){}); // 실패해도 주소카드 유지
     });
   }
   if(window.L){doInit();return;}
   if(!document.getElementById('leaflet-css')){var lc=document.createElement('link');lc.id='leaflet-css';lc.rel='stylesheet';lc.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(lc);}
-  if(!document.getElementById('leaflet-js')){var ls=document.createElement('script');ls.id='leaflet-js';ls.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';ls.onload=doInit;document.head.appendChild(ls);}
-  else{setTimeout(function(){if(window.L)doInit();},600);}
+  if(!document.getElementById('leaflet-js')){
+    var ls=document.createElement('script');ls.id='leaflet-js';ls.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    ls.onload=doInit;document.head.appendChild(ls);
+    // 주소카드는 Leaflet 로딩 전에도 즉시 표시
+    document.querySelectorAll('.pv-leafmap[data-addr]').forEach(function(el){
+      var addr=el.dataset.addr||'';
+      if(addr && !el._leafInit) renderAddrCard(el,addr);
+    });
+  } else{setTimeout(function(){if(window.L)doInit();},400);}
 }
 
 function renderPreview(){
@@ -4101,7 +4151,7 @@ function renderPreview(){
         <div style="width:20px;height:2px;background:rgba(255,255,255,.8);border-radius:1px;"></div>
       </div>
       <div style="display:none;position:absolute;top:52px;left:0;right:0;background:#060D1F;padding:8px 0;z-index:100;">
-        ${bdrState.modules.filter(m=>m.on&&m.id!=='hero').map(m=>`<div style="padding:12px 20px;font-size:14px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.08);">${m.n}</div>`).join('')}
+        ${bdrState.modules.filter(m=>m.on&&m.id!=='hero').map(m=>`<div style="padding:13px 20px;font-size:14px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background=''" onclick="this.parentElement.style.display='none';var c=document.getElementById('bdrMobilePreview');var s=c&&c.querySelector('#pvs-${m.id}');if(s&&c)c.scrollTop=s.offsetTop-52;">${m.n}</div>`).join('')}
       </div>
     </div>`;
     bdrState.modules.forEach(m => {
