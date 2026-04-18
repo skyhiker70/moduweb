@@ -2876,6 +2876,29 @@ async function loadOrCreateSite() {
     } catch(e){}
   }
   if (!currentUser) return;
+
+  // ★ 마지막으로 저장한 사이트 ID가 있으면 그걸 우선 로드
+  const lastId = localStorage.getItem('mw_last_site_id');
+  if(lastId){
+    try{
+      const {data: site} = await sb.from('sites').select('*').eq('id', lastId).eq('user_id', currentUser.id).single();
+      if(site){
+        currentSiteId = site.id;
+        if(site.config){
+          try{
+            const cfg = typeof site.config === 'string' ? JSON.parse(site.config) : site.config;
+            if(cfg.modules) bdrState.modules = cfg.modules;
+            if(cfg.theme) bdrState.theme = cfg.theme;
+          } catch(e){}
+        }
+        const nameInput = document.getElementById('bdrSiteName');
+        if(nameInput && site.name) nameInput.value = site.name;
+        console.log('마지막 사이트 복원:', site.name);
+        return;
+      }
+    } catch(e){ console.warn('마지막 사이트 로드 실패:', e); }
+  }
+
   // 기존 사이트 불러오기
   const { data: sites } = await sb.from('sites').select('*').eq('user_id', currentUser.id).order('updated_at', { ascending: false }).limit(1);
   if (sites && sites.length > 0) {
@@ -2913,15 +2936,31 @@ async function saveBuilder() {
   const btn = document.getElementById('bdrSaveBtn');
   btn.textContent = '저장 중...'; btn.disabled = true;
 
+  // ★ 세션 재확인 - currentUser가 null이어도 실제 로그인됐을 수 있음
+  if (!currentUser && SUPABASE_READY && sb) {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session?.user) {
+        currentUser = session.user;
+        try {
+          const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+          currentProfile = data;
+        } catch(e) {}
+        updateNavAuth();
+      }
+    } catch(e) {}
+  }
+
   // 로그인됐는데 siteId 없으면 새 사이트 생성
   if (currentUser && !currentSiteId && SUPABASE_READY) {
     try {
       const name = document.getElementById('bdrSiteName').value || '내 회사 홈페이지';
-      const { data } = await sb.from('sites').insert({
+      const { data, error } = await sb.from('sites').insert({
         user_id: currentUser.id, name, config: {}, seo: {}
       }).select().single();
+      if (error) console.warn('사이트 생성 실패:', error);
       if (data) currentSiteId = data.id;
-    } catch(e) { console.warn('사이트 생성 실패', e); }
+    } catch(e) { console.warn('사이트 생성 예외:', e); }
   }
 
   if (!currentUser || !currentSiteId) {
@@ -2950,6 +2989,8 @@ async function saveBuilder() {
   }).eq('id', currentSiteId);
   if (error) { showToast('저장 실패: ' + error.message); btn.textContent = '저장'; btn.disabled = false; return; }
   bdrState.saved = true;
+  // 현재 사이트 ID를 기억 (다음 접속 시 이걸 우선 불러옴)
+  localStorage.setItem('mw_last_site_id', currentSiteId);
   btn.textContent = '저장됨 ✓'; btn.classList.add('saved'); btn.disabled = false;
   showToast('클라우드 저장됐습니다 ✓');
   // 대시보드 캐시 초기화 (다음 방문 시 최신 목록 표시)
