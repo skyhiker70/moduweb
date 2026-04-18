@@ -2960,27 +2960,27 @@ async function saveBuilder() {
     showToast(msg);
   };
 
+  // 항상 localStorage에 먼저 저장 (백업)
+  localStorage.setItem('modusite_draft', JSON.stringify({ modules: bdrState.modules, theme: bdrState.theme }));
+
   try {
-    // 세션 재확인
+    // 세션 재확인 (타임아웃 3초)
     if (!currentUser && SUPABASE_READY && sb) {
       try {
-        const { data: { session } } = await sb.auth.getSession();
+        const sessionPromise = sb.auth.getSession();
+        const timeout = new Promise((_,rej) => setTimeout(()=>rej(new Error('timeout')), 3000));
+        const { data: { session } } = await Promise.race([sessionPromise, timeout]);
         if (session?.user) {
           currentUser = session.user;
-          try {
-            const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-            currentProfile = data;
-          } catch(e) {}
           updateNavAuth();
         }
-      } catch(e) {}
+      } catch(e) { console.warn('세션확인 실패:', e.message); }
     }
 
-    // 비로그인 → localStorage
+    // 비로그인이면 localStorage만
     if (!currentUser || !SUPABASE_READY) {
-      localStorage.setItem('modusite_draft', JSON.stringify({ modules: bdrState.modules, theme: bdrState.theme }));
       bdrState.saved = true;
-      done('임시 저장됨 ✓ (로그인 시 클라우드 저장)');
+      done('임시 저장됨 ✓ (로그인 시 클라우드 자동 저장)');
       return;
     }
 
@@ -2995,23 +2995,27 @@ async function saveBuilder() {
     };
     const configData = { modules: bdrState.modules, theme: bdrState.theme };
 
+    // Supabase 요청에 5초 타임아웃 적용
+    const withTimeout = (promise, ms=5000) =>
+      Promise.race([promise, new Promise((_,rej)=>setTimeout(()=>rej(new Error('Supabase 응답 없음 (5초 초과)')), ms))]);
+
     // 사이트 없으면 INSERT
     if (!currentSiteId) {
-      const { data, error } = await sb.from('sites').insert({
-        user_id: currentUser.id, name, config: configData, seo: seoData
-      }).select('id').single();
-      if (error) { done('⚠️ 저장 실패: ' + error.message, false); return; }
+      const { data, error } = await withTimeout(
+        sb.from('sites').insert({ user_id: currentUser.id, name, config: configData, seo: seoData }).select('id').single()
+      );
+      if (error) { done('⚠️ DB 저장 실패: ' + error.message + ' (RLS 설정 확인 필요)', false); return; }
+      if (!data) { done('⚠️ 사이트 생성 응답 없음', false); return; }
       currentSiteId = data.id;
       localStorage.setItem('mw_last_site_id', currentSiteId);
     }
 
     // UPDATE
-    const { error } = await sb.from('sites').update({
-      name, config: configData, seo: seoData,
-      updated_at: new Date().toISOString()
-    }).eq('id', currentSiteId);
+    const { error } = await withTimeout(
+      sb.from('sites').update({ name, config: configData, seo: seoData, updated_at: new Date().toISOString() }).eq('id', currentSiteId)
+    );
 
-    if (error) { done('⚠️ 저장 실패: ' + error.message, false); return; }
+    if (error) { done('⚠️ DB 업데이트 실패: ' + error.message, false); return; }
 
     localStorage.setItem('mw_last_site_id', currentSiteId);
     bdrState.saved = true;
@@ -3020,7 +3024,8 @@ async function saveBuilder() {
 
   } catch(e) {
     console.error('saveBuilder 예외:', e);
-    done('⚠️ 오류: ' + e.message, false);
+    // Supabase 실패해도 localStorage는 이미 저장됨
+    done('⚠️ ' + e.message + ' (로컬 임시저장은 완료)', false);
   }
 }
 
