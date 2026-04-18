@@ -1808,7 +1808,7 @@ function gateLogin(){
             카카오로 계속하기
           </button>
         </div>
-        <div class="divrow"><div class="divline"></div><div class="divtxt">또는 이메일로 로그인</div><div class="divline"></div></div>
+        <div class="divrow"><div class="divline"></div><div class="divtxt" style="white-space:nowrap;">또는 이메일로 로그인</div><div class="divline"></div></div>
         <div class="fg2"><label class="flbl2">이메일</label><input class="fin" id="loginEmail" type="email" placeholder="hello@company.com"></div>
         <div class="fg2 clr"><label class="flbl2">비밀번호 <span class="flnk" onclick="switchTab('forgot')">비밀번호를 잊으셨나요?</span></label><input class="fin" id="loginPw" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')sbSignIn()"></div>
         <div id="loginErr" style="font-size:12px;color:#DC2626;min-height:16px;margin-bottom:4px;"></div><button class="sbmt" id="loginBtn" onclick="sbSignIn()">로그인 →</button>
@@ -1838,7 +1838,11 @@ function gateLogin(){
             카카오로 시작하기
           </button>
         </div>
-        <div class="divrow"><div class="divline"></div><div class="divtxt">또는 이메일로 가입</div><div class="divline"></div></div>
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#166534;">
+          <b>💡 Google로 시작하기를 추천해요!</b><br>
+          <span style="color:#15803D;">클릭 한 번으로 가입과 로그인이 동시에 완료됩니다.<br>이메일 인증 없이 바로 시작할 수 있어요.</span>
+        </div>
+        <div class="divrow"><div class="divline"></div><div class="divtxt">또는 이메일로 직접 가입</div><div class="divline"></div></div>
         <div class="frow2"><div class="fg2"><label class="flbl2">성</label><input class="fin" id="signupLast" type="text" placeholder="홍"></div><div class="fg2"><label class="flbl2">이름</label><input class="fin" id="signupFirst" type="text" placeholder="길동"></div></div>
         <div class="fg2"><label class="flbl2">이메일</label><input class="fin" id="signupEmail" type="email" placeholder="hello@company.com"></div>
         <div class="fg2"><label class="flbl2">비밀번호</label><input class="fin" type="password" id="signupPw" placeholder="8자 이상 입력" oninput="pwStr(this.value)"><div class="pwstr"><div class="pwbar" id="pwbar"></div></div></div>
@@ -2658,11 +2662,18 @@ async function sbSignUp() {
     options: { data: { name, company } }
   });
   if (error) {
-    errEl.textContent = error.message.includes('already') ? '이미 가입된 이메일입니다.' : error.message;
+    const msg = error.message || '';
+    let ko = '가입 중 오류가 발생했습니다.';
+    if(msg.includes('already') || msg.includes('registered')) ko = '이미 가입된 이메일입니다. 로그인해주세요.';
+    else if(msg.includes('rate') || msg.includes('security') || msg.includes('seconds')) ko = '잠시 후 다시 시도해주세요. (보안 정책상 연속 요청이 제한됩니다)';
+    else if(msg.includes('invalid') && msg.includes('email')) ko = '올바른 이메일 형식을 입력해주세요.';
+    else if(msg.includes('password')) ko = '비밀번호는 6자 이상이어야 합니다.';
+    else if(msg.includes('network') || msg.includes('fetch')) ko = '네트워크 오류입니다. 인터넷 연결을 확인해주세요.';
+    errEl.textContent = ko;
     btn.textContent = '무료로 시작하기 →'; btn.disabled = false;
   } else {
     errEl.style.color = '#16A34A';
-    errEl.textContent = '✓ 가입 완료! 이메일을 확인해 인증 후 로그인하세요.';
+    errEl.textContent = '✓ 가입 완료! 이메일 받은편지함에서 인증 링크를 클릭하면 로그인됩니다.';
     btn.textContent = '무료로 시작하기 →'; btn.disabled = false;
   }
 }
