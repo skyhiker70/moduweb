@@ -2561,49 +2561,12 @@ let currentProfile = null;  // profiles 테이블 row
 let currentSiteId  = null;  // 현재 편집 중인 site UUID
 
 // ══════════════════════════════════════════
-// AUTH
+// AUTH - 완전히 재구성
 // ══════════════════════════════════════════
-sb.auth.onAuthStateChange(async (event, session) => {
-  currentUser = session?.user || null;
-  if (currentUser) {
-    const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-    currentProfile = data;
-    updateNavAuth();
-    if (event === 'SIGNED_IN') {
-      _dashLoaded = false;
-      updateNavAuth();
-      await loadOrCreateSite();
-      const editBtn = document.getElementById('navEditSiteBtn');
-      if(editBtn) editBtn.style.display = 'flex';
-      const _wname = currentProfile?.name || currentUser.email?.split('@')[0] || '';
-      showWelcomeBar(_wname);
-      go('dashboard');
-      showToast('로그인 완료! 내 홈페이지를 불러왔어요 ✓');
-    } else if (event === 'INITIAL_SESSION') {
-      // 페이지 새로고침 시 기존 로그인 복원 (구글 OAuth 후 redirect 포함)
-      await loadOrCreateSite();
-      updateNavAuth();
-      showWelcomeBar(currentProfile?.name || currentUser.email?.split('@')[0] || '');
-      // URL에 code 파라미터 있으면 Google OAuth 복귀 → 대시보드로 이동
-      if(location.search.includes('code=') || location.hash === '#' || location.hash === '') {
-        const curHash = location.hash.replace('#','');
-        if(!curHash || curHash==='home' || curHash==='') {
-          _dashLoaded = false;
-          go('dashboard');
-          showToast('구글 로그인 완료! 내 홈페이지를 불러왔어요 ✓');
-        }
-      }
-    }
-  } else {
-    currentProfile = null;
-    currentSiteId  = null;
-    updateNavAuth();
-  }
-});
 
-// ── 페이지 로드 시 세션 복원 ──
-(async function restoreSession() {
-  if (!SUPABASE_READY) return;
+// 1. 앱 시작 시 세션 즉시 확인 (동기적으로)
+(async function initAuth() {
+  if (!SUPABASE_READY || !sb) return;
   try {
     const { data: { session } } = await sb.auth.getSession();
     if (session?.user) {
@@ -2611,14 +2574,47 @@ sb.auth.onAuthStateChange(async (event, session) => {
       const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
       currentProfile = data;
       updateNavAuth();
-      showWelcomeBar(data?.name || currentUser.email?.split('@')[0] || '');
+      const name = currentProfile?.name || currentUser.email?.split('@')[0] || '';
+      showWelcomeBar(name);
       await loadOrCreateSite();
-      // 대시보드 페이지에 있으면 다시 렌더
-      const curHash = location.hash.replace('#','');
-      if(curHash === 'dashboard') { _dashLoaded=false; initDashboard(); }
+      // 현재 해시 확인
+      const h = location.hash.replace('#','');
+      if(h === 'dashboard') { _dashLoaded=false; initDashboard(); }
     }
-  } catch(e) { console.error('세션 복원 오류:', e); }
+  } catch(e) { console.warn('initAuth 오류:', e); }
 })();
+
+// 2. 이후 인증 상태 변경 감지
+sb.auth.onAuthStateChange(async (event, session) => {
+  const prevUser = currentUser;
+  currentUser = session?.user || null;
+
+  if (currentUser) {
+    // 프로필 로드
+    try {
+      const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+      currentProfile = data;
+    } catch(e) {}
+    updateNavAuth();
+    const name = currentProfile?.name || currentUser.email?.split('@')[0] || '';
+    showWelcomeBar(name);
+
+    if (event === 'SIGNED_IN' && !prevUser) {
+      // 새 로그인 (이전에 로그인 안 된 상태)
+      _dashLoaded = false;
+      await loadOrCreateSite();
+      go('dashboard');
+      showToast('로그인 완료! 내 홈페이지를 불러왔어요 ✓');
+    }
+  } else {
+    currentProfile = null;
+    currentSiteId  = null;
+    updateNavAuth();
+    // 환영 바 숨김
+    const wb = document.getElementById('welcomeBar');
+    if(wb) wb.style.display = 'none';
+  }
+});
 
 function updateNavAuth() {
   const loginLink = document.getElementById('navLoginLink');
@@ -5286,7 +5282,7 @@ ${sectionsHtml}
   <div class="s-footer-logo">${sn.split(' ')[0]}<span>${sn.split(' ').slice(1).join(' ')||''}</span></div>
   <div class="s-footer-copy">© 2025 ${sn}. All rights reserved. Powered by moduweb</div>
 </div></footer>
-<script>
+<scr'+'ipt>
 const nav=document.getElementById('sNav');
 if(nav)window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>40),{passive:true});
 document.querySelectorAll('.s-faq-q').forEach(q=>{
@@ -5481,7 +5477,7 @@ function buildSectionHtml(m,tc,sn){
         <button onclick="siteLbNav(1)" style="position:fixed;right:20px;top:50%;transform:translateY(-50%);width:48px;height:48px;background:rgba(255,255,255,.15);border:none;border-radius:50%;color:#fff;font-size:24px;cursor:pointer;">›</button>
       </div>
       <style>.gal-item:hover div:first-child{outline:2px solid ${tc};outline-offset:2px;}@media(max-width:600px){#sGallery{grid-template-columns:repeat(2,1fr)!important;}}</style>
-      <script>
+      <scr'+'ipt>
       var _imgs=${JSON.stringify(imgs)},_idx=0;
       function openSiteLightbox(i){_idx=i;_showSiteLb();}
       function _showSiteLb(){var lb=document.getElementById('siteLb');lb.style.display='flex';document.getElementById('siteLbImg').src=_imgs[_idx].img;(function(){var _esiteLbCap=document.getElementById('siteLbCap');if(_esiteLbCap)_esiteLbCap.textContent=_imgs[_idx].cap||'';})();(function(){var _esiteLbCnt=document.getElementById('siteLbCnt');if(_esiteLbCnt)_esiteLbCnt.textContent=(_idx+1)+' / '+_imgs.length;})();document.body.style.overflow='hidden';}
@@ -5492,7 +5488,7 @@ function buildSectionHtml(m,tc,sn){
       <\/script>
     </section>`;}
   if(m.id==='notice'){    const SB_URL=SUPABASE_URL, SB_KEY=SUPABASE_KEY, SB_SITE=currentSiteId||'';
-    return `<section id="s-notice" style="padding:72px 24px;background:#fff;"><div class="s-in" style="max-width:760px;margin:0 auto;"><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">공지사항</div><div id="noticeList" style="margin-top:24px;"><div class="s-notice-item"><span>불러오는 중...</span></div></div></div><script>
+    return `<section id="s-notice" style="padding:72px 24px;background:#fff;"><div class="s-in" style="max-width:760px;margin:0 auto;"><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">공지사항</div><div id="noticeList" style="margin-top:24px;"><div class="s-notice-item"><span>불러오는 중...</span></div></div></div><scr'+'ipt>
 fetch("${SB_URL}/rest/v1/notices?site_id=eq.${SB_SITE}&order=pinned.desc,created_at.desc&limit=10",{headers:{"apikey":"${SB_KEY}","Authorization":"Bearer ${SB_KEY}"}}).then(r=>r.json()).then(data=>{document.getElementById("noticeList").innerHTML=data.map(n=>'<div class="s-notice-item"><span>'+(n.pinned?"📌 ":"")+"<strong>"+n.title+"</strong></span>"+'<span style="font-size:12px;color:#9CA3AF;">'+new Date(n.created_at).toLocaleDateString("ko-KR")+"</span></div>").join("");}).catch(()=>{});
 <\/script></section>`;
   }
