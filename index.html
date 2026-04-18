@@ -4790,10 +4790,45 @@ function previewImgUrl(url){
   img.onerror=()=>{img.style.display='none';if(empty)empty.style.display='block';};
 }
 
-function applyImg(){
+async function applyImg(){
   if(!selectedImgUrl||!imgTarget) return;
   const {mi,fi}=imgTarget;
-  bdrState.modules[mi].fields[fi].val=selectedImgUrl;
+  let finalUrl = selectedImgUrl;
+
+  // base64 이미지(업로드된 파일)면 Supabase Storage에 저장
+  if(selectedImgUrl.startsWith('data:image/') && SUPABASE_READY && currentUser){
+    try {
+      showToast('이미지 업로드 중...');
+      // base64 → Blob 변환
+      const res = await fetch(selectedImgUrl);
+      const blob = await res.blob();
+      const ext = (blob.type.split('/')[1]||'jpg').replace('jpeg','jpg');
+      const path = `sites/${currentUser.id}/${Date.now()}.${ext}`;
+      const {data, error} = await sb.storage.from('images').upload(path, blob, {
+        contentType: blob.type, upsert: true
+      });
+      if(!error){
+        const {data: urlData} = sb.storage.from('images').getPublicUrl(path);
+        finalUrl = urlData.publicUrl;
+        showToast('서버에 업로드 완료 ✓');
+        // library_images 테이블에도 기록
+        try {
+          await sb.from('library_images').insert({
+            user_id: currentUser.id,
+            url: finalUrl,
+            title: bdrState.modules[mi].fields[fi].cat || 'uploaded',
+            category: bdrState.modules[mi].fields[fi].cat || 'uploaded'
+          });
+        } catch(e){}
+      } else {
+        console.warn('Storage 업로드 실패, base64 유지:', error);
+      }
+    } catch(e) {
+      console.warn('업로드 오류:', e);
+    }
+  }
+
+  bdrState.modules[mi].fields[fi].val = finalUrl;
   markUnsaved();
   closeImgModal();
   editModule(mi);
@@ -5381,7 +5416,7 @@ kakao.maps.load(()=>{
   // URL 표시 - 로그인 시에는 slug URL, 비로그인은 안내 메시지
   const urlBox = document.getElementById('pubUrlText');
   if(urlBox){
-    if(currentUser && currentSiteId){
+    if(currentUser){
       urlBox.textContent = pubUrl;
       urlBox.style.color = '';
     } else {
@@ -5402,7 +5437,8 @@ kakao.maps.load(()=>{
   const pubResultIcon = document.getElementById('pubResultIcon');
   const pubResultTitle = document.getElementById('pubResultTitle');
   const pubResultSub = document.getElementById('pubResultSub');
-  if(!currentUser || !currentSiteId){
+  // currentUser 없을 때만 로그인 안내 (currentSiteId가 없어도 로그인됐으면 성공 처리)
+  if(!currentUser){
     if(loginNotice) loginNotice.style.display = 'block';
     if(pubSteps) pubSteps.style.display = 'none';
     if(pubResultIcon) pubResultIcon.textContent = '👀';
@@ -5419,7 +5455,7 @@ kakao.maps.load(()=>{
   // 방문 버튼
   const visitBtn = document.getElementById('pubVisitBtn');
   if(visitBtn){
-    if(currentUser && currentSiteId){
+    if(currentUser){
       visitBtn.style.display = '';
       visitBtn.textContent = '사이트 방문하기 →';
     } else {
