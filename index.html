@@ -1135,7 +1135,7 @@ function gateLogin(){
         <button id="navEditSiteBtn" onclick="editMySite()" style="font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid #FFB500;border-radius:8px;background:#FFB500;color:#111;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;">✏️ 수정하기</button>
         <button onclick="sbSignOut()" style="font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid #E5E7EB;border-radius:8px;background:#fff;cursor:pointer;color:#6B7280;font-family:inherit;">로그아웃</button>
       </div>
-      <a id="navAdminLink" onclick="go('superadmin')" style="font-size:11px;padding:5px 10px;color:var(--mu);">관리자</a>
+      <a id="navAdminLink" href="https://moduweb.co.kr/#superadmin" style="font-size:11px;padding:5px 10px;color:var(--mu);">관리자</a>
       <a onclick="go('builder')" class="nca">무료로 시작하기 →</a>
       <button id="navHamBtn" onclick="toggleMobileNav()" aria-label="메뉴">
         <span></span><span></span><span></span>
@@ -2570,18 +2570,25 @@ sb.auth.onAuthStateChange(async (event, session) => {
       _dashLoaded = false;
       updateNavAuth();
       await loadOrCreateSite();
-      // 수정하기 버튼 표시
       const editBtn = document.getElementById('navEditSiteBtn');
       if(editBtn) editBtn.style.display = 'flex';
+      const _wname = currentProfile?.name || currentUser.email?.split('@')[0] || '';
+      showWelcomeBar(_wname);
       go('dashboard');
       showToast('로그인 완료! 내 홈페이지를 불러왔어요 ✓');
     } else if (event === 'INITIAL_SESSION') {
-      // 페이지 새로고침 시 기존 로그인 복원
+      // 페이지 새로고침 시 기존 로그인 복원 (구글 OAuth 후 redirect 포함)
       await loadOrCreateSite();
-      // 현재 페이지가 홈이면 대시보드로, 아니면 그대로
-      const curHash = location.hash.replace('#','');
-      if(!curHash || curHash === 'home') {
-        // 그대로 홈 유지 (강제 이동 안 함)
+      updateNavAuth();
+      showWelcomeBar(currentProfile?.name || currentUser.email?.split('@')[0] || '');
+      // URL에 code 파라미터 있으면 Google OAuth 복귀 → 대시보드로 이동
+      if(location.search.includes('code=') || location.hash === '#' || location.hash === '') {
+        const curHash = location.hash.replace('#','');
+        if(!curHash || curHash==='home' || curHash==='') {
+          _dashLoaded = false;
+          go('dashboard');
+          showToast('구글 로그인 완료! 내 홈페이지를 불러왔어요 ✓');
+        }
       }
     }
   } else {
@@ -2601,10 +2608,11 @@ sb.auth.onAuthStateChange(async (event, session) => {
       const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
       currentProfile = data;
       updateNavAuth();
+      showWelcomeBar(data?.name || currentUser.email?.split('@')[0] || '');
       await loadOrCreateSite();
       // 대시보드 페이지에 있으면 다시 렌더
       const curHash = location.hash.replace('#','');
-      if(curHash === 'dashboard') initDashboard();
+      if(curHash === 'dashboard') { _dashLoaded=false; initDashboard(); }
     }
   } catch(e) { console.error('세션 복원 오류:', e); }
 })();
@@ -2631,8 +2639,10 @@ function updateNavAuth() {
     // 수정하기 버튼 표시
     const editBtn = document.getElementById('navEditSiteBtn');
     if(editBtn) editBtn.style.display = 'flex';
-    // 환영 메시지 바
+    // 환영 메시지 바 (항상 표시)
     showWelcomeBar(name);
+    // 로그인 버튼 완전 숨김 보장
+    if(loginLink) loginLink.style.display = 'none';
   } else {
     // 로그인 버튼 복원
     loginLink.textContent = '로그인';
@@ -2692,7 +2702,7 @@ async function sbSignUp() {
 async function sbGoogleAuth() {
   await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.href }
+    options: { redirectTo: window.location.origin + '/' }
   });
 }
 
