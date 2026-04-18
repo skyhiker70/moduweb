@@ -434,7 +434,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .bdr-device:hover{color:var(--w);background:rgba(255,255,255,.08);}
 .bdr-device.on{background:rgba(255,255,255,.12);color:var(--w);}
 .bdr-right{display:flex;align-items:center;gap:8px;}
-.bdr-edit-panel{width:0;background:var(--w);border-left:0 solid var(--bd);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;transition:width .2s,border-left-width .2s;}.bdr-edit-panel.open{width:300px;border-left-width:1px;}
+.bdr-edit-panel{width:300px;background:var(--w);border-left:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;}
 .bdr-rclose{width:28px;height:28px;border-radius:6px;border:none;background:var(--bg);cursor:pointer;font-size:14px;color:var(--mu);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .bdr-rclose:hover{background:var(--bd);}
 .bdr-save{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;background:rgba(255,255,255,.1);color:var(--w);border:1px solid rgba(255,255,255,.12);cursor:pointer;transition:all .2s;}
@@ -1914,13 +1914,14 @@ function gateLogin(){
     <button onclick="go('login')" style="padding:5px 16px;border-radius:100px;border:2px solid #fff;background:#fff;color:#DC2626;font-size:12px;font-weight:900;cursor:pointer;font-family:inherit;">로그인하고 클라우드 저장 →</button>
   </div>
   <div class="bdr-top">
-    <div class="bdr-back" onclick="go('home')">← 대시보드</div>
+    <div class="bdr-back" onclick="go('home')">← 나가기</div>
     <div class="bdr-sep"></div>
-    <input class="bdr-sitename" id="bdrSiteName" value="내 회사 홈페이지" placeholder="사이트 이름">
-    <span class="bdr-status" id="bdrStatus">초안</span>
-    <div class="bdr-mid">
-      <div class="bdr-device on" id="devPC" onclick="setDevice('pc')" title="PC 보기">🖥️</div>
-      <div class="bdr-device" id="devMobile" onclick="setDevice('mobile')" title="모바일 보기">📱</div>
+    <!-- 회사명 수정 (상단 중앙) -->
+    <div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:center;">
+      <span style="font-size:12px;color:rgba(255,255,255,.4);white-space:nowrap;">회사명</span>
+      <input class="bdr-sitename" id="bdrSiteName" value="내 회사 홈페이지" placeholder="회사 이름 입력"
+        style="text-align:center;max-width:280px;font-size:15px;font-weight:800;">
+      <span class="bdr-status" id="bdrStatus">초안</span>
     </div>
     <div class="bdr-right-btns" style="display:flex;align-items:center;gap:8px;">
       <button class="bdr-save" id="bdrSaveBtn" onclick="saveBuilder()">저장</button>
@@ -2114,7 +2115,7 @@ function gateLogin(){
           <div style="height:36px;background:#F5F5F5;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:center;gap:6px;">
             <div style="width:50px;height:6px;background:#333;border-radius:3px;"></div>
           </div>
-          <div style="height:calc(100% - 36px);overflow-y:auto;" id="bdrMobilePreview"></div>
+          <div style="height:calc(100% - 36px);overflow-y:auto;background:#fff;" id="bdrMobilePreview"></div>
         </div>
       </div>
     </div>
@@ -2550,7 +2551,15 @@ const SUPABASE_READY = SUPABASE_URL.includes('YOUR_PROJECT') === false && SUPABA
 
 let sb;
 if(SUPABASE_READY){
-  try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){ sb = null; }
+  try {
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
+    console.log('✓ Supabase 연결됨');
+  } catch(e){
+    sb = null;
+    console.error('✗ Supabase 연결 실패:', e);
+  }
 }
 // mock 객체 — Supabase 미설정 시 조용히 noop 처리
 if(!sb){
@@ -3669,6 +3678,12 @@ async function initBuilder(){
   renderModuleList();
   renderDesignPanel();
   renderPreview();
+
+  // 기본: PC+모바일 나란히 + 첫 모듈 편집 패널 열기
+  setTimeout(()=>{
+    setPreviewMode('split');
+    if(bdrState.modules.length > 0) editModule(0);
+  }, 100);
 }
 
 // ── Module List Render ──
@@ -5069,7 +5084,7 @@ function setDevice(d){
 }
 
 // ── 나란히 미리보기 모드 ──
-let _previewMode = 'pc';
+let _previewMode = 'split';
 function setPreviewMode(mode){
   _previewMode = mode;
   const wrap = document.getElementById('bdrPreviewWrap');
