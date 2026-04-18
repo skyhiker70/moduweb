@@ -1126,16 +1126,14 @@ function gateLogin(){
       <a data-p="features" onclick="go('features')">기능</a>
       <a data-p="modules" onclick="go('modules')">모듈</a>
       <a data-p="pricing" onclick="go('pricing')">요금제</a>
-      <a data-p="login" id="navLoginLink" onclick="go('login')" class="nlo">로그인</a>
+      <button id="navLoginLink" onclick="go('login')" style="font-size:13px;font-weight:700;padding:7px 16px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;cursor:pointer;font-family:inherit;color:var(--fg);">로그인</button>
       <div id="navUserInfo" style="display:none;align-items:center;gap:8px;margin-right:4px;">
-        <button onclick="go('dashboard')" style="font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;cursor:pointer;color:var(--fg);font-family:inherit;display:flex;align-items:center;gap:5px;">🏠 내홈페이지</button>
-        <button id="navEditSiteBtn" onclick="editMySite()" style="font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid #FFB500;border-radius:8px;background:#FFB500;color:#111;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;">✏️ 수정하기</button>
         <div class="credit-badge" onclick="openPayModal('charge')" id="navCreditBadge" title="크레딧 충전">
           <span class="credit-ic">⚡</span><span id="navCreditAmt">0</span>cr
         </div>
-        <div style="width:30px;height:30px;border-radius:50%;background:var(--a);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;" id="navUserAvatar">?</div>
-        <span style="font-size:13px;font-weight:600;color:var(--fg);" id="navUserName"></span>
-        <button onclick="sbSignOut()" style="font-size:12px;padding:5px 11px;border:1.5px solid var(--bd);border-radius:7px;background:transparent;cursor:pointer;color:var(--mu);font-family:inherit;">로그아웃</button>
+        <div style="width:30px;height:30px;border-radius:50%;background:var(--a);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;" id="navUserAvatar" onclick="go('dashboard')" title="내 홈페이지">?</div>
+        <button id="navEditSiteBtn" onclick="editMySite()" style="font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid #FFB500;border-radius:8px;background:#FFB500;color:#111;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;">✏️ 수정하기</button>
+        <button onclick="sbSignOut()" style="font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid #E5E7EB;border-radius:8px;background:#fff;cursor:pointer;color:#6B7280;font-family:inherit;">로그아웃</button>
       </div>
       <a id="navAdminLink" onclick="go('superadmin')" style="font-size:11px;padding:5px 10px;color:var(--mu);">관리자</a>
       <a onclick="go('builder')" class="nca">무료로 시작하기 →</a>
@@ -1145,6 +1143,11 @@ function gateLogin(){
     </div>
   </div>
 </nav>
+<!-- 환영 메시지 바 (로그인 시) -->
+<div id="welcomeBar" style="display:none;background:linear-gradient(90deg,#1A1A1A,#2A2A2A);padding:8px 24px;text-align:center;font-size:13px;font-weight:600;color:rgba(255,255,255,.85);position:relative;z-index:90;">
+  <span id="welcomeMsg">환영합니다!</span>
+  <button onclick="sbSignOut()" style="margin-left:16px;font-size:12px;padding:3px 12px;border:1px solid rgba(255,255,255,.3);border-radius:100px;background:transparent;color:rgba(255,255,255,.7);cursor:pointer;font-family:inherit;">로그아웃</button>
+</div>
 <!-- 모바일 네비 메뉴 -->
 <!-- 모바일 오버레이 -->
 <div class="nav-mobile-overlay" id="navMobileOverlay" onclick="toggleMobileNav()"></div>
@@ -2611,23 +2614,30 @@ function updateNavAuth() {
   const userInfo  = document.getElementById('navUserInfo');
   if (!loginLink || !userInfo) return;
   if (currentUser) {
+    // 로그인 버튼 → 숨김
     loginLink.style.display = 'none';
     userInfo.style.display  = 'flex';
-    const name = currentProfile?.name || currentUser.email.split('@')[0];
-    const _nu=document.getElementById('navUserName'); if(_nu) _nu.textContent = name;
-    const _na=document.getElementById('navUserAvatar'); if(_na) _na.textContent = name.charAt(0).toUpperCase();
+    const name = currentProfile?.name || currentUser.email?.split('@')[0] || '사용자';
+    // 아바타 이니셜
+    const _na=document.getElementById('navUserAvatar');
+    if(_na) { _na.textContent = name.charAt(0).toUpperCase(); _na.title = name + ' 님'; }
+    // 크레딧
     const creditEl = document.getElementById('navCreditAmt');
-    if (creditEl) creditEl.textContent = currentProfile?.credits || 0;
+    if(creditEl) creditEl.textContent = currentProfile?.credits || 0;
     refreshCredits();
-    // 로그인 시 테스트 배너 숨김
+    // 테스트 배너 숨김
     const banner = document.getElementById('demoBanner');
     if(banner) banner.style.display = 'none';
-    // 내홈페이지 메뉴 항상 표시됨
     // 수정하기 버튼 표시
     const editBtn = document.getElementById('navEditSiteBtn');
     if(editBtn) editBtn.style.display = 'flex';
+    // 환영 메시지 바
+    showWelcomeBar(name);
   } else {
-    loginLink.style.display = 'block';
+    // 로그인 버튼 복원
+    loginLink.textContent = '로그인';
+    loginLink.onclick = ()=>go('login');
+    loginLink.style.display = 'flex';
     userInfo.style.display  = 'none';
   }
 }
@@ -2689,7 +2699,25 @@ async function sbGoogleAuth() {
 // 로그아웃
 async function sbSignOut() {
   await sb.auth.signOut();
+  // 환영 바 숨김
+  const wb = document.getElementById('welcomeBar');
+  if(wb) wb.style.display = 'none';
+  // 로그인 버튼 복원
+  const loginLink = document.getElementById('navLoginLink');
+  if(loginLink){ loginLink.textContent='로그인'; loginLink.style.display='flex'; }
+  const userInfo = document.getElementById('navUserInfo');
+  if(userInfo) userInfo.style.display = 'none';
+  showToast('로그아웃 됐습니다');
   go('home');
+}
+
+let _welcomeShown = false;
+function showWelcomeBar(name){
+  const bar = document.getElementById('welcomeBar');
+  const msg = document.getElementById('welcomeMsg');
+  if(!bar || !msg) return;
+  msg.textContent = `👋 ${name} 님, 환영합니다!`;
+  bar.style.display = 'block';
 }
 
 // ══════════════════════════════════════════
@@ -2700,12 +2728,24 @@ async function sbSignOut() {
 // ══════════════════════════════════════════
 let _dashLoaded = false;
 async function initDashboard(){
-  // 세션 복원 대기 (최대 1.5초)
+  // 세션 복원 대기 (최대 3초)
   if(!currentUser && SUPABASE_READY) {
-    for(let i=0; i<8; i++){
+    for(let i=0; i<15; i++){
       await new Promise(r=>setTimeout(r,200));
       if(currentUser) break;
     }
+  }
+  // 한번 더 getSession 직접 시도
+  if(!currentUser && SUPABASE_READY){
+    try{
+      const {data:{session}} = await sb.auth.getSession();
+      if(session?.user){
+        currentUser = session.user;
+        const {data} = await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+        currentProfile = data;
+        updateNavAuth();
+      }
+    }catch(e){}
   }
   // 비로그인: 로그인 안내 표시 후 계속
   if(!currentUser){
