@@ -2738,29 +2738,31 @@ function showWelcomeBar(name){
 // ══════════════════════════════════════════
 let _dashLoaded = false;
 async function initDashboard(){
-  // 세션 복원 대기 (최대 3초)
-  if(!currentUser && SUPABASE_READY) {
-    for(let i=0; i<15; i++){
-      await new Promise(r=>setTimeout(r,200));
-      if(currentUser) break;
-    }
-  }
-  // 한번 더 getSession 직접 시도
-  if(!currentUser && SUPABASE_READY){
+  const grid = document.getElementById('dashSiteGrid');
+  const empty = document.getElementById('dashSiteEmpty');
+
+  // ─ 로딩 스피너 표시 ─
+  if(grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;"><div style="font-size:32px;margin-bottom:12px;">⏳</div><div style="font-size:15px;color:var(--mu);">로그인 상태 확인 중...</div></div>';
+  if(empty) empty.style.display = 'none';
+
+  // ─ 항상 getSession 직접 호출 (timing 문제 해결) ─
+  if(SUPABASE_READY && sb){
     try{
       const {data:{session}} = await sb.auth.getSession();
-      if(session?.user){
+      if(session?.user && !currentUser){
         currentUser = session.user;
-        const {data} = await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+        const {data} = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
         currentProfile = data;
         updateNavAuth();
+        const name = currentProfile?.name || currentUser.email?.split('@')[0] || '';
+        showWelcomeBar(name);
+        await loadOrCreateSite();
       }
-    }catch(e){}
+    } catch(e){ console.warn('getSession 오류:', e); }
   }
-  // 비로그인: 로그인 안내 표시 후 계속
+
+  // ─ 비로그인 상태 ─
   if(!currentUser){
-    const grid = document.getElementById('dashSiteGrid');
-    const empty = document.getElementById('dashSiteEmpty');
     if(grid) grid.innerHTML = `
       <div style="grid-column:1/-1;background:#fff;border:1.5px solid var(--bd);border-radius:16px;padding:48px;text-align:center;">
         <div style="font-size:48px;margin-bottom:16px;">👤</div>
@@ -2771,23 +2773,19 @@ async function initDashboard(){
           <button onclick="go('builder')" style="padding:13px 28px;background:#fff;color:var(--fg);border:1.5px solid var(--bd);border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">먼저 만들어보기</button>
         </div>
       </div>`;
-    if(empty) empty.style.display = 'none';
     return;
   }
 
-  // 플랜/크레딧 표시
+  // ─ 플랜/크레딧 표시 ─
   const planLabels = {free:'무료',starter:'스타터',pro:'프로',agency:'에이전시'};
   (function(){var _edashPlanName=document.getElementById('dashPlanName');if(_edashPlanName)_edashPlanName.textContent = planLabels[currentProfile?.plan||'free'];})();
   (function(){var _edashCredits=document.getElementById('dashCredits');if(_edashCredits)_edashCredits.textContent = currentProfile?.credits||0;})();
 
-  // 내 사이트 목록 로드
-  const grid = document.getElementById('dashSiteGrid');
-  const empty = document.getElementById('dashSiteEmpty');
-  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--mu);">불러오는 중...</div>';
-  empty.style.display = 'none';
+  // ─ 사이트 목록 로드 ─
+  if(grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--mu);">불러오는 중...</div>';
+  if(empty) empty.style.display = 'none';
 
   if(!SUPABASE_READY){
-    // 로컬스토리지 임시저장 확인
     const draft = localStorage.getItem('modusite_draft');
     (function(){var _t_dashSiteCount=document.getElementById('dashSiteCount');if(_t_dashSiteCount)_t_dashSiteCount.textContent=draft ? '1개 (임시저장)' : '0개';})();
     if(draft){
@@ -2805,8 +2803,8 @@ async function initDashboard(){
           </div>
         </div>`;
     } else {
-      grid.innerHTML = '';
-      empty.style.display = 'block';
+      if(grid) grid.innerHTML = '';
+      if(empty) empty.style.display = 'block';
     }
     return;
   }
@@ -2820,16 +2818,16 @@ async function initDashboard(){
     (function(){var _t_dashSiteCount=document.getElementById('dashSiteCount');if(_t_dashSiteCount)_t_dashSiteCount.textContent=`${sites?.length||0}개`;})();
 
     if(!sites || !sites.length){
-      grid.innerHTML = '';
-      empty.style.display = 'block';
+      if(grid) grid.innerHTML = '';
+      if(empty) empty.style.display = 'block';
       return;
     }
 
-    empty.style.display = 'none';
+    if(empty) empty.style.display = 'none';
     grid.innerHTML = sites.map(site => {
       const updated = new Date(site.updated_at).toLocaleDateString('ko-KR');
       const isLive = site.published;
-      const viewUrl = `/viewer.html?id=${site.id}`;
+      const viewUrl = site.slug ? `/viewer.html?slug=${site.slug}` : `/viewer.html?id=${site.id}`;
       return `
         <div style="background:#fff;border:1.5px solid var(--bd);border-radius:14px;overflow:hidden;transition:all .2s;" onmouseover="this.style.boxShadow='0 8px 32px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow='none'">
           <div style="height:160px;background:linear-gradient(135deg,#FFFBF0,#FFD966);display:flex;align-items:center;justify-content:center;position:relative;">
@@ -2837,18 +2835,18 @@ async function initDashboard(){
             <div style="position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:800;background:${isLive?'#DCFCE7':'#F3F4F6'};color:${isLive?'#15803D':'#6B7280'};">${isLive?'🟢 라이브':'⚪ 초안'}</div>
           </div>
           <div style="padding:16px;">
-            <div style="font-size:16px;font-weight:800;margin-bottom:4px;color:#111;">${site.name||'내 회사 홈페이지'}</div>
-            <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">최근 수정: ${updated}</div>
+            <div style="font-size:16px;font-weight:800;margin-bottom:2px;">${site.name||'내 회사 홈페이지'}</div>
+            <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">수정: ${updated} ${site.slug?`· <a href="${viewUrl}" target="_blank" style="color:var(--a);">moduweb.co.kr/${site.slug}</a>`:''}</div>
             <div style="display:flex;gap:8px;">
-              <button onclick="loadSiteAndEdit('${site.id}')" style="flex:2;padding:9px;background:var(--a);color:var(--fg);border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">✏️ 편집</button>
-              ${isLive ? `<button onclick="window.open('${viewUrl}','_blank')" style="flex:1;padding:9px;background:#fff;border:1.5px solid var(--bd);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">↗ 보기</button>` : ''}
+              <button onclick="loadSiteAndEdit('${site.id}')" style="flex:1;padding:9px;background:var(--a);color:var(--fg);border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">✏️ 편집하기</button>
+              ${isLive?`<a href="${viewUrl}" target="_blank" style="flex:1;padding:9px;background:#F3F4F6;color:#374151;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;">🔗 보기</a>`:''}
             </div>
           </div>
         </div>`;
     }).join('');
 
   } catch(e) {
-    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--mu);">사이트를 불러올 수 없습니다.</div>';
+    if(grid) grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--mu);">사이트를 불러올 수 없습니다.</div>';
   }
 }
 
