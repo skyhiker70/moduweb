@@ -31,7 +31,7 @@ loadKakaoMap();
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:'Pretendard Variable','Pretendard',-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:14px;line-height:1.75;background:var(--w);color:var(--fg);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
+body{font-size:16px;font-family:'Pretendard Variable','Pretendard',-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:16px;line-height:1.75;background:var(--w);color:var(--fg);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
 .page{display:none;}.page.active{display:block;}
 a{text-decoration:none;}
 
@@ -90,7 +90,7 @@ nav.solid{background:#fff;border-bottom-color:var(--bd);}
 .hvc:nth-child(6){animation:fl 4s ease-in-out infinite 1.5s;}
 @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .hvi{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
-.hvn{font-size:14px;font-weight:800;color:#111;letter-spacing:-.3px;}
+.hvn{font-size:16px;font-weight:800;color:#111;letter-spacing:-.3px;}
 .hvs{font-size:12px;color:#777;margin-top:3px;font-weight:500;}
 .hvon{width:7px;height:7px;background:#22C55E;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px #22C55E80;}
 
@@ -142,7 +142,7 @@ nav.solid{background:#fff;border-bottom-color:var(--bd);}
 .aidb{padding:20px 24px;}
 .ai-prompt{font-size:12px;color:var(--mu);margin-bottom:14px;font-family:monospace;background:var(--bg);padding:8px 12px;border-radius:8px;line-height:1.6;}
 .ai-prompt span{color:var(--a);}
-.ai-out{font-size:14px;color:var(--fg);line-height:1.95;min-height:100px;}
+.ai-out{font-size:16px;color:var(--fg);line-height:1.95;min-height:100px;}
 .aicur{display:inline-block;width:2px;height:14px;background:var(--a);margin-left:2px;vertical-align:middle;animation:blink .75s step-end infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
@@ -193,7 +193,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .fc a{display:block;font-size:15px;color:rgba(255,255,255,.5);margin-bottom:12px;cursor:pointer;transition:color .15s;font-weight:500;}
 .fc a:hover{color:rgba(255,255,255,.8);}
 .fb{border-top:1px solid rgba(255,255,255,.07);padding-top:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
-.fcopy{font-size:14px;color:rgba(255,255,255,.35);font-weight:500;}
+.fcopy{font-size:16px;color:rgba(255,255,255,.35);font-weight:500;}
 .flinks{display:flex;gap:20px;}
 .flinks a{font-size:13px;color:rgba(255,255,255,.4);cursor:pointer;transition:color .15s;font-weight:500;}
 .flinks a:hover{color:rgba(255,255,255,.6);}
@@ -268,12 +268,12 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .rel-in{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:32px;text-align:center;}
 .rn{font-size:38px;font-weight:900;color:#111;letter-spacing:-1.5px;}
 .rn span{color:var(--a);}
-.rl{font-size:14px;color:#666;margin-top:6px;font-weight:600;}
+.rl{font-size:16px;color:#666;margin-top:6px;font-weight:600;}
 
 /* ═══ MODULES PAGE ═══ */
 .mfbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:44px;}
-.mfbl{font-size:14px;font-weight:600;color:var(--mu);margin-right:4px;}
-.mfb{padding:10px 20px;font-size:14px;font-weight:700;border:1.5px solid var(--bd);border-radius:100px;cursor:pointer;background:var(--w);color:#666;transition:all .2s;}
+.mfbl{font-size:16px;font-weight:600;color:var(--mu);margin-right:4px;}
+.mfb{padding:10px 20px;font-size:16px;font-weight:700;border:1.5px solid var(--bd);border-radius:100px;cursor:pointer;background:var(--w);color:#666;transition:all .2s;}
 .mfb:hover{border-color:var(--fg);color:var(--fg);}
 .mfb.on{background:var(--fg);border-color:var(--fg);color:var(--w);}
 .mfb .cnt{background:rgba(255,255,255,.15);border-radius:100px;padding:1px 7px;font-size:11px;}
@@ -303,13 +303,13 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .dpname{font-size:17px;font-weight:800;}
 .dpbody{padding:26px;}
 .dpst{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);margin-bottom:11px;}
-.dpdesc{font-size:14px;color:var(--mu);line-height:1.8;margin-bottom:22px;}
+.dpdesc{font-size:16px;color:var(--mu);line-height:1.8;margin-bottom:22px;}
 .dpfeats{display:flex;flex-direction:column;gap:8px;margin-bottom:22px;}
 .dpfeat{font-size:13px;display:flex;gap:9px;}
 .dpfeat::before{content:"✓";color:#16A34A;font-weight:800;flex-shrink:0;margin-top:1px;}
 .dppr{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--bd);font-size:13px;}
 .dppr:last-child{border-bottom:none;}
-.dpbtn{display:block;background:var(--a);color:var(--w);text-align:center;padding:13px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;margin-top:26px;transition:all .2s;}
+.dpbtn{display:block;background:var(--a);color:var(--w);text-align:center;padding:13px;border-radius:11px;font-size:16px;font-weight:700;cursor:pointer;margin-top:26px;transition:all .2s;}
 .dpbtn:hover{background:var(--ah);}
 .ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:299;}
 .ovl.open{display:block;}
@@ -328,7 +328,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 
 /* ═══ PRICING PAGE ═══ */
 .tgwrap{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:32px;}
-.tglbl{font-size:14px;font-weight:600;color:rgba(255,255,255,.55);}
+.tglbl{font-size:16px;font-weight:600;color:rgba(255,255,255,.55);}
 .tglbl.on{color:var(--w);}
 .tgtrack{width:50px;height:27px;background:var(--a);border-radius:14px;cursor:pointer;position:relative;transition:background .2s;}
 .tgthumb{position:absolute;top:4px;left:4px;width:19px;height:19px;background:#fff;border-radius:50%;transition:left .2s;}
@@ -369,9 +369,9 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .lpbenic{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
 .lpbentxt{font-size:15px;color:rgba(255,255,255,.8);font-weight:600;line-height:1.65;}
 .lptesti{position:relative;z-index:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:20px 22px;}
-.tt{font-size:14px;color:rgba(255,255,255,.65);line-height:1.75;font-style:italic;margin-bottom:14px;}
+.tt{font-size:16px;color:rgba(255,255,255,.65);line-height:1.75;font-style:italic;margin-bottom:14px;}
 .ta{display:flex;align-items:center;gap:10px;}
-.tav{width:36px;height:36px;border-radius:50%;background:var(--a);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
+.tav{width:36px;height:36px;border-radius:50%;background:var(--a);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0;}
 .tn2{font-size:13px;font-weight:700;color:var(--w);}
 .tr2{font-size:12px;color:rgba(255,255,255,.4);margin-top:1px;}
 .rp{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 48px;background:#fff;}
@@ -382,7 +382,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .atab{flex:1;padding:11px 16px;border-radius:8px;font-size:15px;font-weight:700;text-align:center;cursor:pointer;transition:all .2s;color:#888;}
 .atab.on{background:var(--dk);color:var(--w);}
 .sbns{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
-.sbn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:13px 18px;border-radius:10px;border:1.5px solid var(--bd);background:var(--w);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--fg);}
+.sbn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:13px 18px;border-radius:10px;border:1.5px solid var(--bd);background:var(--w);font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--fg);}
 .sbn:hover{border-color:var(--fg);background:var(--fg);color:var(--w);}
 .sbn.kk{background:#FEE500;border-color:#FEE500;color:#000;}
 .sbn.kk:hover{filter:brightness(.92);}
@@ -390,7 +390,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .divline{flex:1;height:1px;background:var(--bd);}
 .divtxt{font-size:12px;color:var(--mu);white-space:nowrap;}
 .fg2{margin-bottom:16px;}
-.flbl2{display:block;font-size:14px;font-weight:700;color:#333;margin-bottom:8px;}
+.flbl2{display:block;font-size:16px;font-weight:700;color:#333;margin-bottom:8px;}
 .fin{width:100%;padding:13px 15px;border:1.5px solid var(--bd);border-radius:10px;font-size:15px;font-family:inherit;background:#fff;color:#111;transition:border-color .2s,box-shadow .2s;outline:none;}
 .fin:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(255,181,0,.12);}
 .fin::placeholder{color:#C4C4C4;}
@@ -435,7 +435,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .bdr-device.on{background:rgba(255,255,255,.12);color:var(--w);}
 .bdr-right{display:flex;align-items:center;gap:8px;}
 .bdr-edit-panel{width:300px;background:var(--w);border-left:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;}
-.bdr-rclose{width:28px;height:28px;border-radius:6px;border:none;background:var(--bg);cursor:pointer;font-size:14px;color:var(--mu);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.bdr-rclose{width:28px;height:28px;border-radius:6px;border:none;background:var(--bg);cursor:pointer;font-size:16px;color:var(--mu);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .bdr-rclose:hover{background:var(--bd);}
 .bdr-save{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;background:rgba(255,255,255,.1);color:var(--w);border:1px solid rgba(255,255,255,.12);cursor:pointer;transition:all .2s;}
 .bdr-save:hover{background:rgba(255,255,255,.18);}
@@ -462,14 +462,14 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .bdr-mitem:hover{border-color:#ccc;background:var(--w);}
 .bdr-mitem.active-edit{border-color:var(--a);background:#FFFBF0;}
 .bdr-mitem.disabled{opacity:.45;}
-.bdr-drag{color:#C4C4C4;font-size:14px;cursor:grab;flex-shrink:0;line-height:1;padding:2px 1px;}
+.bdr-drag{color:#C4C4C4;font-size:16px;cursor:grab;flex-shrink:0;line-height:1;padding:2px 1px;}
 .bdr-drag:active{cursor:grabbing;}
 .bdr-arrows{display:flex;flex-direction:column;gap:1px;flex-shrink:0;}
 .bdr-arr{width:20px;height:18px;border:none;background:transparent;cursor:pointer;font-size:8px;color:#C4C4C4;display:flex;align-items:center;justify-content:center;border-radius:4px;padding:0;transition:all .15s;line-height:1;}
 .bdr-arr:hover:not(:disabled){background:var(--bg);color:var(--a);}
 .bdr-arr:disabled{opacity:.2;cursor:default;}
 .bdr-mic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
-.bdr-mname{font-size:14px;font-weight:700;color:#111;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bdr-mname{font-size:16px;font-weight:700;color:#111;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .bdr-mtoggle{width:42px;height:24px;border-radius:12px;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;border:none;outline:none;}
 .bdr-mtoggle.on{background:var(--fg);}
 .bdr-mtoggle.off{background:#D1D5DB;}
@@ -545,7 +545,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .pv-form{margin-top:10px;display:flex;flex-direction:column;gap:7px;}
 .pv-input{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:7px;font-size:11px;color:var(--fg);background:var(--bg);}
 .pv-footer{background:var(--dk);padding:24px;text-align:center;}
-.pv-footer-logo{font-size:14px;font-weight:800;color:rgba(255,255,255,.7);}
+.pv-footer-logo{font-size:16px;font-weight:800;color:rgba(255,255,255,.7);}
 .pv-footer-logo span{color:var(--a);}
 .pv-disabled{opacity:.3;pointer-events:none;background:repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(0,0,0,.02) 8px,rgba(0,0,0,.02) 16px);}
 /* 팀 소개 */
@@ -609,8 +609,8 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .bdr-right.open{width:300px;}
 .bdr-right-head{padding:16px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .bdr-rh-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.bdr-rh-name{font-size:14px;font-weight:700;color:var(--fg);flex:1;}
-.bdr-rclose{width:28px;height:28px;border-radius:7px;border:1px solid var(--bd);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;color:var(--mu);}
+.bdr-rh-name{font-size:16px;font-weight:700;color:var(--fg);flex:1;}
+.bdr-rclose{width:28px;height:28px;border-radius:7px;border:1px solid var(--bd);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s;color:var(--mu);}
 .bdr-rclose:hover{background:var(--fg);color:var(--w);}
 .bdr-right-body{flex:1;overflow-y:auto;padding:16px 18px;}
 .bdr-right-body::-webkit-scrollbar{width:4px;}
@@ -619,7 +619,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .bdr-flbl{font-size:12px;font-weight:700;color:var(--mu);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
 .bdr-ai-mini{font-size:10px;font-weight:600;color:var(--a);cursor:pointer;display:flex;align-items:center;gap:3px;padding:2px 6px;border-radius:5px;background:#FFFBF0;border:1px solid rgba(255,69,48,.2);transition:all .15s;}
 .bdr-ai-mini:hover{background:var(--a);color:#fff;}
-.bdr-input{width:100%;padding:10px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:14px;font-family:inherit;color:#111;transition:border-color .2s;outline:none;resize:none;background:#fff;}
+.bdr-input{width:100%;padding:10px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:16px;font-family:inherit;color:#111;transition:border-color .2s;outline:none;resize:none;background:#fff;}
 .bdr-input:focus{border-color:var(--a);}
 .bdr-imgbox{width:100%;height:72px;border:1.5px dashed var(--bd);border-radius:8px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:600;color:var(--mu);cursor:pointer;transition:all .2s;}
 .bdr-imgbox:hover{border-color:var(--a);color:var(--a);background:#FFFBF0;}
@@ -646,10 +646,10 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .bdr-pm-box{background:var(--w);border-radius:20px;padding:36px;width:440px;max-width:90vw;box-shadow:0 24px 60px rgba(0,0,0,.18);}
 .bdr-pm-icon{font-size:40px;text-align:center;margin-bottom:16px;}
 .bdr-pm-title{font-size:20px;font-weight:800;text-align:center;margin-bottom:8px;letter-spacing:-.5px;}
-.bdr-pm-sub{font-size:14px;color:var(--mu);text-align:center;margin-bottom:24px;line-height:1.65;}
+.bdr-pm-sub{font-size:16px;color:var(--mu);text-align:center;margin-bottom:24px;line-height:1.65;}
 .bdr-pm-url{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:12px 16px;font-family:monospace;font-size:13px;color:#15803D;text-align:center;margin-bottom:20px;}
 .bdr-pm-btns{display:flex;gap:10px;}
-.bdr-pm-btn{flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:700;text-align:center;cursor:pointer;transition:all .2s;}
+.bdr-pm-btn{flex:1;padding:12px;border-radius:10px;font-size:16px;font-weight:700;text-align:center;cursor:pointer;transition:all .2s;}
 .bdr-pm-close{background:var(--bg);border:1.5px solid var(--bd);color:var(--fg);}
 .bdr-pm-close:hover{border-color:var(--fg);}
 .bdr-pm-go{background:var(--a);color:#fff;border:none;}
@@ -669,7 +669,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .imgm-close{width:30px;height:30px;border-radius:8px;border:1px solid var(--bd);background:transparent;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .imgm-close:hover{background:var(--fg);color:var(--w);}
 .imgm-tabs{display:flex;border-bottom:1px solid var(--bd);flex-shrink:0;}
-.imgm-tab{flex:1;padding:14px;font-size:14px;font-weight:700;text-align:center;cursor:pointer;color:var(--mu);border-bottom:2.5px solid transparent;transition:all .2s;letter-spacing:-.2px;}
+.imgm-tab{flex:1;padding:14px;font-size:16px;font-weight:700;text-align:center;cursor:pointer;color:var(--mu);border-bottom:2.5px solid transparent;transition:all .2s;letter-spacing:-.2px;}
 .imgm-tab.on{color:var(--fg);border-bottom-color:var(--a);}
 .imgm-pane{display:none;flex:1;overflow-y:auto;padding:18px 28px;min-height:0;}
 .imgm-pane.on{display:flex;flex-direction:column;}
@@ -677,7 +677,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .imgm-upload-area:hover{border-color:var(--a);background:#FFFBF0;}
 .imgm-upload-icon{font-size:44px;margin-bottom:14px;}
 .imgm-upload-title{font-size:16px;font-weight:800;margin-bottom:7px;letter-spacing:-.3px;color:var(--fg);}
-.imgm-upload-sub{font-size:14px;color:var(--mu);line-height:1.6;}
+.imgm-upload-sub{font-size:16px;color:var(--mu);line-height:1.6;}
 .imgm-preview-wrap{margin-top:16px;display:none;}
 .imgm-preview-img{width:100%;max-height:200px;object-fit:cover;border-radius:10px;border:1px solid var(--bd);}
 .imgm-ai-styles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
@@ -685,7 +685,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .imgm-style:hover{border-color:var(--a);}
 .imgm-style.sel{border-color:var(--a);background:#FFFBF0;color:var(--a);}
 .imgm-style-ic{font-size:20px;display:block;margin-bottom:4px;}
-.imgm-gen-btn{width:100%;padding:11px;border-radius:10px;background:linear-gradient(135deg,var(--a),#E6A300);color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;transition:all .2s;margin-bottom:16px;}
+.imgm-gen-btn{width:100%;padding:11px;border-radius:10px;background:linear-gradient(135deg,var(--a),#E6A300);color:#fff;font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all .2s;margin-bottom:16px;}
 .imgm-gen-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(255,69,48,.3);}
 .imgm-gen-btn:disabled{opacity:.6;transform:none;}
 .imgm-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
@@ -710,7 +710,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .ltype:hover{border-color:var(--fg);color:var(--fg);}
 .ltype.on{background:var(--dk);border-color:var(--dk);color:var(--w);}
 .link-hint{font-size:11px;color:var(--mu);margin-bottom:8px;padding:6px 10px;background:var(--bg);border-radius:7px;}
-.linkedit-input{width:100%;padding:10px 12px;border:1.5px solid var(--bd);border-radius:9px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;margin-bottom:14px;}
+.linkedit-input{width:100%;padding:10px 12px;border:1.5px solid var(--bd);border-radius:9px;font-size:16px;font-family:inherit;outline:none;transition:border-color .2s;margin-bottom:14px;}
 .linkedit-input:focus{border-color:var(--a);}
 .linkedit-btns{display:flex;gap:8px;}
 .le-cancel{flex:1;padding:10px;border-radius:9px;border:1.5px solid var(--bd);background:transparent;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
@@ -809,11 +809,11 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .sc-thumb-placeholder .sc-emoji{font-size:48px;margin-bottom:8px;}
 .sc-thumb-placeholder .sc-pname{font-size:13px;font-weight:700;color:rgba(0,0,0,.4);}
 .sc-cat-badge{position:absolute;top:10px;left:10px;font-size:10px;font-weight:800;padding:3px 10px;border-radius:100px;background:rgba(255,255,255,.9);backdrop-filter:blur(4px);}
-.sc-visit-btn{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:14px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .2s;}
+.sc-visit-btn{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:16px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .2s;}
 .sc-card:hover .sc-visit-btn{display:flex;}
 .sc-info{padding:14px 16px;}
 .sc-site-name{font-size:16px;font-weight:800;color:#111;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sc-site-desc{font-size:14px;color:#888;margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sc-site-desc{font-size:16px;color:#888;margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sc-site-meta{display:flex;align-items:center;justify-content:space-between;}
 .sc-author{font-size:13px;color:#aaa;font-weight:600;}
 .sc-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:40px;height:40px;border-radius:50%;background:#fff;border:1.5px solid var(--bd);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.1);transition:all .2s;line-height:1;}
@@ -901,9 +901,9 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .adm-login-icon{font-size:40px;margin-bottom:12px;}
 .adm-login-title{font-size:20px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;}
 .adm-login-sub{font-size:13px;color:var(--mu);margin-bottom:24px;}
-.adm-login-field{width:100%;padding:11px 14px;border:1.5px solid var(--bd);border-radius:10px;font-size:14px;font-family:inherit;outline:none;margin-bottom:10px;transition:border .2s;box-sizing:border-box;}
+.adm-login-field{width:100%;padding:11px 14px;border:1.5px solid var(--bd);border-radius:10px;font-size:16px;font-family:inherit;outline:none;margin-bottom:10px;transition:border .2s;box-sizing:border-box;}
 .adm-login-field:focus{border-color:var(--a);}
-.adm-login-btn{width:100%;padding:12px;background:var(--a);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;transition:all .2s;}
+.adm-login-btn{width:100%;padding:12px;background:var(--a);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px;transition:all .2s;}
 .adm-login-btn:hover{background:var(--ah);}
 .adm-login-err{font-size:12px;color:var(--a);margin-top:8px;min-height:16px;}
 .adm-login-back{font-size:12px;color:var(--mu);margin-top:16px;cursor:pointer;text-decoration:underline;}
@@ -932,7 +932,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .adm-btn.danger:hover{background:#FEF2F2;}
 .adm-table{width:100%;border-collapse:collapse;}
 .adm-table th{font-size:12px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.06em;padding:12px 18px;background:#FAFAFA;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap;}
-.adm-table td{font-size:14px;color:#222;padding:14px 18px;border-bottom:1px solid #F5F5F5;vertical-align:middle;font-weight:500;}
+.adm-table td{font-size:16px;color:#222;padding:14px 18px;border-bottom:1px solid #F5F5F5;vertical-align:middle;font-weight:500;}
 .adm-table tr:last-child td{border-bottom:none;}
 .adm-table tr:hover td{background:#FAFAFA;}
 .adm-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;}
@@ -974,13 +974,13 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .pay-plan-radio::after{content:'';position:absolute;top:3px;left:3px;width:8px;height:8px;border-radius:50%;background:#fff;opacity:0;transition:opacity .15s;}
 .pay-plan-left{display:flex;align-items:center;gap:12px;}
 .pay-plan-info{line-height:1;}
-.pay-plan-name{font-size:14px;font-weight:700;color:var(--fg);margin-bottom:3px;}
+.pay-plan-name{font-size:16px;font-weight:700;color:var(--fg);margin-bottom:3px;}
 .pay-plan-desc{font-size:11px;color:var(--mu);}
 .pay-plan-price{font-size:15px;font-weight:800;color:var(--fg);}
 .pay-plan-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;margin-left:6px;}
 .pay-divider{height:1px;background:var(--bd);margin:16px 0;}
 .pay-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-.pay-total-lbl{font-size:14px;font-weight:600;color:var(--fg);}
+.pay-total-lbl{font-size:16px;font-weight:600;color:var(--fg);}
 .pay-total-amt{font-size:22px;font-weight:800;letter-spacing:-1px;color:var(--fg);}
 .pay-btn{width:100%;padding:14px;background:var(--fg);color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
 .pay-btn:hover{background:#333;}
@@ -998,7 +998,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .pay-result-box{text-align:center;max-width:400px;padding:40px 24px;}
 .pay-result-ic{font-size:56px;margin-bottom:20px;}
 .pay-result-title{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px;}
-.pay-result-sub{font-size:14px;color:var(--mu);line-height:1.7;margin-bottom:28px;}
+.pay-result-sub{font-size:16px;color:var(--mu);line-height:1.7;margin-bottom:28px;}
 .pay-result-credit{display:inline-flex;align-items:center;gap:8px;background:#FFFBF0;border:1.5px solid #FFD966;border-radius:12px;padding:12px 20px;margin-bottom:24px;font-size:15px;font-weight:700;color:var(--a);}
 .adm-chart-wrap{padding:16px 20px 20px;}
 .adm-bars{display:flex;align-items:flex-end;gap:6px;height:100px;}
@@ -1183,8 +1183,8 @@ function gateLogin(){
   </div>
   <div class="nav-mobile-foot">
     <div style="color:rgba(255,255,255,.4);font-size:12px;margin-bottom:10px;padding-left:2px;">계정</div>
-    <button onclick="go('login');toggleMobileNav()" style="width:100%;padding:11px;background:transparent;color:rgba(255,255,255,.6);border:1.5px solid #333;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;">로그인</button>
-    <button onclick="go('builder');toggleMobileNav()" style="width:100%;padding:12px;background:#FFB500;color:#111;border:none;border-radius:8px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">무료로 시작하기 →</button>
+    <button onclick="go('login');toggleMobileNav()" style="width:100%;padding:11px;background:transparent;color:rgba(255,255,255,.6);border:1.5px solid #333;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;">로그인</button>
+    <button onclick="go('builder');toggleMobileNav()" style="width:100%;padding:12px;background:#FFB500;color:#111;border:none;border-radius:8px;font-size:16px;font-weight:900;cursor:pointer;font-family:inherit;">무료로 시작하기 →</button>
   </div>
 </div>
 
@@ -1214,9 +1214,9 @@ function gateLogin(){
       <div>
         <div class="stag">Step 1 — 업종 선택</div>
         <h2 class="stitle" style="font-size:clamp(22px,2.8vw,34px);margin-bottom:6px;">내 업종 홈페이지를<br>먼저 골라보세요</h2>
-        <p style="font-size:14px;color:var(--mu);">마음에 드는 홈페이지 클릭 → 모듈 추가 → 완성</p>
+        <p style="font-size:16px;color:var(--mu);">마음에 드는 홈페이지 클릭 → 모듈 추가 → 완성</p>
       </div>
-      <button onclick="go('showcase')" style="padding:10px 22px;border:1.5px solid var(--bd);border-radius:10px;background:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">전체 보기 →</button>
+      <button onclick="go('showcase')" style="padding:10px 22px;border:1.5px solid var(--bd);border-radius:10px;background:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">전체 보기 →</button>
     </div>
 
     <!-- 카테고리 탭 -->
@@ -1240,11 +1240,11 @@ function gateLogin(){
     <div id="scEmpty" style="display:none;text-align:center;padding:60px 0;">
       <div style="font-size:40px;margin-bottom:12px;">🏗️</div>
       <div style="font-size:16px;font-weight:700;margin-bottom:6px;color:var(--fg);">해당 업종이 아직 없어요</div>
-      <button onclick="go('builder')" style="margin-top:16px;padding:10px 22px;background:var(--a);color:var(--fg);border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">빌더 시작하기 →</button>
+      <button onclick="go('builder')" style="margin-top:16px;padding:10px 22px;background:var(--a);color:var(--fg);border:none;border-radius:9px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;">빌더 시작하기 →</button>
     </div>
 
     <!-- 안내 -->
-    <div style="text-align:center;padding-top:28px;font-size:14px;color:var(--mu);">
+    <div style="text-align:center;padding-top:28px;font-size:16px;color:var(--mu);">
       마음에 드는 홈페이지를 클릭하면 <b style="color:var(--fg);">Step 2 — 모듈 추가</b>로 이동합니다
     </div>
   </div>
@@ -1255,7 +1255,7 @@ function gateLogin(){
   <div class="si">
     <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:36px;">
       <div><div class="stag">Step 2 — 모듈 추가</div><h2 class="stitle">필요한 모듈만<br>골라 조합하세요</h2></div>
-      <div class="btn-p" onclick="go('modules')" style="font-size:14px;padding:11px 22px;">전체 모듈 보기 →</div>
+      <div class="btn-p" onclick="go('modules')" style="font-size:16px;padding:11px 22px;">전체 모듈 보기 →</div>
     </div>
     <div class="mg">
       <div class="mc"><div class="mcfb">무료</div><div class="mci" style="background:#EFF6FF">🏢</div><h3 class="mcn">회사소개</h3><p class="mcd">비전·미션·연혁·팀 소개. AI가 업종 기반 문구를 초안으로 작성합니다.</p></div>
@@ -1401,14 +1401,14 @@ function gateLogin(){
         <div style="position:absolute;top:0;right:0;width:160px;height:160px;background:rgba(255,255,255,.03);border-radius:50%;transform:translate(40px,-40px);"></div>
         <div style="display:inline-block;background:#FFB500;color:#111;font-size:11px;font-weight:800;padding:4px 12px;border-radius:100px;margin-bottom:16px;letter-spacing:.05em;">STEP 1</div>
         <h3 style="font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;line-height:1.3;">업종별 홈페이지<br>먼저 고르기</h3>
-        <p style="font-size:14px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:20px;">9개 업종 × 전문 디자인 템플릿.<br>클릭 한 번으로 내 업종 홈페이지 세팅 완료.</p>
+        <p style="font-size:16px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:20px;">9개 업종 × 전문 디자인 템플릿.<br>클릭 한 번으로 내 업종 홈페이지 세팅 완료.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
           <span style="font-size:12px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:4px 10px;border-radius:100px;">비즈니스</span>
           <span style="font-size:12px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:4px 10px;border-radius:100px;">음식/카페</span>
           <span style="font-size:12px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:4px 10px;border-radius:100px;">의료/병원</span>
           <span style="font-size:12px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:4px 10px;border-radius:100px;">+6개</span>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;color:#FFB500;font-size:14px;font-weight:700;">업종 선택하러 가기 →</div>
+        <div style="display:flex;align-items:center;gap:8px;color:#FFB500;font-size:16px;font-weight:700;">업종 선택하러 가기 →</div>
       </div>
 
       <!-- AI 스튜디오 -->
@@ -1418,13 +1418,13 @@ function gateLogin(){
         <div style="position:absolute;top:0;right:0;width:160px;height:160px;background:rgba(255,255,255,.03);border-radius:50%;transform:translate(40px,-40px);"></div>
         <div style="display:inline-block;background:#FFB500;color:#111;font-size:11px;font-weight:800;padding:4px 12px;border-radius:100px;margin-bottom:16px;letter-spacing:.05em;">AI PRO</div>
         <h3 style="font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;line-height:1.3;">AI 스튜디오로<br>사진·배너 자동 완성</h3>
-        <p style="font-size:14px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:20px;">내 가게 사진 업로드 → AI 전문 보정<br>광고 배너까지 즉시 자동 생성.</p>
+        <p style="font-size:16px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:20px;">내 가게 사진 업로드 → AI 전문 보정<br>광고 배너까지 즉시 자동 생성.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
           <span style="font-size:12px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:4px 10px;border-radius:100px;">AI 사진 보정</span>
           <span style="font-size:12px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:4px 10px;border-radius:100px;">광고 배너 생성</span>
           <span style="font-size:12px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:4px 10px;border-radius:100px;">무료 체험 3회</span>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;color:#FFB500;font-size:14px;font-weight:700;">AI 스튜디오 체험하기 →</div>
+        <div style="display:flex;align-items:center;gap:8px;color:#FFB500;font-size:16px;font-weight:700;">AI 스튜디오 체험하기 →</div>
       </div>
 
     </div>
@@ -1459,9 +1459,9 @@ function gateLogin(){
     <h1 style="font-size:clamp(28px,5vw,52px);font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:8px;">요금 안내</h1>
     <p style="font-size:16px;color:rgba(255,255,255,.5);margin-bottom:24px;">숨겨진 비용 없이, 필요한 플랜만 선택하세요</p>
     <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
-      <span id="tl1" style="font-size:14px;font-weight:700;color:#FFB500;">월간 결제</span>
+      <span id="tl1" style="font-size:16px;font-weight:700;color:#FFB500;">월간 결제</span>
       <div class="tgtrack" id="tgtrack" onclick="toggleBilling()"><div class="tgthumb"></div></div>
-      <span id="tl2" style="font-size:14px;font-weight:600;color:rgba(255,255,255,.5);">연간 결제 <span class="savebadge">20% 절약</span></span>
+      <span id="tl2" style="font-size:16px;font-weight:600;color:rgba(255,255,255,.5);">연간 결제 <span class="savebadge">20% 절약</span></span>
     </div>
   </div>
 </div>
@@ -1499,7 +1499,7 @@ function gateLogin(){
         <div style="font-size:13px;color:#bbb;display:flex;gap:6px;"><span>✗</span>커스텀 도메인</div>
         <div style="font-size:13px;color:#bbb;display:flex;gap:6px;"><span>✗</span>AI 콘텐츠 생성</div>
       </div>
-      <button onclick="go('builder')" style="width:100%;padding:13px;border:2px solid #1A1A1A;border-radius:3px;background:transparent;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;color:#1A1A1A;letter-spacing:.05em;">무료로 시작하기</button>
+      <button onclick="go('builder')" style="width:100%;padding:13px;border:2px solid #1A1A1A;border-radius:3px;background:transparent;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;color:#1A1A1A;letter-spacing:.05em;">무료로 시작하기</button>
     </div>
 
     <!-- 장식 -->
@@ -1528,7 +1528,7 @@ function gateLogin(){
         <div style="font-size:13px;color:rgba(255,255,255,.8);display:flex;gap:6px;"><span style="color:#FFB500;">✓</span>광고 제거</div>
         <div style="font-size:13px;color:rgba(255,255,255,.8);display:flex;gap:6px;"><span style="color:#FFB500;">✓</span>무제한 트래픽</div>
       </div>
-      <button onclick="openPayModal('plan')" style="width:100%;padding:13px;border:none;border-radius:3px;background:#FFB500;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;color:#111;letter-spacing:.05em;">지금 시작하기</button>
+      <button onclick="openPayModal('plan')" style="width:100%;padding:13px;border:none;border-radius:3px;background:#FFB500;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;color:#111;letter-spacing:.05em;">지금 시작하기</button>
     </div>
 
     <!-- 장식 -->
@@ -1557,7 +1557,7 @@ function gateLogin(){
         <div style="font-size:13px;color:#555;display:flex;gap:6px;"><span style="color:#FFB500;">✓</span>실시간 상담 알림</div>
         <div style="font-size:13px;color:#555;display:flex;gap:6px;"><span style="color:#FFB500;">✓</span>주문 확인 알림</div>
       </div>
-      <button onclick="openPayModal('plan')" style="width:100%;padding:13px;border:2px solid #1A1A1A;border-radius:3px;background:transparent;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;color:#1A1A1A;letter-spacing:.05em;">시작하기</button>
+      <button onclick="openPayModal('plan')" style="width:100%;padding:13px;border:2px solid #1A1A1A;border-radius:3px;background:transparent;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;color:#1A1A1A;letter-spacing:.05em;">시작하기</button>
       <div style="margin-top:8px;text-align:center;"><button onclick="go('aistudio')" style="font-size:12px;color:#888;border:none;background:none;cursor:pointer;font-family:inherit;text-decoration:underline;">AI 스튜디오 먼저 체험하기 →</button></div>
     </div>
 
@@ -1574,7 +1574,7 @@ function gateLogin(){
         </div>
       </div>
       <div style="height:1px;background:repeating-linear-gradient(90deg,#D4C9B8 0,#D4C9B8 6px,transparent 6px,transparent 12px);margin:16px 0;"></div>
-      <button style="width:100%;padding:13px;border:2px solid #D4C9B8;border-radius:3px;background:transparent;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;color:#888;letter-spacing:.05em;">문의하기</button>
+      <button style="width:100%;padding:13px;border:2px solid #D4C9B8;border-radius:3px;background:transparent;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;color:#888;letter-spacing:.05em;">문의하기</button>
     </div>
 
     <!-- 하단 장식 -->
@@ -1667,7 +1667,7 @@ function gateLogin(){
       </div>
       <div style="text-align:right;">
         <div style="font-size:28px;font-weight:900;color:#FFB500;line-height:1;">29,800<span style="font-size:13px;color:#888;font-weight:500;"> KRW/월</span></div>
-        <button onclick="openPayModal('plan')" style="margin-top:12px;padding:12px 22px;background:#FFB500;color:#111;border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;">지금 시작하기 →</button>
+        <button onclick="openPayModal('plan')" style="margin-top:12px;padding:12px 22px;background:#FFB500;color:#111;border:none;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;">지금 시작하기 →</button>
       </div>
     </div>
     <div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:36px;">✓ 7일 환불 보장 · ✓ 언제든 해지 · ✓ 신용카드 불필요</div>
@@ -2111,11 +2111,11 @@ function gateLogin(){
           <div class="bdr-frame-inner" id="bdrPreview"></div>
         </div>
         <!-- 모바일 프레임 (나란히 모드) -->
-        <div id="bdrMobileFrame" style="display:none;width:375px;flex-shrink:0;border-radius:28px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.2);">
+        <div id="bdrMobileFrame" style="display:none;width:375px;flex-shrink:0;border-radius:28px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.2);height:50vh;">
           <div style="height:36px;background:#F5F5F5;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:center;gap:6px;">
             <div style="width:50px;height:6px;background:#333;border-radius:3px;"></div>
           </div>
-          <div style="height:calc(100% - 36px);overflow-y:auto;background:#fff;" id="bdrMobilePreview"></div>
+          <div style="height:calc(50vh - 36px);overflow-y:auto;background:#fff;" id="bdrMobilePreview"></div>
         </div>
       </div>
     </div>
@@ -2146,7 +2146,7 @@ function gateLogin(){
         <div style="display:flex;align-items:center;background:#F3F4F6;border:1.5px solid #E5E7EB;border-radius:10px;overflow:hidden;padding:0 12px;gap:4px;">
           <span style="font-size:13px;color:#6B7280;white-space:nowrap;">moduweb.co.kr/</span>
           <input id="pubSlugInput" type="text" placeholder="내가게이름"
-            style="flex:1;border:none;background:transparent;font-size:14px;font-weight:700;color:#111;outline:none;padding:13px 0;font-family:inherit;"
+            style="flex:1;border:none;background:transparent;font-size:16px;font-weight:700;color:#111;outline:none;padding:13px 0;font-family:inherit;"
             oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'').replace(/--+/g,'-')">
         </div>
         <div id="pubSlugHint" style="font-size:12px;color:#9CA3AF;margin-top:6px;padding-left:4px;">예: my-shop → moduweb.co.kr/my-shop</div>
@@ -2242,8 +2242,8 @@ function gateLogin(){
       <div class="imgm-pane" id="ipane2">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;height:100%;">
           <div style="display:flex;flex-direction:column;gap:10px;">
-            <div style="font-size:14px;font-weight:700;color:var(--fg);">이미지 URL 직접 입력</div>
-            <input class="linkedit-input" type="url" id="imgUrlInput" placeholder="https://example.com/image.jpg" oninput="previewImgUrl(this.value)" style="width:100%;padding:12px 14px;border:1.5px solid var(--bd);border-radius:10px;font-size:14px;font-family:inherit;outline:none;">
+            <div style="font-size:16px;font-weight:700;color:var(--fg);">이미지 URL 직접 입력</div>
+            <input class="linkedit-input" type="url" id="imgUrlInput" placeholder="https://example.com/image.jpg" oninput="previewImgUrl(this.value)" style="width:100%;padding:12px 14px;border:1.5px solid var(--bd);border-radius:10px;font-size:16px;font-family:inherit;outline:none;">
             <div style="font-size:12px;color:var(--mu);line-height:1.7;">
               Unsplash, Pexels 등 이미지 URL을 붙여넣으면<br>오른쪽 미리보기에서 확인할 수 있어요.
             </div>
@@ -2274,7 +2274,7 @@ function gateLogin(){
         <div class="ltype" onclick="setLinkType(this,'tel')">📞 전화</div>
       </div>
       <div class="link-hint" id="linkHint" style="font-size:11px;color:var(--mu);margin-bottom:8px;padding:6px 10px;background:var(--bg);border-radius:7px;">https://example.com 형식으로 입력하세요</div>
-      <input class="linkedit-input" type="text" id="linkInput" placeholder="https://example.com" oninput="updateLinkPreview(this.value)" style="width:100%;padding:10px 12px;border:1.5px solid var(--bd);border-radius:9px;font-size:14px;font-family:inherit;outline:none;margin-bottom:14px;">
+      <input class="linkedit-input" type="text" id="linkInput" placeholder="https://example.com" oninput="updateLinkPreview(this.value)" style="width:100%;padding:10px 12px;border:1.5px solid var(--bd);border-radius:9px;font-size:16px;font-family:inherit;outline:none;margin-bottom:14px;">
       <div style="font-size:12px;color:var(--mu);margin-bottom:14px;min-height:18px;" id="linkPreview"></div>
       <div style="display:flex;gap:8px;">
         <button style="flex:1;padding:10px;border-radius:9px;border:1.5px solid var(--bd);background:transparent;font-size:13px;font-weight:600;cursor:pointer;" onclick="closeLinkModal()">취소</button>
@@ -2288,7 +2288,7 @@ function gateLogin(){
   <div style="max-width:780px;margin:0 auto;padding:100px 32px 80px;">
     <div style="margin-bottom:8px;"><span style="font-size:12px;font-weight:700;color:var(--a);text-transform:uppercase;letter-spacing:.1em;">Legal</span></div>
     <h1 style="font-size:26px;font-weight:900;letter-spacing:-1px;margin-bottom:6px;">이용약관</h1>
-    <p style="font-size:14px;color:var(--mu);margin-bottom:48px;">최종 수정일: 2025년 1월 1일 · 시행일: 2025년 1월 1일</p>
+    <p style="font-size:16px;color:var(--mu);margin-bottom:48px;">최종 수정일: 2025년 1월 1일 · 시행일: 2025년 1월 1일</p>
     <div style="display:flex;flex-direction:column;gap:40px;font-size:15px;line-height:1.9;color:#2D2D2D;">
 
       <section><h2 style="font-size:18px;font-weight:800;margin-bottom:12px;letter-spacing:-.3px;">제1조 (목적)</h2>
@@ -2343,8 +2343,8 @@ function gateLogin(){
 
     </div>
     <div style="margin-top:48px;padding-top:24px;border-top:1px solid var(--bd);display:flex;gap:12px;">
-      <button class="btn-s" onclick="go('privacy')" style="font-size:14px;">개인정보처리방침 →</button>
-      <button class="btn-s" onclick="go('home')" style="font-size:14px;">홈으로</button>
+      <button class="btn-s" onclick="go('privacy')" style="font-size:16px;">개인정보처리방침 →</button>
+      <button class="btn-s" onclick="go('home')" style="font-size:16px;">홈으로</button>
     </div>
   </div>
 </div>
@@ -2354,13 +2354,13 @@ function gateLogin(){
   <div style="max-width:780px;margin:0 auto;padding:100px 32px 80px;">
     <div style="margin-bottom:8px;"><span style="font-size:12px;font-weight:700;color:var(--a);text-transform:uppercase;letter-spacing:.1em;">Legal</span></div>
     <h1 style="font-size:26px;font-weight:900;letter-spacing:-1px;margin-bottom:6px;">개인정보처리방침</h1>
-    <p style="font-size:14px;color:var(--mu);margin-bottom:48px;">최종 수정일: 2025년 1월 1일</p>
+    <p style="font-size:16px;color:var(--mu);margin-bottom:48px;">최종 수정일: 2025년 1월 1일</p>
     <div style="display:flex;flex-direction:column;gap:40px;font-size:15px;line-height:1.9;color:#2D2D2D;">
 
       <section><h2 style="font-size:18px;font-weight:800;margin-bottom:12px;letter-spacing:-.3px;">1. 수집하는 개인정보</h2>
       <p>회사는 서비스 제공을 위해 다음과 같은 개인정보를 수집합니다.</p>
       <div style="background:var(--bg);border-radius:12px;padding:20px;margin-top:12px;">
-        <div style="display:grid;grid-template-columns:1fr 2fr;gap:12px;font-size:14px;">
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:12px;font-size:16px;">
           <div style="font-weight:700;">회원가입 시</div><div>이름, 이메일 주소, 비밀번호(암호화), 회사명(선택)</div>
           <div style="font-weight:700;">서비스 이용 시</div><div>접속 IP, 브라우저 정보, 서비스 이용 기록</div>
           <div style="font-weight:700;">결제 시</div><div>결제 수단 정보(토스페이먼츠 위탁 처리), 결제 내역</div>
@@ -2389,7 +2389,7 @@ function gateLogin(){
 
       <section><h2 style="font-size:18px;font-weight:800;margin-bottom:12px;letter-spacing:-.3px;">5. 개인정보 처리 위탁</h2>
       <div style="background:var(--bg);border-radius:12px;padding:20px;margin-top:12px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:14px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:16px;">
           <div style="font-weight:700;">수탁업체</div><div style="font-weight:700;">위탁 업무</div><div style="font-weight:700;">보유 기간</div>
           <div>Supabase Inc.</div><div>데이터 저장·관리</div><div>회원 탈퇴 시</div>
           <div>토스페이먼츠</div><div>결제 처리</div><div>5년</div>
@@ -2414,8 +2414,8 @@ function gateLogin(){
 
     </div>
     <div style="margin-top:48px;padding-top:24px;border-top:1px solid var(--bd);display:flex;gap:12px;">
-      <button class="btn-s" onclick="go('terms')" style="font-size:14px;">이용약관 →</button>
-      <button class="btn-s" onclick="go('home')" style="font-size:14px;">홈으로</button>
+      <button class="btn-s" onclick="go('terms')" style="font-size:16px;">이용약관 →</button>
+      <button class="btn-s" onclick="go('home')" style="font-size:16px;">홈으로</button>
     </div>
   </div>
 </div>
@@ -2425,7 +2425,7 @@ function gateLogin(){
   <div style="max-width:780px;margin:0 auto;padding:100px 32px 80px;">
     <div style="margin-bottom:8px;"><span style="font-size:12px;font-weight:700;color:var(--a);text-transform:uppercase;letter-spacing:.1em;">Company</span></div>
     <h1 style="font-size:26px;font-weight:900;letter-spacing:-1px;margin-bottom:6px;">사업자정보</h1>
-    <p style="font-size:14px;color:var(--mu);margin-bottom:48px;">moduweb(모두의웹) 운영사 공식 정보</p>
+    <p style="font-size:16px;color:var(--mu);margin-bottom:48px;">moduweb(모두의웹) 운영사 공식 정보</p>
 
     <div style="background:#fff;border:1.5px solid var(--bd);border-radius:20px;overflow:hidden;margin-bottom:32px;">
       <div style="background:var(--fg);padding:24px 32px;">
@@ -2446,7 +2446,7 @@ function gateLogin(){
 
     <div style="background:#FFFBF0;border:1.5px solid #FFD966;border-radius:14px;padding:24px;margin-bottom:32px;">
       <div style="font-size:15px;font-weight:800;margin-bottom:12px;">📋 결제 및 환불 안내</div>
-      <div style="font-size:14px;line-height:1.9;color:#2D2D2D;">
+      <div style="font-size:16px;line-height:1.9;color:#2D2D2D;">
         · 결제 수단: 신용카드, 카카오페이, 토스페이, 계좌이체<br>
         · 결제 처리: 토스페이먼츠 (주식회사 비바리퍼블리카)<br>
         · <strong>디지털 콘텐츠 특성상, 서비스 이용이 시작된 경우 환불이 불가합니다.</strong><br>
@@ -2457,7 +2457,7 @@ function gateLogin(){
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px;">
       <div style="background:var(--bg);border-radius:14px;padding:20px;">
-        <div style="font-size:14px;font-weight:800;margin-bottom:8px;">🛡️ 소비자 분쟁 해결</div>
+        <div style="font-size:16px;font-weight:800;margin-bottom:8px;">🛡️ 소비자 분쟁 해결</div>
         <div style="font-size:13px;color:var(--mu);line-height:1.8;">
           공정거래위원회 전자거래분쟁조정위원회<br>
           📞 1336<br>
@@ -2465,7 +2465,7 @@ function gateLogin(){
         </div>
       </div>
       <div style="background:var(--bg);border-radius:14px;padding:20px;">
-        <div style="font-size:14px;font-weight:800;margin-bottom:8px;">🔒 개인정보 침해 신고</div>
+        <div style="font-size:16px;font-weight:800;margin-bottom:8px;">🔒 개인정보 침해 신고</div>
         <div style="font-size:13px;color:var(--mu);line-height:1.8;">
           개인정보보호위원회<br>
           📞 118<br>
@@ -2475,9 +2475,9 @@ function gateLogin(){
     </div>
 
     <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--bd);display:flex;gap:12px;">
-      <button class="btn-s" onclick="go('terms')" style="font-size:14px;">이용약관</button>
-      <button class="btn-s" onclick="go('privacy')" style="font-size:14px;">개인정보처리방침</button>
-      <button class="btn-s" onclick="go('home')" style="font-size:14px;">홈으로</button>
+      <button class="btn-s" onclick="go('terms')" style="font-size:16px;">이용약관</button>
+      <button class="btn-s" onclick="go('privacy')" style="font-size:16px;">개인정보처리방침</button>
+      <button class="btn-s" onclick="go('home')" style="font-size:16px;">홈으로</button>
     </div>
   </div>
 </div>
@@ -3877,7 +3877,7 @@ function renderPreview(){
           <div>
             <div style="font-size:12px;color:var(--mu);line-height:2.2;">
               📍 ${getField(m,'addr')}<br>
-              📞 <a href="${tel}" onclick="event.stopPropagation()" style="color:var(--a);">${telClean}</a><br>
+              📞 <a href="${tel}" onclick="event.stopPropagation()" style="color:var(--a);font-size:18px;font-weight:800;">${telClean}</a><br>
               ✉️ <a href="${email}" onclick="event.stopPropagation()" style="color:var(--a);">${emailClean}</a><br>
               🕐 ${getField(m,'hours')}
             </div>
@@ -4053,7 +4053,7 @@ function renderPreview(){
     bdrState.device = 'mobile';
     let mHtml = `<div style="font-family:'Pretendard Variable','Pretendard',sans-serif;">`;
     mHtml += `<div class="pv-nav" style="background:#060D1F;position:sticky;top:0;z-index:10;">
-      <div class="pv-nav-logo" style="font-size:14px;">${sn.split(' ')[0]}<span style="color:${tc}">${sn.split(' ').slice(1).join(' ')||''}</span></div>
+      <div class="pv-nav-logo" style="font-size:16px;">${sn.split(' ')[0]}<span style="color:${tc}">${sn.split(' ').slice(1).join(' ')||''}</span></div>
     </div>`;
     bdrState.modules.forEach(m => {
       if(!m.on) return;
@@ -4153,7 +4153,7 @@ function renderLinkField(mi,fi,f){
   return `<div style="display:flex;gap:6px;align-items:center;">
     <input class="bdr-input" type="text" value="${val.replace(/"/g,'&quot;')}" placeholder="링크 없음" style="flex:1;font-size:12px;"
       oninput="updateField(${mi},${fi},this.value)">
-    <button onclick="openLinkModal(${mi},${fi})" style="width:34px;height:34px;border-radius:8px;border:1.5px solid var(--bd);background:${hasLink?'var(--a)':'var(--bg)'};color:${hasLink?'#fff':'var(--mu)'};cursor:pointer;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;" title="링크 편집">🔗</button>
+    <button onclick="openLinkModal(${mi},${fi})" style="width:34px;height:34px;border-radius:8px;border:1.5px solid var(--bd);background:${hasLink?'var(--a)':'var(--bg)'};color:${hasLink?'#fff':'var(--mu)'};cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;" title="링크 편집">🔗</button>
   </div>
   ${hasLink?`<div style="font-size:10px;color:var(--mu);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${val}</div>`:''}`;
 }
@@ -4957,45 +4957,36 @@ async function applyImg(){
   const {mi,fi}=imgTarget;
   let finalUrl = selectedImgUrl;
 
-  // base64 이미지(업로드된 파일)면 Supabase Storage에 저장
-  if(selectedImgUrl.startsWith('data:image/') && SUPABASE_READY && currentUser){
+  if(selectedImgUrl.startsWith('data:image/') && SUPABASE_READY){
     try {
       showToast('이미지 업로드 중...');
-      // base64 → Blob 변환
-      const res = await fetch(selectedImgUrl);
-      const blob = await res.blob();
-      const ext = (blob.type.split('/')[1]||'jpg').replace('jpeg','jpg');
-      const path = `sites/${currentUser.id}/${Date.now()}.${ext}`;
-      const {data, error} = await sb.storage.from('images').upload(path, blob, {
-        contentType: blob.type, upsert: true
-      });
-      if(!error){
-        const {data: urlData} = sb.storage.from('images').getPublicUrl(path);
-        finalUrl = urlData.publicUrl;
-        showToast('서버에 업로드 완료 ✓');
-        // library_images 테이블에도 기록
-        try {
-          await sb.from('library_images').insert({
-            user_id: currentUser.id,
-            url: finalUrl,
-            title: bdrState.modules[mi].fields[fi].cat || 'uploaded',
-            category: bdrState.modules[mi].fields[fi].cat || 'uploaded'
-          });
-        } catch(e){}
-      } else {
-        console.warn('Storage 업로드 실패, base64 유지:', error);
+      let token=null, uid=currentUser?.id;
+      try{ const {data:{session}}=await sb.auth.getSession(); if(session){token=session.access_token;uid=session.user.id;} }catch(e){}
+      if(!token){ showToast('로그인 후 업로드 가능합니다'); }
+      else {
+        const res=await fetch(selectedImgUrl);
+        const blob=await res.blob();
+        const ext=(blob.type.split('/')[1]||'jpg').replace('jpeg','jpg');
+        const path=`sites/${uid}/${Date.now()}.${ext}`;
+        const up=await fetch(`${SUPABASE_URL}/storage/v1/object/images/${path}`,{
+          method:'POST',
+          headers:{'Authorization':'Bearer '+token,'apikey':SUPABASE_KEY,'Content-Type':blob.type,'x-upsert':'true'},
+          body:blob
+        });
+        if(up.ok){
+          finalUrl=`${SUPABASE_URL}/storage/v1/object/public/images/${path}`;
+          showToast('이미지 업로드 완료 ✓');
+        } else {
+          const et=await up.text(); console.warn('Storage 실패:',up.status,et);
+          showToast('⚠️ 서버 업로드 실패, 로컬 이미지로 적용');
+        }
       }
-    } catch(e) {
-      console.warn('업로드 오류:', e);
-    }
+    } catch(e){ console.warn('업로드 오류:',e); }
   }
 
-  bdrState.modules[mi].fields[fi].val = finalUrl;
-  markUnsaved();
-  closeImgModal();
-  editModule(mi);
-  renderPreview();
-  showToast('이미지가 적용되었습니다 ✓');
+  bdrState.modules[mi].fields[fi].val=finalUrl;
+  markUnsaved(); closeImgModal(); editModule(mi); renderPreview();
+  showToast('이미지가 적용됐습니다 ✓');
 }
 
 // ══════════════════════════════════
@@ -5509,7 +5500,7 @@ section{padding:72px 24px;}.s-in{max-width:1100px;margin:0 auto;}
 .s-h1{font-size:clamp(38px,5.5vw,72px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px;}
 .s-h2{font-size:clamp(26px,3.5vw,44px);font-weight:900;line-height:1.15;letter-spacing:-1.2px;margin-bottom:16px;}
 .s-p{font-size:17px;color:#6B7280;line-height:1.85;}
-.s-btn{display:inline-flex;align-items:center;background:var(--a);color:#fff;font-size:14px;font-weight:700;padding:12px 26px;border-radius:9px;border:none;cursor:pointer;margin-top:20px;text-decoration:none;}
+.s-btn{display:inline-flex;align-items:center;background:var(--a);color:#fff;font-size:16px;font-weight:700;padding:12px 26px;border-radius:9px;border:none;cursor:pointer;margin-top:20px;text-decoration:none;}
 .s-hero{min-height:88vh;display:flex;align-items:center;padding-top:100px;position:relative;overflow:hidden;text-align:center;justify-content:center;}
 .s-hero-dot{position:absolute;inset:0;background-image:radial-gradient(circle,#E5E7EB 1px,transparent 1px);background-size:28px 28px;opacity:.5;}
 .s-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:36px;}
@@ -5519,10 +5510,10 @@ section{padding:72px 24px;}.s-in{max-width:1100px;margin:0 auto;}
 .s-member{text-align:center;background:#F9F9F9;border-radius:12px;padding:20px;}
 .s-member-avatar{width:60px;height:60px;border-radius:50%;margin:0 auto 10px;overflow:hidden;background:#E5E7EB;display:flex;align-items:center;justify-content:center;font-size:24px;}
 .s-member-avatar img{width:100%;height:100%;object-fit:cover;}
-.s-member-name{font-size:14px;font-weight:800;margin-bottom:2px;}.s-member-role{font-size:11px;color:var(--a);font-weight:700;margin-bottom:6px;}.s-member-desc{font-size:12px;color:#6B7280;line-height:1.6;}
+.s-member-name{font-size:16px;font-weight:800;margin-bottom:2px;}.s-member-role{font-size:11px;color:var(--a);font-weight:700;margin-bottom:6px;}.s-member-desc{font-size:12px;color:#6B7280;line-height:1.6;}
 .s-faq{display:flex;flex-direction:column;gap:8px;margin-top:32px;}
 .s-faq-item{border:1px solid #E5E7EB;border-radius:10px;overflow:hidden;}
-.s-faq-q{padding:14px 18px;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#fff;user-select:none;}
+.s-faq-q{padding:14px 18px;font-size:16px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#fff;user-select:none;}
 .s-faq-q:hover{background:#FAFAFA;}
 .s-faq-a{padding:0 18px;font-size:13px;color:#6B7280;line-height:1.75;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s;}
 .s-faq-item.open .s-faq-a{max-height:300px;padding:12px 18px 16px;}.s-faq-item.open .s-faq-q{color:var(--a);}
@@ -5558,9 +5549,9 @@ section{padding:72px 24px;}.s-in{max-width:1100px;margin:0 auto;}
 .s-contact-info{font-size:13px;color:#6B7280;line-height:2.4;}.s-contact-info a{color:var(--a);}
 .s-map{background:#E8EFF7;border-radius:12px;min-height:200px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:13px;}
 .s-form{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
-.s-input{padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:9px;font-size:14px;font-family:inherit;outline:none;transition:border .2s;}
+.s-input{padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:9px;font-size:16px;font-family:inherit;outline:none;transition:border .2s;}
 .s-input:focus{border-color:var(--a);}
-.s-submit{padding:12px;background:var(--a);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.s-submit{padding:12px;background:var(--a);color:#fff;border:none;border-radius:9px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
 .s-notice-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F0F0F0;font-size:13px;}
 .s-notice-item:last-child{border-bottom:none;}
 .s-footer{background:#0D0F14;padding:48px 24px 28px;}
@@ -5772,7 +5763,7 @@ function buildSectionHtml(m,tc,sn){
         <div style="position:relative;text-align:center;">
           <button onclick="closeSiteLb()" style="position:absolute;top:-44px;right:0;width:36px;height:36px;background:rgba(255,255,255,.15);border:none;border-radius:50%;color:#fff;font-size:18px;cursor:pointer;">✕</button>
           <img id="siteLbImg" src="" style="max-width:90vw;max-height:82vh;object-fit:contain;border-radius:4px;display:block;">
-          <div id="siteLbCap" style="color:#fff;font-size:14px;margin-top:10px;"></div>
+          <div id="siteLbCap" style="color:#fff;font-size:16px;margin-top:10px;"></div>
           <div id="siteLbCnt" style="color:rgba(255,255,255,.4);font-size:12px;margin-top:4px;"></div>
         </div>
         <button onclick="siteLbNav(1)" style="position:fixed;right:20px;top:50%;transform:translateY(-50%);width:48px;height:48px;background:rgba(255,255,255,.15);border:none;border-radius:50%;color:#fff;font-size:24px;cursor:pointer;">›</button>
@@ -5796,7 +5787,7 @@ fetch("${SB_URL}/rest/v1/notices?site_id=eq.${SB_SITE}&order=pinned.desc,created
   if(m.id==='contact'){
     const addr=f('addr'), tel=f('tel'), email=f('email');
     const SB_URL=SUPABASE_URL, SB_KEY=SUPABASE_KEY, SB_SITE=currentSiteId||'', KK=KAKAO_APP_KEY;
-    return `<section id="s-contact" style="padding:72px 24px;background:#fff;"><div class="s-in"><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">연락하기</div><div class="s-contact-grid"><div><div class="s-contact-info">📍 ${addr}<br>📞 <a href="${tel}">${tel.replace('tel:','')}</a><br>✉️ <a href="${email}">${email.replace('mailto:','')}</a><br>🕐 ${f('hours')}</div><div class="s-map" id="kakaoMap" data-addr="${addr}" style="margin-top:14px;min-height:200px;">🗺️ ${addr}</div></div><div><form class="s-form" id="contactForm"><input class="s-input" name="name" placeholder="이름" required><input class="s-input" name="email" type="email" placeholder="이메일" required><input class="s-input" name="phone" placeholder="연락처 (선택)"><textarea class="s-input" name="body" rows="4" placeholder="문의 내용" required style="resize:vertical;"></textarea><button type="submit" class="s-submit" style="background:${tc}">문의 보내기</button></form></div></div></div></section>`;
+    return `<section id="s-contact" style="padding:72px 24px;background:#fff;"><div class="s-in"><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">연락하기</div><div class="s-contact-grid"><div><div class="s-contact-info">📍 ${addr}<br>📞 <a href="${tel}" style="font-size:18px;font-weight:800;color:var(--a);">${tel.replace('tel:','')}</a><br>✉️ <a href="${email}">${email.replace('mailto:','')}</a><br>🕐 ${f('hours')}</div><div class="s-map" id="kakaoMap" data-addr="${addr}" style="margin-top:14px;min-height:200px;">🗺️ ${addr}</div></div><div><form class="s-form" id="contactForm"><input class="s-input" name="name" placeholder="이름" required><input class="s-input" name="email" type="email" placeholder="이메일" required><input class="s-input" name="phone" placeholder="연락처 (선택)"><textarea class="s-input" name="body" rows="4" placeholder="문의 내용" required style="resize:vertical;"></textarea><button type="submit" class="s-submit" style="background:${tc}">문의 보내기</button></form></div></div></div></section>`;
   }  return '';
 }
 
@@ -6286,7 +6277,7 @@ function buildScCard(s) {
       </div>
       <div style="padding:10px 10px 12px;">
         <div style="height:44px;background:${color};border-radius:5px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-          <span style="font-size:14px;">${emoji}</span>
+          <span style="font-size:16px;">${emoji}</span>
           <span style="font-size:13px;font-weight:800;color:rgba(255,255,255,.9);">${s.name}</span>
         </div>
         <div style="height:6px;background:#f0f0f0;border-radius:2px;margin-bottom:5px;width:90%;"></div>
@@ -6427,8 +6418,8 @@ function buildScPageCard(s) {
           <div style="font-size:16px;font-weight:800;color:#111;">${s.name}</div>
           <span style="font-size:11px;font-weight:700;color:${color};background:${color}15;padding:3px 9px;border-radius:100px;">${CAT_KO[s.cat]||s.cat}</span>
         </div>
-        <div style="font-size:14px;color:#888;margin-bottom:14px;">${s.desc||'이 업종으로 시작하기'}</div>
-        <button onclick="${clickAction}" style="width:100%;padding:11px;background:#FFB500;color:#111;border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">이 디자인으로 시작하기 →</button>
+        <div style="font-size:16px;color:#888;margin-bottom:14px;">${s.desc||'이 업종으로 시작하기'}</div>
+        <button onclick="${clickAction}" style="width:100%;padding:11px;background:#FFB500;color:#111;border:none;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;">이 디자인으로 시작하기 →</button>
       </div>
     </div>`;
 }
@@ -6602,7 +6593,7 @@ function buildTplPreview(t){
       </div>
       <!-- 적용 유도 -->
       <div style="background:${tc};padding:20px 24px;text-align:center;">
-        <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">이 템플릿이 마음에 드세요?</div>
+        <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">이 템플릿이 마음에 드세요?</div>
         <div style="font-size:12px;color:rgba(255,255,255,.7);">빌더에 적용하고 내용만 바꾸면 완성!</div>
       </div>
     </div>`;
@@ -7157,7 +7148,7 @@ function showToast(msg){
             <div class="adm-card-head"><span class="adm-card-title">👤 계정 관리</span></div>
             <div style="padding:20px;display:flex;flex-direction:column;gap:14px;max-width:480px;">
               <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:16px;">
-                <div style="font-size:14px;font-weight:700;color:#991B1B;margin-bottom:6px;">⚠️ 회원 탈퇴</div>
+                <div style="font-size:16px;font-weight:700;color:#991B1B;margin-bottom:6px;">⚠️ 회원 탈퇴</div>
                 <div style="font-size:13px;color:#B91C1C;line-height:1.7;margin-bottom:12px;">탈퇴 시 모든 사이트, 결제 내역, 크레딧이 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</div>
                 <button class="adm-btn danger" onclick="confirmDeleteAccount()">회원 탈퇴하기</button>
               </div>
@@ -7372,7 +7363,7 @@ function renderSaShowcaseOrder(){
       <div style="font-size:18px;color:var(--mu);cursor:grab;">⠿</div>
       <div style="width:36px;height:36px;border-radius:8px;background:${CAT_COL[s.cat]||'#1A1A1A'};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${s.emoji}</div>
       <div style="flex:1;">
-        <div style="font-size:14px;font-weight:700;">${s.name}</div>
+        <div style="font-size:16px;font-weight:700;">${s.name}</div>
         <div style="font-size:12px;color:var(--mu);">${CAT_KO_LOCAL[s.cat]||s.cat} · ${s.desc}</div>
       </div>
       <div style="font-size:12px;font-weight:700;color:var(--mu);background:var(--bg);padding:3px 10px;border-radius:100px;">${i+1}위</div>
