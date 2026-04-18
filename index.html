@@ -2867,6 +2867,13 @@ async function loadSiteAndEdit(siteId){
 }
 
 async function loadOrCreateSite() {
+  // currentUser 없으면 세션 재확인
+  if(!currentUser && SUPABASE_READY && sb){
+    try{
+      const {data:{session}} = await sb.auth.getSession();
+      if(session?.user) currentUser = session.user;
+    } catch(e){}
+  }
   if (!currentUser) return;
   // 기존 사이트 불러오기
   const { data: sites } = await sb.from('sites').select('*').eq('user_id', currentUser.id).order('updated_at', { ascending: false }).limit(1);
@@ -5173,6 +5180,29 @@ async function doPublish(){
 
   document.getElementById('pubStep1').style.display = 'none';
   if(btn){ btn.textContent='배포 중... 🔄'; btn.disabled=true; }
+
+  // ★ 로그인 확인 및 세션 재확인
+  if(SUPABASE_READY && !currentUser && sb){
+    try{
+      const {data:{session}} = await sb.auth.getSession();
+      if(session?.user){
+        currentUser = session.user;
+        const {data} = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+        currentProfile = data;
+      }
+    } catch(e){}
+  }
+
+  // ★ 로그인 상태인데 currentSiteId 없으면 새 사이트 생성
+  if(currentUser && !currentSiteId && SUPABASE_READY){
+    try{
+      const siteName = document.getElementById('bdrSiteName').value || '내 회사 홈페이지';
+      const {data} = await sb.from('sites').insert({
+        user_id: currentUser.id, name: siteName, config: {}, seo: {}
+      }).select().single();
+      if(data) currentSiteId = data.id;
+    } catch(e){ console.warn('사이트 생성 실패', e); }
+  }
 
   await saveBuilder();
   const sn = document.getElementById('bdrSiteName').value || '내 회사';
