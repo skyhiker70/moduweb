@@ -2090,8 +2090,15 @@ function gateLogin(){
 
     <!-- Center Preview -->
     <div class="bdr-center">
-      <div class="bdr-preview-wrap">
-        <div class="bdr-frame pc" id="bdrFrame">
+      <!-- 디바이스 토글 버튼 -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-shrink:0;">
+        <button onclick="setPreviewMode('pc')" id="prevBtnPC" style="padding:6px 14px;border-radius:7px;border:1.5px solid var(--a);background:var(--a);color:#111;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">🖥️ PC만</button>
+        <button onclick="setPreviewMode('split')" id="prevBtnSplit" style="padding:6px 14px;border-radius:7px;border:1.5px solid #E5E7EB;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">⬛📱 나란히</button>
+        <button onclick="setPreviewMode('mobile')" id="prevBtnMobile" style="padding:6px 14px;border-radius:7px;border:1.5px solid #E5E7EB;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">📱 모바일만</button>
+      </div>
+      <div class="bdr-preview-wrap" id="bdrPreviewWrap" style="gap:16px;">
+        <!-- PC 프레임 -->
+        <div class="bdr-frame pc" id="bdrFrame" style="flex:1;min-width:0;max-width:960px;">
           <div class="bdr-frame-bar">
             <div class="bdr-frame-dots">
               <span style="background:#FF5F57"></span>
@@ -2101,6 +2108,13 @@ function gateLogin(){
             <div class="bdr-frame-url" id="bdrFrameUrl">mycompany.modusite.kr</div>
           </div>
           <div class="bdr-frame-inner" id="bdrPreview"></div>
+        </div>
+        <!-- 모바일 프레임 (나란히 모드) -->
+        <div id="bdrMobileFrame" style="display:none;width:375px;flex-shrink:0;border-radius:28px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.2);">
+          <div style="height:36px;background:#F5F5F5;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:center;gap:6px;">
+            <div style="width:50px;height:6px;background:#333;border-radius:3px;"></div>
+          </div>
+          <div style="height:calc(100% - 36px);overflow-y:auto;" id="bdrMobilePreview"></div>
         </div>
       </div>
     </div>
@@ -2934,80 +2948,80 @@ async function loadOrCreateSite() {
 
 async function saveBuilder() {
   const btn = document.getElementById('bdrSaveBtn');
-  btn.textContent = '저장 중...'; btn.disabled = true;
+  if(btn){ btn.textContent = '저장 중...'; btn.disabled = true; }
 
-  // ★ 세션 재확인 - currentUser가 null이어도 실제 로그인됐을 수 있음
-  if (!currentUser && SUPABASE_READY && sb) {
-    try {
-      const { data: { session } } = await sb.auth.getSession();
-      if (session?.user) {
-        currentUser = session.user;
-        try {
-          const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-          currentProfile = data;
-        } catch(e) {}
-        updateNavAuth();
-      }
-    } catch(e) {}
-  }
-
-  // 로그인됐는데 siteId 없으면 새 사이트 생성
-  if (currentUser && !currentSiteId && SUPABASE_READY) {
-    try {
-      const name = document.getElementById('bdrSiteName').value || '내 회사 홈페이지';
-      const { data, error } = await sb.from('sites').insert({
-        user_id: currentUser.id,
-        name,
-        config: { modules: bdrState.modules, theme: bdrState.theme },
-        seo: {}
-      }).select().single();
-      if (error) {
-        console.error('사이트 생성 실패:', error);
-        showToast('⚠️ 저장 실패: ' + (error.message || 'RLS 오류'));
-        btn.textContent = '저장'; btn.disabled = false;
-        return;
-      }
-      if (data) {
-        currentSiteId = data.id;
-        localStorage.setItem('mw_last_site_id', currentSiteId);
-        console.log('✓ 새 사이트 생성:', currentSiteId);
-      }
-    } catch(e) { console.error('사이트 생성 예외:', e); }
-  }
-
-  if (!currentUser || !currentSiteId) {
-    // 비로그인: localStorage fallback
-    localStorage.setItem('modusite_draft', JSON.stringify({ modules: bdrState.modules, theme: bdrState.theme }));
-    bdrState.saved = true;
-    btn.textContent = '저장됨 ✓'; btn.classList.add('saved'); btn.disabled = false;
-    showToast('임시 저장됨 ✓ (로그인 시 클라우드 자동 저장)');
-    setTimeout(() => { btn.textContent = '저장'; btn.classList.remove('saved'); }, 3000);
-    return;
-  }
-  const name = document.getElementById('bdrSiteName').value || '내 회사 홈페이지';
-  const seoData = {
-    title: document.getElementById('seoTitle')?.value || '',
-    desc:  document.getElementById('seoDesc')?.value  || '',
-    keywords: document.getElementById('seoKeywords')?.value || '',
-    ogTitle:  document.getElementById('ogTitle')?.value     || '',
-    ogDesc:   document.getElementById('ogDesc')?.value      || '',
-    ogImage:  document.getElementById('ogImage')?.value     || '',
+  const done = (msg, ok=true) => {
+    if(btn){
+      btn.textContent = ok ? '저장됨 ✓' : '저장';
+      if(ok) btn.classList.add('saved');
+      btn.disabled = false;
+      if(ok) setTimeout(()=>{ btn.textContent='저장'; btn.classList.remove('saved'); }, 3000);
+    }
+    showToast(msg);
   };
-  const { error } = await sb.from('sites').update({
-    name,
-    config: { modules: bdrState.modules, theme: bdrState.theme },
-    seo: seoData,
-    updated_at: new Date().toISOString()
-  }).eq('id', currentSiteId);
-  if (error) { showToast('저장 실패: ' + error.message); btn.textContent = '저장'; btn.disabled = false; return; }
-  bdrState.saved = true;
-  // 현재 사이트 ID를 기억 (다음 접속 시 이걸 우선 불러옴)
-  localStorage.setItem('mw_last_site_id', currentSiteId);
-  btn.textContent = '저장됨 ✓'; btn.classList.add('saved'); btn.disabled = false;
-  showToast('클라우드 저장됐습니다 ✓');
-  // 대시보드 캐시 초기화 (다음 방문 시 최신 목록 표시)
-  _dashLoaded = false;
-  setTimeout(() => { btn.textContent = '저장'; btn.classList.remove('saved'); }, 3000);
+
+  try {
+    // 세션 재확인
+    if (!currentUser && SUPABASE_READY && sb) {
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session?.user) {
+          currentUser = session.user;
+          try {
+            const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+            currentProfile = data;
+          } catch(e) {}
+          updateNavAuth();
+        }
+      } catch(e) {}
+    }
+
+    // 비로그인 → localStorage
+    if (!currentUser || !SUPABASE_READY) {
+      localStorage.setItem('modusite_draft', JSON.stringify({ modules: bdrState.modules, theme: bdrState.theme }));
+      bdrState.saved = true;
+      done('임시 저장됨 ✓ (로그인 시 클라우드 저장)');
+      return;
+    }
+
+    const name = document.getElementById('bdrSiteName').value || '내 회사 홈페이지';
+    const seoData = {
+      title:    document.getElementById('seoTitle')?.value    || '',
+      desc:     document.getElementById('seoDesc')?.value     || '',
+      keywords: document.getElementById('seoKeywords')?.value || '',
+      ogTitle:  document.getElementById('ogTitle')?.value     || '',
+      ogDesc:   document.getElementById('ogDesc')?.value      || '',
+      ogImage:  document.getElementById('ogImage')?.value     || '',
+    };
+    const configData = { modules: bdrState.modules, theme: bdrState.theme };
+
+    // 사이트 없으면 INSERT
+    if (!currentSiteId) {
+      const { data, error } = await sb.from('sites').insert({
+        user_id: currentUser.id, name, config: configData, seo: seoData
+      }).select('id').single();
+      if (error) { done('⚠️ 저장 실패: ' + error.message, false); return; }
+      currentSiteId = data.id;
+      localStorage.setItem('mw_last_site_id', currentSiteId);
+    }
+
+    // UPDATE
+    const { error } = await sb.from('sites').update({
+      name, config: configData, seo: seoData,
+      updated_at: new Date().toISOString()
+    }).eq('id', currentSiteId);
+
+    if (error) { done('⚠️ 저장 실패: ' + error.message, false); return; }
+
+    localStorage.setItem('mw_last_site_id', currentSiteId);
+    bdrState.saved = true;
+    _dashLoaded = false;
+    done('클라우드 저장됐습니다 ✓');
+
+  } catch(e) {
+    console.error('saveBuilder 예외:', e);
+    done('⚠️ 오류: ' + e.message, false);
+  }
 }
 
 // ══════════════════════════════════════════
@@ -3999,6 +4013,53 @@ function renderPreview(){
     return mod?`<div id="pvs-${mod.id}" class="pv-section`:`<div class="pv-section`;
   });
   el.innerHTML=html;
+
+  // 나란히 모드일 때 모바일 프레임도 업데이트
+  const mobPrev = document.getElementById('bdrMobilePreview');
+  if(mobPrev && _previewMode === 'split'){
+    // 모바일용 - device를 mobile로 바꿔서 렌더
+    const savedDevice = bdrState.device;
+    bdrState.device = 'mobile';
+    let mHtml = `<div style="font-family:'Pretendard Variable','Pretendard',sans-serif;">`;
+    mHtml += `<div class="pv-nav" style="background:#060D1F;position:sticky;top:0;z-index:10;">
+      <div class="pv-nav-logo" style="font-size:14px;">${sn.split(' ')[0]}<span style="color:${tc}">${sn.split(' ').slice(1).join(' ')||''}</span></div>
+    </div>`;
+    bdrState.modules.forEach(m => {
+      if(!m.on) return;
+      mHtml += buildMobileSection(m, tc, sn);
+    });
+    mHtml += `</div>`;
+    mobPrev.innerHTML = mHtml;
+    bdrState.device = savedDevice;
+  }
+}
+
+// ── 모바일 섹션 빌더 (나란히 보기용) ──
+function buildMobileSection(m, tc, sn){
+  const f = key => m.fields.find(x=>x.key===key)?.val || '';
+  if(m.id==='hero'){
+    const bg = f('img');
+    return `<div style="background:${bg?`url('${bg}') center/cover`:'#060D1F'};padding:40px 16px;text-align:center;position:relative;min-height:200px;">
+      ${bg?'<div style="position:absolute;inset:0;background:rgba(0,0,0,.45);"></div>':''}
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:8px;">${f('title')}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:16px;">${f('sub')}</div>
+        <div style="display:inline-block;background:${tc};color:#fff;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;">${f('cta')}</div>
+      </div>
+    </div>`;
+  }
+  if(m.id==='contact'){
+    return `<div style="padding:24px 16px;">
+      <div style="font-size:11px;font-weight:700;color:${tc};text-transform:uppercase;margin-bottom:4px;">연락처</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:12px;">${f('title')}</div>
+      <div style="font-size:13px;color:#666;line-height:2;">📍 ${f('addr')}<br>📞 ${f('tel').replace('tel:','')}<br>✉️ ${f('email').replace('mailto:','')}<br>🕐 ${f('hours')}</div>
+    </div>`;
+  }
+  return `<div style="padding:24px 16px;border-bottom:1px solid #f0f0f0;">
+    <div style="font-size:11px;font-weight:700;color:${tc};text-transform:uppercase;margin-bottom:4px;">${m.n}</div>
+    <div style="font-size:16px;font-weight:800;margin-bottom:6px;">${f('title')||m.n}</div>
+    <div style="font-size:13px;color:#666;">${(f('body')||f('desc')||'').slice(0,80)}${(f('body')||f('desc')||'').length>80?'...':''}</div>
+  </div>`;
 }
 
 // ── Edit Module Panel ──
@@ -4999,6 +5060,50 @@ function setDevice(d){
   const frame=document.getElementById('bdrFrame');
   frame.classList.toggle('pc',d==='pc');
   frame.classList.toggle('mobile',d==='mobile');
+  renderPreview();
+}
+
+// ── 나란히 미리보기 모드 ──
+let _previewMode = 'pc';
+function setPreviewMode(mode){
+  _previewMode = mode;
+  const wrap = document.getElementById('bdrPreviewWrap');
+  const pcFrame = document.getElementById('bdrFrame');
+  const mobFrame = document.getElementById('bdrMobileFrame');
+  const btns = {
+    pc: document.getElementById('prevBtnPC'),
+    split: document.getElementById('prevBtnSplit'),
+    mobile: document.getElementById('prevBtnMobile')
+  };
+  // 버튼 스타일
+  Object.entries(btns).forEach(([k,b])=>{
+    if(!b) return;
+    const on = k===mode;
+    b.style.background = on ? 'var(--a)' : '#fff';
+    b.style.color = on ? '#111' : '#555';
+    b.style.borderColor = on ? 'var(--a)' : '#E5E7EB';
+  });
+  if(mode==='split'){
+    pcFrame.style.display='';
+    pcFrame.style.flex='1';
+    pcFrame.style.maxWidth='none';
+    pcFrame.classList.remove('mobile'); pcFrame.classList.add('pc');
+    if(mobFrame) mobFrame.style.display='';
+    wrap.style.flexDirection='row';
+    bdrState.device='pc';
+  } else if(mode==='mobile'){
+    pcFrame.style.display='none';
+    if(mobFrame) mobFrame.style.display='';
+    bdrState.device='mobile';
+  } else {
+    pcFrame.style.display='';
+    pcFrame.style.flex='1';
+    pcFrame.style.maxWidth='960px';
+    pcFrame.classList.remove('mobile'); pcFrame.classList.add('pc');
+    if(mobFrame) mobFrame.style.display='none';
+    wrap.style.flexDirection='row';
+    bdrState.device='pc';
+  }
   renderPreview();
 }
 
