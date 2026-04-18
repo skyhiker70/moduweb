@@ -4161,6 +4161,7 @@ function renderPreview(){
     mHtml += `</div>`;
     mobPrev.innerHTML = mHtml;
     bdrState.device = savedDevice;
+    initPvLeafMaps();
   }
 }
 
@@ -4179,10 +4180,12 @@ function buildMobileSection(m, tc, sn){
     </div>`;
   }
   if(m.id==='contact'){
+    const addr = f('addr');
     return `<div style="padding:24px 16px;">
       <div style="font-size:11px;font-weight:700;color:${tc};text-transform:uppercase;margin-bottom:4px;">연락처</div>
       <div style="font-size:18px;font-weight:900;margin-bottom:12px;">${f('title')}</div>
       <div style="font-size:13px;color:#666;line-height:2;">📍 ${f('addr')}<br>📞 ${f('tel').replace('tel:','')}<br>✉️ ${f('email').replace('mailto:','')}<br>🕐 ${f('hours')}</div>
+      ${addr ? `<div class="pv-leafmap" data-addr="${addr.replace(/"/g,'&quot;')}" style="margin-top:14px;height:180px;border-radius:10px;overflow:hidden;background:#e8eff7;position:relative;"></div>` : ''}
     </div>`;
   }
   return `<div style="padding:24px 16px;border-bottom:1px solid #f0f0f0;">
@@ -6210,12 +6213,22 @@ const SC_VISIBLE = 4; // 한 번에 보이는 카드 수
 async function loadShowcaseSites() {
   if (SUPABASE_READY) {
     try {
-      const { data } = await sb.from('sites')
+      // 1차 시도: is_public_template 필터
+      let { data, error } = await sb.from('sites')
         .select('id, name, slug, industry_cat, thumbnail_url, description, published_at, profiles(name)')
         .eq('is_public_template', true)
         .eq('published', true)
         .order('published_at', { ascending: false })
         .limit(50);
+      // 컬럼이 없으면 fallback - published만으로 필터
+      if (error && (error.message||'').includes('is_public_template')) {
+        const r2 = await sb.from('sites')
+          .select('id, name, slug, industry_cat, thumbnail_url, description, published_at, profiles(name)')
+          .eq('published', true)
+          .order('published_at', { ascending: false })
+          .limit(50);
+        data = r2.data;
+      }
       if (data && data.length > 0) {
         _showcaseData = data.map(s => ({
           id: s.id,
@@ -6229,7 +6242,7 @@ async function loadShowcaseSites() {
         }));
         return;
       }
-    } catch(e) {}
+    } catch(e) { console.warn('showcase 로드 실패, 샘플 데이터 사용:', e); }
   }
   // Supabase 미연결 시 샘플 데이터
   _showcaseData = [
