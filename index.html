@@ -2969,62 +2969,75 @@ async function saveBuilder() {
     showToast(msg);
   };
 
-  // 항상 localStorage에 먼저 저장 (백업)
+  // 항상 localStorage 백업
   localStorage.setItem('modusite_draft', JSON.stringify({ modules: bdrState.modules, theme: bdrState.theme }));
 
+  // 세션 토큰 가져오기
+  let token = null;
+  let uid = null;
   try {
-    // 세션 재확인 (타임아웃 3초)
-    if (!currentUser && SUPABASE_READY && sb) {
-      try {
-        const sessionPromise = sb.auth.getSession();
-        const timeout = new Promise((_,rej) => setTimeout(()=>rej(new Error('timeout')), 3000));
-        const { data: { session } } = await Promise.race([sessionPromise, timeout]);
-        if (session?.user) {
-          currentUser = session.user;
-          updateNavAuth();
-        }
-      } catch(e) { console.warn('세션확인 실패:', e.message); }
+    const { data: { session } } = await sb.auth.getSession();
+    if(session) {
+      token = session.access_token;
+      uid = session.user.id;
+      if(!currentUser){ currentUser = session.user; updateNavAuth(); }
     }
+  } catch(e) { console.warn('세션 조회 실패:', e); }
 
-    // 비로그인이면 localStorage만
-    if (!currentUser || !SUPABASE_READY) {
-      bdrState.saved = true;
-      done('임시 저장됨 ✓ (로그인 시 클라우드 자동 저장)');
-      return;
-    }
+  // 비로그인
+  if(!token) {
+    bdrState.saved = true;
+    done('임시 저장됨 ✓ (로그인 후 클라우드 자동 저장)');
+    return;
+  }
 
-    const name = document.getElementById('bdrSiteName').value || '내 회사 홈페이지';
-    const seoData = {
-      title:    document.getElementById('seoTitle')?.value    || '',
-      desc:     document.getElementById('seoDesc')?.value     || '',
-      keywords: document.getElementById('seoKeywords')?.value || '',
-      ogTitle:  document.getElementById('ogTitle')?.value     || '',
-      ogDesc:   document.getElementById('ogDesc')?.value      || '',
-      ogImage:  document.getElementById('ogImage')?.value     || '',
-    };
-    const configData = { modules: bdrState.modules, theme: bdrState.theme };
+  const name = document.getElementById('bdrSiteName').value || '내 회사 홈페이지';
+  const seoData = {
+    title: document.getElementById('seoTitle')?.value||'',
+    desc: document.getElementById('seoDesc')?.value||'',
+    keywords: document.getElementById('seoKeywords')?.value||'',
+    ogTitle: document.getElementById('ogTitle')?.value||'',
+    ogDesc: document.getElementById('ogDesc')?.value||'',
+    ogImage: document.getElementById('ogImage')?.value||'',
+  };
+  const configData = { modules: bdrState.modules, theme: bdrState.theme };
+  const headers = {
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + token,
+    'Prefer': 'return=representation'
+  };
 
-    // Supabase 요청에 5초 타임아웃 적용
-    const withTimeout = (promise, ms=5000) =>
-      Promise.race([promise, new Promise((_,rej)=>setTimeout(()=>rej(new Error('Supabase 응답 없음 (5초 초과)')), ms))]);
-
+  try {
     // 사이트 없으면 INSERT
-    if (!currentSiteId) {
-      const { data, error } = await withTimeout(
-        sb.from('sites').insert({ user_id: currentUser.id, name, config: configData, seo: seoData }).select('id').single()
-      );
-      if (error) { done('⚠️ DB 저장 실패: ' + error.message + ' (RLS 설정 확인 필요)', false); return; }
-      if (!data) { done('⚠️ 사이트 생성 응답 없음', false); return; }
-      currentSiteId = data.id;
+    if(!currentSiteId) {
+      const r = await fetch(SUPABASE_URL + '/rest/v1/sites', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ user_id: uid, name, config: configData, seo: seoData })
+      });
+      if(!r.ok) {
+        const err = await r.text();
+        done('⚠️ 저장 실패 (' + r.status + '): ' + err.slice(0,80), false);
+        return;
+      }
+      const rows = await r.json();
+      currentSiteId = Array.isArray(rows) ? rows[0]?.id : rows?.id;
+      if(!currentSiteId) { done('⚠️ 사이트 ID 생성 실패', false); return; }
       localStorage.setItem('mw_last_site_id', currentSiteId);
     }
 
     // UPDATE
-    const { error } = await withTimeout(
-      sb.from('sites').update({ name, config: configData, seo: seoData, updated_at: new Date().toISOString() }).eq('id', currentSiteId)
-    );
-
-    if (error) { done('⚠️ DB 업데이트 실패: ' + error.message, false); return; }
+    const r = await fetch(SUPABASE_URL + '/rest/v1/sites?id=eq.' + currentSiteId, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ name, config: configData, seo: seoData, updated_at: new Date().toISOString() })
+    });
+    if(!r.ok) {
+      const err = await r.text();
+      done('⚠️ 업데이트 실패 (' + r.status + '): ' + err.slice(0,80), false);
+      return;
+    }
 
     localStorage.setItem('mw_last_site_id', currentSiteId);
     bdrState.saved = true;
@@ -3032,9 +3045,7 @@ async function saveBuilder() {
     done('클라우드 저장됐습니다 ✓');
 
   } catch(e) {
-    console.error('saveBuilder 예외:', e);
-    // Supabase 실패해도 localStorage는 이미 저장됨
-    done('⚠️ ' + e.message + ' (로컬 임시저장은 완료)', false);
+    done('⚠️ 네트워크 오류: ' + e.message, false);
   }
 }
 
