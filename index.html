@@ -1122,14 +1122,14 @@ function gateLogin(){
     <div class="nl">
       <a data-p="showcase" onclick="go('showcase')">업종별홈페이지</a>
       <a data-p="aistudio" onclick="go('aistudio')" style="color:#FFB500;">AI스튜디오</a>
-      <a data-p="dashboard" onclick="go('dashboard')" id="navMyPage" style="display:none;">내홈페이지관리</a>
+      <a data-p="dashboard" onclick="go('dashboard')" id="navMyPage" style="font-weight:800;">🏠 내홈페이지</a>
       <a data-p="features" onclick="go('features')">기능</a>
       <a data-p="modules" onclick="go('modules')">모듈</a>
       <a data-p="pricing" onclick="go('pricing')">요금제</a>
       <a data-p="login" id="navLoginLink" onclick="go('login')" class="nlo">로그인</a>
       <div id="navUserInfo" style="display:none;align-items:center;gap:8px;margin-right:4px;">
         <button onclick="go('dashboard')" style="font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;cursor:pointer;color:var(--fg);font-family:inherit;display:flex;align-items:center;gap:5px;">🏠 내홈페이지</button>
-        <button id="navEditSiteBtn" onclick="editMySite()" style="display:none;font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid #FFB500;border-radius:8px;background:#FFB500;color:#111;cursor:pointer;font-family:inherit;gap:5px;">✏️ 수정하기</button>
+        <button id="navEditSiteBtn" onclick="editMySite()" style="font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid #FFB500;border-radius:8px;background:#FFB500;color:#111;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;">✏️ 수정하기</button>
         <div class="credit-badge" onclick="openPayModal('charge')" id="navCreditBadge" title="크레딧 충전">
           <span class="credit-ic">⚡</span><span id="navCreditAmt">0</span>cr
         </div>
@@ -1158,7 +1158,7 @@ function gateLogin(){
     <div class="nav-mobile-item" onclick="go('showcase');toggleMobileNav()">
       <div class="nm-ic">🏠</div>업종별홈페이지
     </div>
-    <div class="nav-mobile-item" id="mobileMyPage" onclick="go('dashboard');toggleMobileNav()" style="display:none;">
+    <div class="nav-mobile-item" id="mobileMyPage" onclick="go('dashboard');toggleMobileNav()">
       <div class="nm-ic">📋</div>내홈페이지관리
     </div>
     <div class="nav-mobile-item" onclick="go('aistudio');toggleMobileNav()" style="color:#FFB500;">
@@ -2561,8 +2561,13 @@ sb.auth.onAuthStateChange(async (event, session) => {
     updateNavAuth();
     if (event === 'SIGNED_IN') {
       _dashLoaded = false;
+      updateNavAuth();
       await loadOrCreateSite();
+      // 수정하기 버튼 표시
+      const editBtn = document.getElementById('navEditSiteBtn');
+      if(editBtn) editBtn.style.display = 'flex';
       go('dashboard');
+      showToast('로그인 완료! 내 홈페이지를 불러왔어요 ✓');
     } else if (event === 'INITIAL_SESSION') {
       // 페이지 새로고침 시 기존 로그인 복원
       await loadOrCreateSite();
@@ -2613,11 +2618,7 @@ function updateNavAuth() {
     // 로그인 시 테스트 배너 숨김
     const banner = document.getElementById('demoBanner');
     if(banner) banner.style.display = 'none';
-    // 내홈페이지관리 메뉴 표시
-    const myPage = document.getElementById('navMyPage');
-    if(myPage) myPage.style.display = 'inline';
-    const mobileMyPage = document.getElementById('mobileMyPage');
-    if(mobileMyPage) mobileMyPage.style.display = 'block';
+    // 내홈페이지 메뉴 항상 표시됨
     // 수정하기 버튼 표시
     const editBtn = document.getElementById('navEditSiteBtn');
     if(editBtn) editBtn.style.display = 'flex';
@@ -2688,14 +2689,30 @@ async function sbSignOut() {
 // ══════════════════════════════════════════
 let _dashLoaded = false;
 async function initDashboard(){
-  // 세션 복원 대기 (최대 2초)
+  // 세션 복원 대기 (최대 1.5초)
   if(!currentUser && SUPABASE_READY) {
-    for(let i=0; i<10; i++){
+    for(let i=0; i<8; i++){
       await new Promise(r=>setTimeout(r,200));
       if(currentUser) break;
     }
   }
-  if(!currentUser){ go('login'); return; }
+  // 비로그인: 로그인 안내 표시 후 계속
+  if(!currentUser){
+    const grid = document.getElementById('dashSiteGrid');
+    const empty = document.getElementById('dashSiteEmpty');
+    if(grid) grid.innerHTML = `
+      <div style="grid-column:1/-1;background:#fff;border:1.5px solid var(--bd);border-radius:16px;padding:48px;text-align:center;">
+        <div style="font-size:48px;margin-bottom:16px;">👤</div>
+        <div style="font-size:20px;font-weight:800;margin-bottom:8px;">로그인이 필요해요</div>
+        <div style="font-size:15px;color:var(--mu);margin-bottom:24px;">로그인하면 내 홈페이지를 저장하고<br>어디서든 수정할 수 있어요.</div>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <button onclick="go('login')" style="padding:13px 28px;background:var(--a);color:var(--fg);border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">로그인 / 회원가입 →</button>
+          <button onclick="go('builder')" style="padding:13px 28px;background:#fff;color:var(--fg);border:1.5px solid var(--bd);border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">먼저 만들어보기</button>
+        </div>
+      </div>`;
+    if(empty) empty.style.display = 'none';
+    return;
+  }
 
   // 플랜/크레딧 표시
   const planLabels = {free:'무료',starter:'스타터',pro:'프로',agency:'에이전시'};
