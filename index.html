@@ -1909,9 +1909,9 @@ function gateLogin(){
 
   <!-- Top Bar -->
   <!-- 테스트 모드 배너 (비로그인 시 표시) -->
-  <div id="demoBanner" style="display:none;background:linear-gradient(90deg,#FFB500,#E6A300);height:36px;align-items:center;justify-content:center;gap:12px;font-size:13px;font-weight:700;color:#1A1A1A;flex-shrink:0;">
-    <span>🧪 테스트 모드 — 모든 기능 체험 가능 · 저장은 내 기기에만 됩니다</span>
-    <button onclick="go('login')" style="padding:4px 14px;border-radius:100px;border:2px solid #1A1A1A;background:transparent;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;">로그인하면 클라우드 저장 →</button>
+  <div id="demoBanner" style="display:none;background:linear-gradient(90deg,#DC2626,#991B1B);height:42px;align-items:center;justify-content:center;gap:14px;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">
+    <span>⚠️ 로그인 안됨 — 실제 배포 불가 · 저장은 내 기기에만 됩니다</span>
+    <button onclick="go('login')" style="padding:5px 16px;border-radius:100px;border:2px solid #fff;background:#fff;color:#DC2626;font-size:12px;font-weight:900;cursor:pointer;font-family:inherit;">로그인하고 클라우드 저장 →</button>
   </div>
   <div class="bdr-top">
     <div class="bdr-back" onclick="go('home')">← 대시보드</div>
@@ -3571,12 +3571,28 @@ const themeColors=[
 const themeFonts=['Pretendard','Nanum Gothic','Noto Sans KR'];
 const themeLayouts=['모던 (기본)','클래식','미니멀'];
 
-function initBuilder(){
-  if(bdrInited){renderPreview();return;}
-  bdrInited=true;
-  // 테스트 모드 배너: 비로그인 시 표시
+async function initBuilder(){
+  // 세션 재확인 (로그인 상태 최신화)
+  if(SUPABASE_READY && !currentUser && sb){
+    try{
+      const {data:{session}} = await sb.auth.getSession();
+      if(session?.user){
+        currentUser = session.user;
+        try{
+          const {data} = await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+          currentProfile = data;
+        } catch(e){}
+        updateNavAuth();
+      }
+    } catch(e){}
+  }
+
+  // 배너는 매번 현재 로그인 상태로 업데이트
   const banner = document.getElementById('demoBanner');
   if(banner) banner.style.display = currentUser ? 'none' : 'flex';
+
+  if(bdrInited){ renderPreview(); return; }
+  bdrInited=true;
   renderModuleList();
   renderDesignPanel();
   renderPreview();
@@ -5195,6 +5211,25 @@ function closePublishModal(){document.getElementById('pubModal').classList.remov
 
 // ── Publish / HTML 내보내기 ──
 async function publishSite(){
+  // ★ 로그인 체크 먼저 - 로그인 안 됐으면 바로 로그인 페이지로
+  if(SUPABASE_READY && !currentUser && sb){
+    try{
+      const {data:{session}} = await sb.auth.getSession();
+      if(session?.user){
+        currentUser = session.user;
+        const {data} = await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+        currentProfile = data;
+        updateNavAuth();
+      }
+    } catch(e){}
+  }
+
+  if(!currentUser){
+    const ok = confirm('배포하려면 로그인이 필요해요.\n\n로그인하면 moduweb.co.kr/내주소 로 실제 배포됩니다.\n\n지금 로그인하시겠어요?');
+    if(ok) go('login');
+    return;
+  }
+
   // Step1: 슬러그 입력 모달 열기
   const sn = document.getElementById('bdrSiteName').value || '내 회사';
   const defaultSlug = sn.replace(/\s+/g,'-').toLowerCase().replace(/[^a-z0-9-]/g,'');
