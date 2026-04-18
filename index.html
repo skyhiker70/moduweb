@@ -5106,6 +5106,15 @@ async function aiGenSeo(){
   const industry=document.getElementById('aiIndustry')?.value||'';
   const btn=document.getElementById('aiSeoBtn');
   btn.textContent='⏳ 생성 중...';btn.disabled=true;
+  const prompt=`한국 기업 홈페이지 SEO 문구를 JSON으로만 반환하세요. 마크다운 없이 순수 JSON만.
+회사명: ${company}${industry?'\n업종: '+industry:''}
+{
+  "title": "페이지 타이틀 (50자 이내)",
+  "desc": "메타 설명 (130자 이내, 검색 유입 최적화)",
+  "keywords": "키워드1, 키워드2, 키워드3, 키워드4, 키워드5",
+  "ogTitle": "OG 타이틀",
+  "ogDesc": "OG 설명 (100자 이내)"
+}`;
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
@@ -5119,16 +5128,6 @@ async function aiGenSeo(){
         model:'claude-sonnet-4-20250514',
         max_tokens:1000,
         messages:[{role:'user',content:prompt}]
-      })
-    });,content:`한국 기업 홈페이지 SEO 문구를 JSON으로만 반환하세요. 마크다운 없이 순수 JSON만.
-회사명: ${company}${industry?'\n업종: '+industry:''}
-{
-  "title": "페이지 타이틀 (50자 이내)",
-  "desc": "메타 설명 (130자 이내, 검색 유입 최적화)",
-  "keywords": "키워드1, 키워드2, 키워드3, 키워드4, 키워드5",
-  "ogTitle": "OG 타이틀",
-  "ogDesc": "OG 설명 (100자 이내)"
-}`}]
       })
     });
     const data=await res.json();
