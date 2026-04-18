@@ -2507,6 +2507,23 @@ function gateLogin(){
 const pages = ['home','features','modules','pricing','login','builder','dashboard','superadmin','siteadmin','pay-success','pay-fail','templates','showcase','aistudio','terms','privacy','bizinfo'];
 function go(p){
   if(!pages.includes(p)) p='home';
+  // 빌더에서 나갈 때 Leaflet 지도 인스턴스 정리 (뷰포트 탈출 방지)
+  if(p !== 'builder' && document.getElementById('page-builder')?.classList.contains('active')){
+    try{
+      document.querySelectorAll('.pv-leafmap').forEach(function(el){
+        if(el._leaflet_id && window.L){
+          // Leaflet 내부적으로 map 인스턴스에 도달하려면 _map 속성 확인
+          var container = el;
+          if(container._leaflet_id){
+            // map.remove()를 호출하려면 map 인스턴스 필요
+            // 가장 간단한 방법: innerHTML 비우고 style 초기화
+            container.innerHTML = '';
+          }
+        }
+        el._leafInit = false;
+      });
+    }catch(e){}
+  }
   pages.forEach(id=>{
     const el=document.getElementById('page-'+id);
     if(el) el.classList.toggle('active',id===p);
@@ -3833,6 +3850,11 @@ function initPvLeafMaps(){
       el._leafInit = true;
       var addr = el.dataset.addr||'';
       if(!addr){el.innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:13px;">주소를 입력하세요</div>';return;}
+      // 부모 컨테이너에 position:relative 보장 (Leaflet이 absolute로 바뀌어도 뷰포트 탈출 방지)
+      var parent = el.parentElement;
+      if(parent && getComputedStyle(parent).position === 'static'){
+        parent.style.position = 'relative';
+      }
       // 즉시 주소카드 표시
       renderAddrCard(el, addr);
       // Leaflet으로 업그레이드 시도
@@ -4185,7 +4207,7 @@ function buildMobileSection(m, tc, sn){
       <div style="font-size:11px;font-weight:700;color:${tc};text-transform:uppercase;margin-bottom:4px;">연락처</div>
       <div style="font-size:18px;font-weight:900;margin-bottom:12px;">${f('title')}</div>
       <div style="font-size:13px;color:#666;line-height:2;">📍 ${f('addr')}<br>📞 ${f('tel').replace('tel:','')}<br>✉️ ${f('email').replace('mailto:','')}<br>🕐 ${f('hours')}</div>
-      ${addr ? `<div class="pv-leafmap" data-addr="${addr.replace(/"/g,'&quot;')}" style="margin-top:14px;height:180px;border-radius:10px;overflow:hidden;background:#e8eff7;position:relative;"></div>` : ''}
+      ${addr ? `<div style="margin-top:14px;height:180px;border-radius:10px;overflow:hidden;background:#e8eff7;position:relative;"><div class="pv-leafmap" data-addr="${addr.replace(/"/g,'&quot;')}" style="position:absolute;inset:0;"></div></div>` : ''}
     </div>`;
   }
   return `<div style="padding:24px 16px;border-bottom:1px solid #f0f0f0;">
