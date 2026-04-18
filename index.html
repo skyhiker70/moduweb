@@ -3883,7 +3883,8 @@ function renderPreview(){
             </div>
           </div>
           <div id="pvKakaoMap_${i}" class="pv-map-box" style="overflow:hidden;position:relative;">
-            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mu);">🗺️ ${getField(m,'addr')}</div>
+            <div style="position:absolute;inset:0;overflow:hidden;">
+            <iframe src="https://maps.google.com/maps?q=${encodeURIComponent(getField(m,'addr'))}&output=embed&z=15" width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen loading="lazy"></iframe>
           </div>
         </div>
         <div class="pv-form">
@@ -5816,7 +5817,15 @@ fetch("${SB_URL}/rest/v1/notices?site_id=eq.${SB_SITE}&order=pinned.desc,created
   if(m.id==='contact'){
     const addr=f('addr'), tel=f('tel'), email=f('email');
     const SB_URL=SUPABASE_URL, SB_KEY=SUPABASE_KEY, SB_SITE=currentSiteId||'', KK=KAKAO_APP_KEY;
-    return `<section id="s-contact" style="padding:72px 24px;background:#fff;"><div class="s-in"><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">연락하기</div><div class="s-contact-grid"><div><div class="s-contact-info">📍 ${addr}<br>📞 <a href="${tel}" style="font-size:18px;font-weight:800;color:var(--a);">${tel.replace('tel:','')}</a><br>✉️ <a href="${email}">${email.replace('mailto:','')}</a><br>🕐 ${f('hours')}</div><div class="s-map" id="kakaoMap" data-addr="${addr}" style="margin-top:14px;min-height:200px;">🗺️ ${addr}</div></div><div><form class="s-form" id="contactForm"><input class="s-input" name="name" placeholder="이름" required><input class="s-input" name="email" type="email" placeholder="이메일" required><input class="s-input" name="phone" placeholder="연락처 (선택)"><textarea class="s-input" name="body" rows="4" placeholder="문의 내용" required style="resize:vertical;"></textarea><button type="submit" class="s-submit" style="background:${tc}">문의 보내기</button></form></div></div></div></section>`;
+    return `<section id="s-contact" style="padding:72px 24px;background:#fff;"><div class="s-in"><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">연락하기</div><div class="s-contact-grid"><div><div class="s-contact-info">📍 ${addr}<br>📞 <a href="${tel}" style="font-size:18px;font-weight:800;color:var(--a);">${tel.replace('tel:','')}</a><br>✉️ <a href="${email}">${email.replace('mailto:','')}</a><br>🕐 ${f('hours')}</div><div style="margin-top:14px;border-radius:12px;overflow:hidden;min-height:200px;">
+  <iframe
+    src="https://maps.google.com/maps?q=${encodeURIComponent(addr)}&output=embed&z=15"
+    width="100%" height="200" frameborder="0"
+    style="border:0;display:block;"
+    allowfullscreen loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
+</div></div><div><form class="s-form" id="contactForm"><input class="s-input" name="name" placeholder="이름" required><input class="s-input" name="email" type="email" placeholder="이메일" required><input class="s-input" name="phone" placeholder="연락처 (선택)"><textarea class="s-input" name="body" rows="4" placeholder="문의 내용" required style="resize:vertical;"></textarea><button type="submit" class="s-submit" style="background:${tc}">문의 보내기</button></form></div></div></div></section>`;
   }  return '';
 }
 
