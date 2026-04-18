@@ -2956,11 +2956,23 @@ async function saveBuilder() {
     try {
       const name = document.getElementById('bdrSiteName').value || '내 회사 홈페이지';
       const { data, error } = await sb.from('sites').insert({
-        user_id: currentUser.id, name, config: {}, seo: {}
+        user_id: currentUser.id,
+        name,
+        config: { modules: bdrState.modules, theme: bdrState.theme },
+        seo: {}
       }).select().single();
-      if (error) console.warn('사이트 생성 실패:', error);
-      if (data) currentSiteId = data.id;
-    } catch(e) { console.warn('사이트 생성 예외:', e); }
+      if (error) {
+        console.error('사이트 생성 실패:', error);
+        showToast('⚠️ 저장 실패: ' + (error.message || 'RLS 오류'));
+        btn.textContent = '저장'; btn.disabled = false;
+        return;
+      }
+      if (data) {
+        currentSiteId = data.id;
+        localStorage.setItem('mw_last_site_id', currentSiteId);
+        console.log('✓ 새 사이트 생성:', currentSiteId);
+      }
+    } catch(e) { console.error('사이트 생성 예외:', e); }
   }
 
   if (!currentUser || !currentSiteId) {
