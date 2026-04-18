@@ -1128,7 +1128,8 @@ function gateLogin(){
       <a data-p="pricing" onclick="go('pricing')">요금제</a>
       <a data-p="login" id="navLoginLink" onclick="go('login')" class="nlo">로그인</a>
       <div id="navUserInfo" style="display:none;align-items:center;gap:8px;margin-right:4px;">
-        <button onclick="go('dashboard')" style="font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;cursor:pointer;color:var(--fg);font-family:inherit;display:flex;align-items:center;gap:5px;">🏠 내 홈페이지</button>
+        <button onclick="go('dashboard')" style="font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;cursor:pointer;color:var(--fg);font-family:inherit;display:flex;align-items:center;gap:5px;">🏠 내홈페이지</button>
+        <button id="navEditSiteBtn" onclick="editMySite()" style="display:none;font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid #FFB500;border-radius:8px;background:#FFB500;color:#111;cursor:pointer;font-family:inherit;gap:5px;">✏️ 수정하기</button>
         <div class="credit-badge" onclick="openPayModal('charge')" id="navCreditBadge" title="크레딧 충전">
           <span class="credit-ic">⚡</span><span id="navCreditAmt">0</span>cr
         </div>
@@ -2617,6 +2618,9 @@ function updateNavAuth() {
     if(myPage) myPage.style.display = 'inline';
     const mobileMyPage = document.getElementById('mobileMyPage');
     if(mobileMyPage) mobileMyPage.style.display = 'block';
+    // 수정하기 버튼 표시
+    const editBtn = document.getElementById('navEditSiteBtn');
+    if(editBtn) editBtn.style.display = 'flex';
   } else {
     loginLink.style.display = 'block';
     userInfo.style.display  = 'none';
@@ -5405,22 +5409,7 @@ fetch("${SB_URL}/rest/v1/notices?site_id=eq.${SB_SITE}&order=pinned.desc,created
   if(m.id==='contact'){
     const addr=f('addr'), tel=f('tel'), email=f('email');
     const SB_URL=SUPABASE_URL, SB_KEY=SUPABASE_KEY, SB_SITE=currentSiteId||'', KK=KAKAO_APP_KEY;
-    return `<section id="s-contact" style="padding:72px 24px;background:#fff;"><div class="s-in"><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">연락하기</div><div class="s-contact-grid"><div><div class="s-contact-info">📍 ${addr}<br>📞 <a href="${tel}">${tel.replace('tel:','')}</a><br>✉️ <a href="${email}">${email.replace('mailto:','')}</a><br>🕐 ${f('hours')}</div><div class="s-map" id="kakaoMap" data-addr="${addr}" style="margin-top:14px;min-height:200px;">🗺️ ${addr}</div></div><div><form class="s-form" id="contactForm"><input class="s-input" name="name" placeholder="이름" required><input class="s-input" name="email" type="email" placeholder="이메일" required><input class="s-input" name="phone" placeholder="연락처 (선택)"><textarea class="s-input" name="body" rows="4" placeholder="문의 내용" required style="resize:vertical;"></textarea><button type="submit" class="s-submit" style="background:${tc}">문의 보내기</button></form></div></div></div><scr''ipt>
-(function(){
-  var cf=document.getElementById("contactForm");
-  if(!cf)return;
-  cf.addEventListener("submit",async function(e){
-    e.preventDefault();
-    var btn=cf.querySelector(".s-submit");
-    btn.textContent="전송 중...";btn.disabled=true;
-    try{
-      var r=await fetch("${SB_URL}/rest/v1/inquiries",{method:"POST",headers:{"Content-Type":"application/json","apikey":"${SB_KEY}","Authorization":"Bearer ${SB_KEY}"},body:JSON.stringify({site_id:"${SB_SITE}",name:cf.querySelector("[name=name]").value,email:cf.querySelector("[name=email]").value,phone:(cf.querySelector("[name=phone]")||{}).value||"",body:cf.querySelector("[name=body]").value})});
-      if(r.ok){btn.textContent="전송 완료 ✓";btn.style.background="#16A34A";cf.reset();}else throw 0;
-    }catch(err){btn.textContent="다시 시도";btn.style.background="#DC2626";btn.disabled=false;}
-  });
-  ${KK!=='YOUR_KAKAO_APP_KEY'?`if(window.kakao){kakao.maps.load(function(){var el=document.getElementById("kakaoMap");if(!el)return;el.innerHTML="";el.style.cssText="border-radius:12px;min-height:200px;overflow:hidden;";var gc=new kakao.maps.services.Geocoder();gc.addressSearch(el.dataset.addr,function(res,st){if(st===kakao.maps.services.Status.OK){var c=new kakao.maps.LatLng(res[0].y,res[0].x);var map=new kakao.maps.Map(el,{center:c,level:4});new kakao.maps.Marker({map:map,position:c});}});});}`:``}
-})();
-<\/script></section>`;
+    return `<section id="s-contact" style="padding:72px 24px;background:#fff;"><div class="s-in"><div class="s-tag" style="color:${tc}">${f('title')}</div><div class="s-h2">연락하기</div><div class="s-contact-grid"><div><div class="s-contact-info">📍 ${addr}<br>📞 <a href="${tel}">${tel.replace('tel:','')}</a><br>✉️ <a href="${email}">${email.replace('mailto:','')}</a><br>🕐 ${f('hours')}</div><div class="s-map" id="kakaoMap" data-addr="${addr}" style="margin-top:14px;min-height:200px;">🗺️ ${addr}</div></div><div><form class="s-form" id="contactForm"><input class="s-input" name="name" placeholder="이름" required><input class="s-input" name="email" type="email" placeholder="이메일" required><input class="s-input" name="phone" placeholder="연락처 (선택)"><textarea class="s-input" name="body" rows="4" placeholder="문의 내용" required style="resize:vertical;"></textarea><button type="submit" class="s-submit" style="background:${tc}">문의 보내기</button></form></div></div></div></section>`;
   }  return '';
 }
 
@@ -6316,6 +6305,13 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape')     closeLightbox();
 });
 
+
+function editMySite(){
+  if(!currentUser){ go('login'); return; }
+  if(currentSiteId){ go('builder'); return; }
+  // siteId 없으면 대시보드로
+  go('dashboard');
+}
 function showToast(msg){
   const t=document.getElementById('bdrToast');
   t.textContent=msg;
