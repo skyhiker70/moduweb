@@ -799,6 +799,17 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .sc-tab{padding:7px 16px;border-radius:100px;border:1.5px solid var(--bd);background:#fff;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:inherit;flex-shrink:0;}
 .sc-tab:hover{border-color:var(--a);}
 .sc-tab.on{background:var(--fg);border-color:var(--fg);color:#fff;}
+/* 업종 카드 */
+.ind-card{border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;border:2px solid transparent;box-shadow:0 2px 12px rgba(0,0,0,.07);transition:all .22s;}
+.ind-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,.14);border-color:var(--a);}
+.ind-card-img{height:160px;background-size:cover;background-position:center;background-color:#e8e8e8;transition:transform .4s;}
+.ind-card:hover .ind-card-img{transform:scale(1.04);}
+.ind-card-body{padding:14px 16px;background:#fff;}
+.ind-card-emoji{font-size:24px;margin-bottom:6px;}
+.ind-card-name{font-size:16px;font-weight:900;color:var(--fg);margin-bottom:3px;letter-spacing:-.3px;}
+.ind-card-sub{font-size:12px;color:var(--mu);}
+@media(max-width:900px){#industryCardGrid{grid-template-columns:repeat(2,1fr)!important;}}
+@media(max-width:480px){#industryCardGrid{grid-template-columns:repeat(2,1fr)!important;}}
 .sc-scroll{overflow:hidden;padding:8px max(32px,calc((100vw - 1200px)/2)) 20px;}
 .sc-track{display:flex;gap:16px;transition:transform .35s cubic-bezier(.25,.1,.25,1);}
 .sc-card{flex-shrink:0;width:280px;background:#fff;border:1.5px solid var(--bd);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;}
@@ -1148,6 +1159,23 @@ function gateLogin(){
   <span id="welcomeMsg">환영합니다!</span>
   <button onclick="sbSignOut()" style="margin-left:16px;font-size:12px;padding:3px 12px;border:1px solid rgba(255,255,255,.3);border-radius:100px;background:transparent;color:rgba(255,255,255,.7);cursor:pointer;font-family:inherit;">로그아웃</button>
 </div>
+
+<!-- ★ 로그인 상태 즉시 복원 - async initAuth 전에 동기 실행하여 플리커 완전 제거 -->
+<script>
+(function navAuthSync(){
+  try {
+    var email = localStorage.getItem('mw_user_email');
+    var loginBtn = document.getElementById('navLoginLink');
+    var userInfo  = document.getElementById('navUserInfo');
+    if(email && loginBtn && userInfo){
+      loginBtn.style.cssText = 'display:none!important';
+      userInfo.style.cssText = 'display:flex!important;align-items:center;gap:8px;margin-right:4px;';
+      var avatar = document.getElementById('navUserAvatar');
+      if(avatar) avatar.textContent = email.charAt(0).toUpperCase();
+    }
+  } catch(e){}
+})();
+</script>
 <!-- 모바일 네비 메뉴 -->
 <!-- 모바일 오버레이 -->
 <div class="nav-mobile-overlay" id="navMobileOverlay" onclick="toggleMobileNav()"></div>
@@ -1214,38 +1242,92 @@ function gateLogin(){
       <div>
         <div class="stag">Step 1 — 업종 선택</div>
         <h2 class="stitle" style="font-size:clamp(22px,2.8vw,34px);margin-bottom:6px;">내 업종 홈페이지를<br>먼저 골라보세요</h2>
-        <p style="font-size:16px;color:var(--mu);">마음에 드는 홈페이지 클릭 → 모듈 추가 → 완성</p>
+        <p style="font-size:16px;color:var(--mu);">마음에 드는 업종 클릭 → 모듈 추가 → 완성</p>
       </div>
       <button onclick="go('showcase')" style="padding:10px 22px;border:1.5px solid var(--bd);border-radius:10px;background:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">전체 보기 →</button>
     </div>
 
-    <!-- 카테고리 탭 -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;" id="showcaseCatTabs">
-      <button class="sc-tab on" onclick="filterShowcaseGrid('all',this)">전체</button>
-      <button class="sc-tab" onclick="filterShowcaseGrid('business',this)">비즈니스</button>
-      <button class="sc-tab" onclick="filterShowcaseGrid('food',this)">음식/카페</button>
-      <button class="sc-tab" onclick="filterShowcaseGrid('medical',this)">의료/병원</button>
-      <button class="sc-tab" onclick="filterShowcaseGrid('education',this)">교육/학원</button>
-      <button class="sc-tab" onclick="filterShowcaseGrid('beauty',this)">뷰티/패션</button>
-      <button class="sc-tab" onclick="filterShowcaseGrid('realestate',this)">부동산/건설</button>
-      <button class="sc-tab" onclick="filterShowcaseGrid('it',this)">IT/스타트업</button>
-      <button class="sc-tab" onclick="filterShowcaseGrid('delivery',this)">음식/배달</button>
-    </div>
+    <!-- 업종 카드 그리드 — 이미지로 즉시 표시 (로딩 없음) -->
+    <div id="industryCardGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
 
-    <!-- 4열 그리드 -->
-    <div id="scGridWrap" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;">
-    </div>
+      <!-- 각 카드: 이미지 + 업종명 + 버튼 — 기본 이미지 즉시 표시, 관리자 업로드 시 교체 -->
+      <div class="ind-card" onclick="applyTemplateById('corp-basic');showToast('비즈니스 템플릿을 적용합니다')" data-cat="business">
+        <div class="ind-card-img" style="background-image:url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=70');" id="ind-img-business"></div>
+        <div class="ind-card-body">
+          <div class="ind-card-emoji">📊</div>
+          <div class="ind-card-name">비즈니스</div>
+          <div class="ind-card-sub">기업·스타트업·컨설팅</div>
+        </div>
+      </div>
 
-    <!-- 빈 상태 -->
-    <div id="scEmpty" style="display:none;text-align:center;padding:60px 0;">
-      <div style="font-size:40px;margin-bottom:12px;">🏗️</div>
-      <div style="font-size:16px;font-weight:700;margin-bottom:6px;color:var(--fg);">해당 업종이 아직 없어요</div>
-      <button onclick="go('builder')" style="margin-top:16px;padding:10px 22px;background:var(--a);color:var(--fg);border:none;border-radius:9px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;">빌더 시작하기 →</button>
+      <div class="ind-card" onclick="applyTemplateById('cafe-warm');showToast('음식/카페 템플릿을 적용합니다')" data-cat="food">
+        <div class="ind-card-img" style="background-image:url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=70');" id="ind-img-food"></div>
+        <div class="ind-card-body">
+          <div class="ind-card-emoji">🍜</div>
+          <div class="ind-card-name">음식/카페</div>
+          <div class="ind-card-sub">식당·카페·베이커리</div>
+        </div>
+      </div>
+
+      <div class="ind-card" onclick="applyTemplateById('hospital-clean');showToast('의료/병원 템플릿을 적용합니다')" data-cat="medical">
+        <div class="ind-card-img" style="background-image:url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&q=70');" id="ind-img-medical"></div>
+        <div class="ind-card-body">
+          <div class="ind-card-emoji">🏥</div>
+          <div class="ind-card-name">의료/병원</div>
+          <div class="ind-card-sub">병원·클리닉·한의원</div>
+        </div>
+      </div>
+
+      <div class="ind-card" onclick="applyTemplateById('academy-edu');showToast('교육/학원 템플릿을 적용합니다')" data-cat="education">
+        <div class="ind-card-img" style="background-image:url('https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&q=70');" id="ind-img-education"></div>
+        <div class="ind-card-body">
+          <div class="ind-card-emoji">📚</div>
+          <div class="ind-card-name">교육/학원</div>
+          <div class="ind-card-sub">학원·어학원·과외</div>
+        </div>
+      </div>
+
+      <div class="ind-card" onclick="applyTemplateById('beauty-salon');showToast('뷰티/패션 템플릿을 적용합니다')" data-cat="beauty">
+        <div class="ind-card-img" style="background-image:url('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=70');" id="ind-img-beauty"></div>
+        <div class="ind-card-body">
+          <div class="ind-card-emoji">💅</div>
+          <div class="ind-card-name">뷰티/패션</div>
+          <div class="ind-card-sub">헤어샵·네일·피부관리</div>
+        </div>
+      </div>
+
+      <div class="ind-card" onclick="applyTemplateById('realestate-pro');showToast('부동산 템플릿을 적용합니다')" data-cat="realestate">
+        <div class="ind-card-img" style="background-image:url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=70');" id="ind-img-realestate"></div>
+        <div class="ind-card-body">
+          <div class="ind-card-emoji">🏠</div>
+          <div class="ind-card-name">부동산/건설</div>
+          <div class="ind-card-sub">공인중개사·인테리어</div>
+        </div>
+      </div>
+
+      <div class="ind-card" onclick="applyTemplateById('startup-it');showToast('IT/스타트업 템플릿을 적용합니다')" data-cat="it">
+        <div class="ind-card-img" style="background-image:url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=70');" id="ind-img-it"></div>
+        <div class="ind-card-body">
+          <div class="ind-card-emoji">💻</div>
+          <div class="ind-card-name">IT/스타트업</div>
+          <div class="ind-card-sub">앱·SaaS·테크기업</div>
+        </div>
+      </div>
+
+      <div class="ind-card" onclick="applyTemplateById('food-delivery');showToast('음식/배달 템플릿을 적용합니다')" data-cat="delivery">
+        <div class="ind-card-img" style="background-image:url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=70');" id="ind-img-delivery"></div>
+        <div class="ind-card-body">
+          <div class="ind-card-emoji">🛵</div>
+          <div class="ind-card-name">음식/배달</div>
+          <div class="ind-card-sub">배달전문점·포장판매</div>
+        </div>
+      </div>
+
     </div>
 
     <!-- 안내 -->
-    <div style="text-align:center;padding-top:28px;font-size:16px;color:var(--mu);">
-      마음에 드는 홈페이지를 클릭하면 <b style="color:var(--fg);">Step 2 — 모듈 추가</b>로 이동합니다
+    <div style="text-align:center;padding-top:24px;font-size:15px;color:var(--mu);">
+      업종을 클릭하면 <b style="color:var(--fg);">Step 2 — 모듈 추가</b>로 바로 이동합니다
     </div>
   </div>
 </section>
@@ -6927,9 +7009,14 @@ async function loadShowcaseSites() {
 
 // 홈 랜딩 그리드 쇼케이스
 async function loadHomeShowcase() {
-  renderScGrid('all'); // 이미 초기화된 데이터로 즉시 표시
-  // 백그라운드에서 Supabase 공개 사이트 로드 (블로킹 없음)
-  loadShowcaseSites().then(()=>{ renderScGrid('all'); }).catch(()=>{});
+  // 관리자가 저장한 업종 이미지 적용 (localStorage → 즉시 반영)
+  try {
+    const saved = JSON.parse(localStorage.getItem('mw_ind_imgs') || '{}');
+    Object.entries(saved).forEach(([cat, url]) => {
+      const el = document.getElementById('ind-img-' + cat);
+      if(el) el.style.backgroundImage = `url('${url}')`;
+    });
+  } catch(e){}
 }
 
 function renderScGrid(cat) {
@@ -8131,6 +8218,7 @@ function showToast(msg){
         <div class="adm-nav-item" onclick="saNav('aistats',this)"><span class="adm-nav-ic">✨</span><span class="adm-nav-lbl">AI 사용량</span></div>
         <div class="adm-nav-item" onclick="saNav('library',this)"><span class="adm-nav-ic">🗂️</span><span class="adm-nav-lbl">이미지 라이브러리</span></div>
         <div class="adm-nav-item" onclick="saNav('showcase_order',this)"><span class="adm-nav-ic">🏠</span><span class="adm-nav-lbl">홈 쇼케이스 관리</span></div>
+        <div class="adm-nav-item" onclick="saNav('industry_imgs',this)"><span class="adm-nav-ic">🖼️</span><span class="adm-nav-lbl">업종 대표 이미지</span></div>
         <div class="adm-nav-sec">시스템</div>
         <div class="adm-nav-item" onclick="saNav('settings',this)"><span class="adm-nav-ic">⚙️</span><span class="adm-nav-lbl">시스템 설정</span></div>
       </div>
@@ -8306,6 +8394,23 @@ function showToast(msg){
         </div>
 
         <!-- 시스템 설정 -->
+        <div class="adm-section" id="sa-industry_imgs">
+          <div class="adm-card">
+            <div class="adm-card-head">
+              <span class="adm-card-title">🖼️ 업종 대표 이미지 관리</span>
+            </div>
+            <div style="padding:16px 20px;">
+              <p style="font-size:13px;color:var(--mu);margin-bottom:20px;">
+                홈페이지 "Step 1 — 업종 선택" 섹션에 표시되는 업종별 대표 이미지를 관리합니다.<br>
+                이미지를 업로드하면 즉시 홈페이지에 반영됩니다.
+              </p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;" id="saIndImgGrid">
+                <!-- JS로 채워짐 -->
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="adm-section" id="sa-settings">
           <div class="adm-card">
             <div class="adm-card-head"><span class="adm-card-title">⚙️ 시스템 설정</span></div>
@@ -8717,7 +8822,7 @@ function saNav(sec,el){
   if(el) el.classList.add('on');
   document.querySelectorAll('#page-superadmin .adm-section').forEach(s=>s.classList.remove('on'));
   document.getElementById('sa-'+sec)?.classList.add('on');
-  const titles={dashboard:'현황 개요',users:'회원 목록',sites:'사이트 목록',billing:'결제 / 매출',aistats:'AI 사용량',settings:'시스템 설정',library:'이미지 라이브러리',showcase_order:'홈 쇼케이스 관리'};
+  const titles={dashboard:'현황 개요',users:'회원 목록',sites:'사이트 목록',billing:'결제 / 매출',aistats:'AI 사용량',settings:'시스템 설정',library:'이미지 라이브러리',showcase_order:'홈 쇼케이스 관리',industry_imgs:'업종 대표 이미지'};
   (function(){var _t_saTopTitle=document.getElementById('saTopTitle');if(_t_saTopTitle)_t_saTopTitle.textContent=titles[sec]||sec;})();
   if(sec==='dashboard') renderSaDashboard();
   if(sec==='users') renderSaUsers();
@@ -8726,6 +8831,155 @@ function saNav(sec,el){
   if(sec==='aistats') renderSaAi();
   if(sec==='library') renderAdminLibrary();
   if(sec==='showcase_order') renderSaShowcaseOrder();
+  if(sec==='industry_imgs') renderSaIndustryImgs();
+}
+
+// ── 업종 대표 이미지 관리 ──
+const IND_IMG_CATS = [
+  { cat:'business',   name:'비즈니스',    emoji:'📊', defaultUrl:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=70' },
+  { cat:'food',       name:'음식/카페',   emoji:'🍜', defaultUrl:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=70' },
+  { cat:'medical',    name:'의료/병원',   emoji:'🏥', defaultUrl:'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&q=70' },
+  { cat:'education',  name:'교육/학원',   emoji:'📚', defaultUrl:'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&q=70' },
+  { cat:'beauty',     name:'뷰티/패션',   emoji:'💅', defaultUrl:'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=70' },
+  { cat:'realestate', name:'부동산/건설', emoji:'🏠', defaultUrl:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=70' },
+  { cat:'it',         name:'IT/스타트업', emoji:'💻', defaultUrl:'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=70' },
+  { cat:'delivery',   name:'음식/배달',   emoji:'🛵', defaultUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=70' },
+];
+
+function renderSaIndustryImgs() {
+  const grid = document.getElementById('saIndImgGrid');
+  if(!grid) return;
+
+  // localStorage에서 저장된 커스텀 이미지 불러오기
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('mw_ind_imgs') || '{}'); } catch(e){}
+
+  grid.innerHTML = IND_IMG_CATS.map(cat => {
+    const currentUrl = saved[cat.cat] || cat.defaultUrl;
+    return `
+      <div style="border:1.5px solid var(--bd);border-radius:12px;overflow:hidden;background:#fff;">
+        <!-- 이미지 미리보기 -->
+        <div style="height:140px;overflow:hidden;position:relative;background:#f0f0f0;">
+          <img id="ind-preview-${cat.cat}" src="${currentUrl}" alt="${cat.name}"
+            style="width:100%;height:100%;object-fit:cover;display:block;">
+          <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.6));padding:8px 10px;">
+            <span style="font-size:16px;">${cat.emoji}</span>
+            <span style="font-size:13px;font-weight:700;color:#fff;margin-left:4px;">${cat.name}</span>
+          </div>
+        </div>
+        <!-- 업로드 컨트롤 -->
+        <div style="padding:12px;">
+          <div style="display:flex;gap:7px;">
+            <button onclick="saIndImgUpload('${cat.cat}')"
+              style="flex:1;padding:7px;background:#FFB500;color:#111;border:none;border-radius:7px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;">
+              📁 이미지 업로드
+            </button>
+            <button onclick="saIndImgReset('${cat.cat}','${cat.defaultUrl}')"
+              style="padding:7px 10px;background:#F3F4F6;color:#555;border:1.5px solid #E5E7EB;border-radius:7px;font-size:11px;cursor:pointer;font-family:inherit;">
+              초기화
+            </button>
+          </div>
+          <input type="file" id="saIndFile-${cat.cat}" accept="image/*" style="display:none"
+            onchange="saIndImgHandleFile(event,'${cat.cat}')">
+          <div style="font-size:10px;color:var(--mu);margin-top:6px;text-align:center;">
+            권장 크기: 600×400px · JPG/PNG
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function saIndImgUpload(cat) {
+  document.getElementById('saIndFile-' + cat)?.click();
+}
+
+async function saIndImgHandleFile(e, cat) {
+  const file = e.target.files[0];
+  if(!file) return;
+
+  showToast('이미지 업로드 중...');
+
+  let finalUrl = '';
+
+  // Supabase Storage 업로드 시도
+  if(SUPABASE_READY) {
+    try {
+      const blob = file;
+      const mime = file.type || 'image/jpeg';
+      const ext = mime.split('/')[1].replace('jpeg','jpg').split('+')[0];
+      const path = `industry/${cat}_${Date.now()}.${ext}`;
+
+      let token = null;
+      try {
+        const {data:{session}} = await sb.auth.getSession();
+        if(session) token = session.access_token;
+      } catch(e){}
+
+      const up = await fetch(`${SUPABASE_URL}/storage/v1/object/images/${path}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + (token || SUPABASE_KEY),
+          'apikey': SUPABASE_KEY,
+          'Content-Type': mime,
+          'x-upsert': 'true'
+        },
+        body: blob
+      });
+
+      if(up.ok) {
+        finalUrl = `${SUPABASE_URL}/storage/v1/object/public/images/${path}`;
+      } else {
+        // SDK fallback
+        const {error} = await sb.storage.from('images').upload(path, blob, {contentType:mime, upsert:true});
+        if(!error) {
+          const {data:urlData} = sb.storage.from('images').getPublicUrl(path);
+          finalUrl = urlData.publicUrl;
+        }
+      }
+    } catch(err) { console.warn('Storage 업로드 실패:', err); }
+  }
+
+  // Storage 실패 시 base64 로컬 저장
+  if(!finalUrl) {
+    finalUrl = await new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // localStorage에 저장 (홈에서 즉시 반영)
+  try {
+    let saved = JSON.parse(localStorage.getItem('mw_ind_imgs') || '{}');
+    saved[cat] = finalUrl;
+    localStorage.setItem('mw_ind_imgs', JSON.stringify(saved));
+  } catch(err){}
+
+  // 미리보기 업데이트
+  const preview = document.getElementById('ind-preview-' + cat);
+  if(preview) preview.src = finalUrl;
+
+  // 홈 카드 즉시 업데이트
+  const homeCard = document.getElementById('ind-img-' + cat);
+  if(homeCard) homeCard.style.backgroundImage = `url('${finalUrl}')`;
+
+  showToast(`✓ ${cat} 업종 이미지가 저장됐습니다`);
+}
+
+function saIndImgReset(cat, defaultUrl) {
+  try {
+    let saved = JSON.parse(localStorage.getItem('mw_ind_imgs') || '{}');
+    delete saved[cat];
+    localStorage.setItem('mw_ind_imgs', JSON.stringify(saved));
+  } catch(e){}
+
+  const preview = document.getElementById('ind-preview-' + cat);
+  if(preview) preview.src = defaultUrl;
+
+  const homeCard = document.getElementById('ind-img-' + cat);
+  if(homeCard) homeCard.style.backgroundImage = `url('${defaultUrl}')`;
+
+  showToast('기본 이미지로 초기화됐습니다');
 }
 
 function renderSaShowcaseOrder(){
