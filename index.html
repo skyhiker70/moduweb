@@ -1704,9 +1704,9 @@ function gateLogin(){
         <!-- 입력 폼 -->
         <div style="display:flex;flex-direction:column;gap:14px;">
           <div>
-            <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">가게/브랜드 이름</label>
+            <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">가게/브랜드 이름 <span style="color:#FFB500;">★ 제일 크게 표시</span></label>
             <input id="aisShopName" type="text" placeholder="예: 온기 한식당" oninput="aisUpdateBanner()"
-              style="width:100%;padding:10px 13px;border:1.5px solid #E5E5E5;border-radius:9px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;">
+              style="width:100%;padding:10px 13px;border:1.5px solid #FFB500;border-radius:9px;font-size:16px;font-weight:700;font-family:inherit;outline:none;box-sizing:border-box;">
           </div>
           <div>
             <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">이벤트/홍보 문구 (메인)</label>
@@ -1728,34 +1728,95 @@ function gateLogin(){
             </div>
           </div>
           <div>
-            <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">배너 이모지/아이콘</label>
-            <div style="display:flex;gap:7px;flex-wrap:wrap;">
-              ${['🍜','🍣','☕','🍰','🏠','💆','💻','🎓','💊','🚗'].map(e=>`<button onclick="aisSelEmoji(this,'${e}')" style="width:36px;height:36px;border-radius:7px;border:1.5px solid #e5e5e5;background:#fff;font-size:18px;cursor:pointer;">${e}</button>`).join('')}
+            <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:7px;">배너 이모지/아이콘</label>
+            <div id="aisEmojiGrid" style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button onclick="aisSelEmoji(this,'🍜')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🍜</button>
+              <button onclick="aisSelEmoji(this,'🍣')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🍣</button>
+              <button onclick="aisSelEmoji(this,'☕')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">☕</button>
+              <button onclick="aisSelEmoji(this,'🍕')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🍕</button>
+              <button onclick="aisSelEmoji(this,'🍰')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🍰</button>
+              <button onclick="aisSelEmoji(this,'🥗')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🥗</button>
+              <button onclick="aisSelEmoji(this,'🍔')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🍔</button>
+              <button onclick="aisSelEmoji(this,'🏠')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🏠</button>
+              <button onclick="aisSelEmoji(this,'🏢')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🏢</button>
+              <button onclick="aisSelEmoji(this,'💆')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">💆</button>
+              <button onclick="aisSelEmoji(this,'💅')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">💅</button>
+              <button onclick="aisSelEmoji(this,'✂️')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">✂️</button>
+              <button onclick="aisSelEmoji(this,'💻')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">💻</button>
+              <button onclick="aisSelEmoji(this,'📱')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">📱</button>
+              <button onclick="aisSelEmoji(this,'🎓')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🎓</button>
+              <button onclick="aisSelEmoji(this,'📚')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">📚</button>
+              <button onclick="aisSelEmoji(this,'💊')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">💊</button>
+              <button onclick="aisSelEmoji(this,'🏥')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🏥</button>
+              <button onclick="aisSelEmoji(this,'🚗')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🚗</button>
+              <button onclick="aisSelEmoji(this,'🎵')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🎵</button>
+              <button onclick="aisSelEmoji(this,'🎨')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🎨</button>
+              <button onclick="aisSelEmoji(this,'🌟')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🌟</button>
+              <button onclick="aisSelEmoji(this,'🔥')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🔥</button>
+              <button onclick="aisSelEmoji(this,'💎')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">💎</button>
+              <button onclick="aisSelEmoji(this,'🎁')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🎁</button>
+              <button onclick="aisSelEmoji(this,'🏆')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🏆</button>
+              <button onclick="aisSelEmoji(this,'⚡')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">⚡</button>
+              <button onclick="aisSelEmoji(this,'🌈')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🌈</button>
+              <button onclick="aisSelEmoji(this,'🌺')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🌺</button>
+              <button onclick="aisSelEmoji(this,'🐶')" class="ais-emoji-btn" style="width:38px;height:38px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:20px;cursor:pointer;">🐶</button>
             </div>
           </div>
-          <button onclick="aisGenerateBanner()" style="width:100%;padding:13px;background:#FFB500;color:#111;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">✨ 배너 생성하기</button>
+          <!-- 배너 이미지 업로드 -->
+          <div style="border:1.5px dashed #E5E5E5;border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:#FAFAFA;" onclick="document.getElementById('aisBannerImgInput').click()">
+            <div style="font-size:24px;margin-bottom:4px;">🖼️</div>
+            <div style="font-size:13px;font-weight:700;color:#555;margin-bottom:2px;">배너 배경 이미지 업로드</div>
+            <div style="font-size:11px;color:#aaa;">클릭해서 사진 선택 (JPG, PNG)</div>
+          </div>
+          <input type="file" id="aisBannerImgInput" accept="image/*" style="display:none" onchange="aisBannerImgUpload(event)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <button onclick="aisGenerateBanner()" style="padding:13px;background:#FFB500;color:#111;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">✨ AI 배너 생성</button>
+            <button onclick="aisSaveBanner()" style="padding:13px;background:#1A1A1A;color:#FFB500;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">💾 저장하기</button>
+          </div>
         </div>
 
         <!-- 배너 미리보기 -->
         <div>
           <div style="font-size:13px;font-weight:700;color:#555;margin-bottom:10px;">📱 실시간 미리보기</div>
           <div id="aisBannerPreview" style="border-radius:14px;overflow:hidden;aspect-ratio:1;background:#1A1A1A;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;position:relative;transition:background .3s;">
-            <div id="aisBannerEmoji" style="font-size:64px;margin-bottom:12px;">🍜</div>
-            <div id="aisBannerBadge" style="background:#FFB500;color:#111;font-size:11px;font-weight:800;padding:3px 12px;border-radius:4px;margin-bottom:8px;display:inline-block;" id="aisBannerBadgeEl">내 가게</div>
-            <div id="aisBannerTitleEl" style="font-size:24px;font-weight:900;color:#fff;line-height:1.2;margin-bottom:6px;">이벤트 문구</div>
-            <div id="aisBannerSubEl" style="font-size:14px;color:rgba(255,255,255,.7);">서브 문구</div>
+            <!-- 배경 이미지 레이어 -->
+            <div id="aisBannerBgLayer" style="position:absolute;inset:0;background-size:cover;background-position:center;display:none;"></div>
+            <div id="aisBannerOverlay" style="position:absolute;inset:0;background:rgba(0,0,0,.45);display:none;"></div>
+            <!-- 콘텐츠 -->
+            <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;">
+              <div id="aisBannerEmoji" style="font-size:72px;margin-bottom:14px;">🍜</div>
+              <div id="aisBannerBadge" style="background:#FFB500;color:#111;font-size:14px;font-weight:900;padding:5px 18px;border-radius:5px;margin-bottom:12px;display:inline-block;letter-spacing:-.3px;">내 가게</div>
+              <div id="aisBannerTitleEl" style="font-size:22px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:8px;">이벤트 문구</div>
+              <div id="aisBannerSubEl" style="font-size:13px;color:rgba(255,255,255,.7);">서브 문구</div>
+            </div>
             <!-- QR 데코 -->
-            <div style="position:absolute;right:12px;bottom:12px;width:28px;height:28px;background:#fff;border-radius:4px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;padding:3px;">
+            <div style="position:absolute;right:12px;bottom:12px;width:28px;height:28px;background:#fff;border-radius:4px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;padding:3px;z-index:2;">
               <span style="background:#111;border-radius:1px;"></span><span></span><span style="background:#111;border-radius:1px;"></span>
               <span></span><span style="background:#111;border-radius:1px;"></span><span></span>
               <span style="background:#111;border-radius:1px;"></span><span></span><span style="background:#111;border-radius:1px;"></span>
             </div>
           </div>
-          <!-- 배너 크기 옵션 -->
-          <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
-            <button onclick="showToast('인스타 정사각형으로 다운로드 (1080×1080)')" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid #E5E5E5;background:#fff;color:#555;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📷 인스타 1:1</button>
-            <button onclick="showToast('스토리 세로형으로 다운로드 (1080×1920)')" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid #E5E5E5;background:#fff;color:#555;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📱 스토리 9:16</button>
+          <!-- 저장 버튼들 -->
+          <div style="display:flex;gap:6px;margin-top:10px;">
+            <button onclick="showToast('인스타 1:1 (1080×1080) 저장 준비 ✓')" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid #E5E5E5;background:#fff;color:#555;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📷 인스타 1:1</button>
+            <button onclick="showToast('스토리 9:16 저장 준비 ✓')" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid #E5E5E5;background:#fff;color:#555;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📱 스토리 9:16</button>
             <button onclick="aisDownloadBanner()" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid #FFB500;background:#FFB500;color:#111;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">⬇️ 저장</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 저장된 배너 작업 내역 -->
+      <div style="margin-top:40px;padding-top:32px;border-top:2px solid #F0F0F0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div>
+            <div style="font-size:18px;font-weight:900;letter-spacing:-.4px;">📂 저장된 배너 작업 내역</div>
+            <div style="font-size:13px;color:#888;margin-top:3px;">클릭하면 불러와서 수정할 수 있습니다</div>
+          </div>
+          <button onclick="aisClearHistory()" style="padding:6px 14px;border:1.5px solid #E5E5E5;border-radius:7px;background:#fff;color:#aaa;font-size:12px;cursor:pointer;font-family:inherit;">전체 삭제</button>
+        </div>
+        <div id="aisBannerHistory" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;">
+          <div style="text-align:center;padding:32px 16px;color:#bbb;font-size:13px;grid-column:1/-1;">
+            아직 저장된 배너가 없습니다.<br>배너를 만들고 저장해보세요 💾
           </div>
         </div>
       </div>
@@ -6843,6 +6904,7 @@ const _aisStyles = {
 };
 let _aisBannerStyle = 'dark';
 let _aisBannerEmoji = '🍜';
+let _aisBannerBgUrl = null;
 const _aisBannerStyles = {
   dark:  { bg:'#1A1A1A', titleColor:'#fff', subColor:'rgba(255,255,255,.7)', badgeBg:'#FFB500', badgeColor:'#111' },
   warm:  { bg:'linear-gradient(135deg,#FF6B35,#FFB500)', titleColor:'#fff', subColor:'rgba(255,255,255,.85)', badgeBg:'#fff', badgeColor:'#FF6B35' },
@@ -6854,6 +6916,7 @@ function initAiStudio() {
   aisUpdateTicket();
   aisInitSlider();
   aisUpdateBanner();
+  aisRenderHistory();
 }
 
 function aisUpdateTicket() {
@@ -6915,9 +6978,23 @@ function aisSelBannerStyle(el, style) {
 
 function aisSelEmoji(el, emoji) {
   _aisBannerEmoji = emoji;
-  document.querySelectorAll('#aisBannerPreview ~ * button, [onclick*="aisSelEmoji"] ').forEach(b=>b.style.borderColor='#e5e5e5');
-  el.style.borderColor='#FFB500';
+  document.querySelectorAll('.ais-emoji-btn').forEach(b=>{ b.style.borderColor='#e5e5e5'; b.style.background='#fff'; });
+  el.style.borderColor='#FFB500'; el.style.background='#FFFBF0';
   aisUpdateBanner();
+}
+
+function aisBannerImgUpload(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  const bg = document.getElementById('aisBannerBgLayer');
+  const overlay = document.getElementById('aisBannerOverlay');
+  const preview = document.getElementById('aisBannerPreview');
+  if(bg){ bg.style.backgroundImage = `url(${url})`; bg.style.display='block'; }
+  if(overlay){ overlay.style.display='block'; }
+  if(preview){ preview.style.background='transparent'; }
+  _aisBannerBgUrl = url;
+  showToast('배경 이미지가 적용됐습니다 ✓');
 }
 
 function aisUpdateBanner() {
@@ -6928,13 +7005,21 @@ function aisUpdateBanner() {
 
   const preview = document.getElementById('aisBannerPreview');
   const emojiEl = document.getElementById('aisBannerEmoji');
-  const badgeEl = document.getElementById('aisBannerBadge') || document.getElementById('aisBannerBadgeEl');
+  const badgeEl = document.getElementById('aisBannerBadge');
   const titleEl = document.getElementById('aisBannerTitleEl');
   const subEl = document.getElementById('aisBannerSubEl');
 
-  if(preview) preview.style.background = s.bg;
+  if(preview && !_aisBannerBgUrl) preview.style.background = s.bg;
   if(emojiEl) emojiEl.textContent = _aisBannerEmoji;
-  if(badgeEl){ badgeEl.textContent = shop; badgeEl.style.background = s.badgeBg; badgeEl.style.color = s.badgeColor; }
+  if(badgeEl){ 
+    badgeEl.textContent = shop; 
+    badgeEl.style.background = s.badgeBg; 
+    badgeEl.style.color = s.badgeColor;
+    badgeEl.style.fontSize = '20px';
+    badgeEl.style.fontWeight = '900';
+    badgeEl.style.padding = '6px 20px';
+    badgeEl.style.letterSpacing = '-0.5px';
+  }
   if(titleEl){ titleEl.textContent = title; titleEl.style.color = s.titleColor; }
   if(subEl){ subEl.textContent = sub; subEl.style.color = s.subColor; }
 }
@@ -6943,10 +7028,101 @@ function aisGenerateBanner() {
   const shop = document.getElementById('aisShopName')?.value;
   const title = document.getElementById('aisBannerTitle')?.value;
   if(!shop || !title){ showToast('가게명과 이벤트 문구를 입력해주세요'); return; }
-  showToast('배너 생성 완료! ✓ 아래에서 저장하세요');
-  // 생성 애니메이션
   const preview = document.getElementById('aisBannerPreview');
-  if(preview){ preview.style.transform='scale(1.02)'; setTimeout(()=>{ preview.style.transform=''; preview.style.transition='transform .3s'; }, 300); }
+  if(preview){ 
+    preview.style.transform='scale(1.03)'; 
+    preview.style.transition='transform .25s';
+    setTimeout(()=>{ preview.style.transform='scale(1)'; }, 280);
+  }
+  showToast('✨ 배너 생성 완료! 저장하기를 눌러 내역에 추가하세요');
+}
+
+function aisSaveBanner() {
+  const shop = document.getElementById('aisShopName')?.value || '내 가게';
+  const title = document.getElementById('aisBannerTitle')?.value || '이벤트 문구';
+  const sub = document.getElementById('aisBannerSub')?.value || '';
+  const s = _aisBannerStyles[_aisBannerStyle];
+  const banner = {
+    id: Date.now(),
+    shop, title, sub,
+    emoji: _aisBannerEmoji,
+    style: _aisBannerStyle,
+    bg: s.bg, badgeBg: s.badgeBg, badgeColor: s.badgeColor,
+    titleColor: s.titleColor, subColor: s.subColor,
+    date: new Date().toLocaleDateString('ko-KR')
+  };
+  try {
+    const history = JSON.parse(localStorage.getItem('ais_banner_history')||'[]');
+    history.unshift(banner);
+    if(history.length > 20) history.pop();
+    localStorage.setItem('ais_banner_history', JSON.stringify(history));
+  } catch(e){}
+  aisRenderHistory();
+  showToast('배너가 저장됐습니다 ✓ 하단 내역에서 확인하세요');
+}
+
+function aisRenderHistory() {
+  const container = document.getElementById('aisBannerHistory');
+  if(!container) return;
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('ais_banner_history')||'[]'); } catch(e){}
+  if(!history.length){
+    container.innerHTML='<div style="text-align:center;padding:32px 16px;color:#bbb;font-size:13px;grid-column:1/-1;">아직 저장된 배너가 없습니다.<br>배너를 만들고 저장해보세요 💾</div>';
+    return;
+  }
+  container.innerHTML = history.map(b=>`
+    <div onclick="aisLoadBanner(${b.id})" style="border:1.5px solid #E5E5E5;border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='#FFB500';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='#E5E5E5';this.style.transform=''">
+      <div style="background:${b.bg};padding:16px;text-align:center;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">
+        <div style="font-size:28px;">${b.emoji}</div>
+        <div style="background:${b.badgeBg};color:${b.badgeColor};font-size:10px;font-weight:900;padding:2px 8px;border-radius:3px;">${b.shop}</div>
+        <div style="font-size:12px;font-weight:800;color:${b.titleColor};line-height:1.2;">${b.title}</div>
+      </div>
+      <div style="padding:8px 10px;background:#fff;">
+        <div style="font-size:11px;color:#888;">${b.date}</div>
+        <div style="display:flex;gap:5px;margin-top:5px;">
+          <button onclick="event.stopPropagation();aisLoadBanner(${b.id})" style="flex:1;padding:4px;border:1.5px solid #FFB500;border-radius:5px;background:#FFB500;color:#111;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;">수정</button>
+          <button onclick="event.stopPropagation();aisDeleteBanner(${b.id})" style="flex:1;padding:4px;border:1.5px solid #E5E5E5;border-radius:5px;background:#fff;color:#999;font-size:10px;cursor:pointer;font-family:inherit;">삭제</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function aisLoadBanner(id) {
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('ais_banner_history')||'[]'); } catch(e){}
+  const b = history.find(x=>x.id===id);
+  if(!b) return;
+  const setVal = (elId, val) => { const el=document.getElementById(elId); if(el) el.value=val; };
+  setVal('aisShopName', b.shop);
+  setVal('aisBannerTitle', b.title);
+  setVal('aisBannerSub', b.sub||'');
+  _aisBannerEmoji = b.emoji;
+  _aisBannerStyle = b.style;
+  // 스타일 버튼 업데이트
+  document.querySelectorAll('#aisBannerStyleBtns button').forEach((btn,i)=>{
+    const styles=['dark','warm','blue','green'];
+    btn.style.borderWidth = styles[i]===b.style ? '2.5px' : '1.5px';
+  });
+  aisUpdateBanner();
+  window.scrollTo({top: document.getElementById('page-aistudio')?.offsetTop||0, behavior:'smooth'});
+  showToast('배너를 불러왔습니다. 수정 후 다시 저장하세요 ✓');
+}
+
+function aisDeleteBanner(id) {
+  try {
+    let history = JSON.parse(localStorage.getItem('ais_banner_history')||'[]');
+    history = history.filter(x=>x.id!==id);
+    localStorage.setItem('ais_banner_history', JSON.stringify(history));
+  } catch(e){}
+  aisRenderHistory();
+  showToast('삭제됐습니다');
+}
+
+function aisClearHistory() {
+  if(!confirm('저장된 배너를 모두 삭제할까요?')) return;
+  localStorage.removeItem('ais_banner_history');
+  aisRenderHistory();
+  showToast('전체 삭제됐습니다');
 }
 
 function aisDownloadBanner() {
