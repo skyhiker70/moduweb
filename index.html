@@ -7082,7 +7082,7 @@ function renderShowcasePage(cat) {
 // ══════════════════════════════════════════
 // 🎨 AI 프로 스튜디오
 // ══════════════════════════════════════════
-let _aisSliderPct = 50, _aisDragging = false, _aisRemain = 1;
+var _aisSliderPct = 50, _aisDragging = false, _aisRemain = 1;
 const _aisTotal = 3;
 const _aisStyles = {
   warm:    ['#8B6355','#C4927A','#FF8C42','#FFB500'],
@@ -7090,9 +7090,9 @@ const _aisStyles = {
   natural: ['#4A7C59','#7BAF7F','#B5D99C','#D4EEC8'],
   dark:    ['#111','#222','#333','#FFB500'],
 };
-let _aisBannerStyle = 'dark';
-let _aisBannerEmoji = '🍜';
-let _aisBannerBgUrl = null;
+var _aisBannerStyle = 'dark';
+var _aisBannerEmoji = '🍜';
+var _aisBannerBgUrl = null;
 const _aisBannerStyles = {
   dark:  { bg:'#1A1A1A', titleColor:'#fff', subColor:'rgba(255,255,255,.7)', badgeBg:'#FFB500', badgeColor:'#111' },
   warm:  { bg:'linear-gradient(135deg,#FF6B35,#FFB500)', titleColor:'#fff', subColor:'rgba(255,255,255,.85)', badgeBg:'#fff', badgeColor:'#FF6B35' },
@@ -7124,7 +7124,7 @@ function aisUpload() {
   document.getElementById('aisFileInput')?.click();
 }
 
-let _aisRetouchedUrl = null; // 현재 보정된 이미지 URL
+var _aisRetouchedUrl = null; // 현재 보정된 이미지 URL
 
 function aisHandleFile(e) {
   const file = e.target.files[0];
@@ -7425,8 +7425,8 @@ function aisDownloadBanner() {
 // ══════════════════════════════════════════════════════
 // 🤖 Google Gemini AI 이미지 생성
 // ══════════════════════════════════════════════════════
-let _geminiRatio = '16:9';
-let _geminiResultUrl = null;
+var _geminiRatio = '16:9';
+var _geminiResultUrl = null;
 
 // API 키 초기화
 function initGeminiKeyUI() {
