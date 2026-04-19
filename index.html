@@ -1149,7 +1149,7 @@ function gateLogin(){
       <a data-p="features" onclick="go('features')">기능</a>
       <a data-p="modules" onclick="go('modules')">모듈</a>
       <a data-p="pricing" onclick="go('pricing')">요금제</a>
-      <button id="navLoginLink" onclick="go('login')" style="font-size:13px;font-weight:700;padding:7px 16px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;cursor:pointer;font-family:inherit;color:var(--fg);">로그인</button>
+      <button id="navLoginLink" onclick="go('login')" style="font-size:13px;font-weight:700;padding:7px 16px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;cursor:pointer;font-family:inherit;color:var(--fg);display:none;">로그인</button>
       <div id="navUserInfo" style="display:none;align-items:center;gap:8px;margin-right:4px;">
         <div class="credit-badge" onclick="openPayModal('charge')" id="navCreditBadge" title="크레딧 충전">
           <span class="credit-ic">⚡</span><span id="navCreditAmt">0</span>cr
@@ -1179,11 +1179,14 @@ function gateLogin(){
     var email = localStorage.getItem('mw_user_email');
     var loginBtn = document.getElementById('navLoginLink');
     var userInfo  = document.getElementById('navUserInfo');
-    if(email && loginBtn && userInfo){
-      loginBtn.style.cssText = 'display:none!important';
-      userInfo.style.cssText = 'display:flex!important;align-items:center;gap:8px;margin-right:4px;';
+    if(email){
+      // 로그인 캐시 있음 → 로그아웃 버튼 표시 (loginBtn은 이미 display:none)
+      if(userInfo) userInfo.style.cssText = 'display:flex!important;align-items:center;gap:8px;margin-right:4px;';
       var avatar = document.getElementById('navUserAvatar');
       if(avatar) avatar.textContent = email.charAt(0).toUpperCase();
+    } else {
+      // 캐시 없음 → 로그인 버튼만 표시
+      if(loginBtn) loginBtn.style.display = 'flex';
     }
   } catch(e){}
 })();
@@ -3065,22 +3068,23 @@ let currentProfile = null;  // profiles 테이블 row
 let currentSiteId  = null;  // 현재 편집 중인 site UUID
 
 // ══════════════════════════════════════════
-// AUTH - 완전히 재구성
+// AUTH - Promise 기반으로 재구성
 // ══════════════════════════════════════════
 
-// 1. 앱 시작 시 세션 즉시 확인
-(async function initAuth() {
-  if (!SUPABASE_READY || !sb) return;
+// initAuth 완료 신호 — dashboard가 이 Promise를 await해서 순서 보장
+let _authReady = null;
+let _authResolve = null;
+_authReady = new Promise(resolve => { _authResolve = resolve; });
 
-  // 빠른 nav 복원: localStorage에 이전 로그인 이메일이 있으면 즉시 로그인 버튼 숨김
-  // (실제 세션 확인 전 플리커 방지)
-  try {
-    const cachedEmail = localStorage.getItem('mw_user_email');
-    if(cachedEmail) {
-      const loginLink = document.getElementById('navLoginLink');
-      if(loginLink) loginLink.style.display = 'none';
-    }
-  } catch(e){}
+// 1. 앱 시작 시 세션 확인
+(async function initAuth() {
+  if (!SUPABASE_READY || !sb) {
+    // 로그인 버튼 표시 후 완료
+    const loginLink = document.getElementById('navLoginLink');
+    if(loginLink) loginLink.style.display = 'flex';
+    _authResolve && _authResolve();
+    return;
+  }
 
   try {
     const { data: { session } } = await sb.auth.getSession();
@@ -3090,19 +3094,23 @@ let currentSiteId  = null;  // 현재 편집 중인 site UUID
         const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
         currentProfile = data;
       } catch(e) {}
-      updateNavAuth();
+      updateNavAuth(); // 로그아웃 버튼으로 전환
       const name = currentProfile?.name || currentUser.email?.split('@')[0] || '';
       try { showWelcomeBar(name); } catch(e){}
-      try { await loadOrCreateSite(); } catch(e){ console.warn('사이트 로드 실패:', e); }
-      const h = location.hash.replace('#','');
-      if(h === 'dashboard') { _dashLoaded=false; initDashboard(); }
+      try { await loadOrCreateSite(); } catch(e){}
     } else {
       // 세션 없음 → 캐시 제거 + 로그인 버튼 표시
       try { localStorage.removeItem('mw_user_email'); } catch(e){}
-      const loginLink = document.getElementById('navLoginLink');
-      if(loginLink) { loginLink.style.cssText = ''; loginLink.style.display = 'flex'; }
+      updateNavAuth(); // currentUser=null이므로 로그인 버튼 표시
     }
-  } catch(e) { console.warn('initAuth 오류:', e); }
+  } catch(e) {
+    console.warn('initAuth 오류:', e);
+    // 오류 시에도 로그인 버튼 표시
+    const loginLink = document.getElementById('navLoginLink');
+    if(loginLink) loginLink.style.display = 'flex';
+  } finally {
+    _authResolve && _authResolve(); // 항상 완료 신호
+  }
 })();
 
 // 2. 이후 인증 상태 변경 감지
@@ -3355,22 +3363,26 @@ async function initDashboard(){
   const grid = document.getElementById('dashSiteGrid');
   const empty = document.getElementById('dashSiteEmpty');
 
+  // 로딩 표시
   if(grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;"><div style="font-size:28px;margin-bottom:10px;">⏳</div><div style="color:var(--mu);">불러오는 중...</div></div>';
   if(empty) empty.style.display = 'none';
 
-  // 세션 확인
-  if(SUPABASE_READY && sb){
+  // ★ initAuth 완료될 때까지 기다림 (타이밍 경쟁 조건 해결)
+  try { await _authReady; } catch(e){}
+
+  // 여전히 비로그인이면 getSession 한 번 더 시도
+  if(!currentUser && SUPABASE_READY && sb){
     try{
       const {data:{session}} = await sb.auth.getSession();
-      if(session?.user && !currentUser){
+      if(session?.user){
         currentUser = session.user;
-        const {data} = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-        currentProfile = data;
+        try{
+          const {data} = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+          currentProfile = data;
+        }catch(e){}
         updateNavAuth();
-        showWelcomeBar(currentProfile?.name||currentUser.email?.split('@')[0]||'');
-        await loadOrCreateSite();
       }
-    } catch(e){}
+    }catch(e){}
   }
 
   // 비로그인
