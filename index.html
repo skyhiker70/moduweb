@@ -2530,6 +2530,7 @@ function gateLogin(){
         <div class="imgm-tab on" id="itab0" onclick="switchImgTab(0)">📁 직접 업로드</div>
         <div class="imgm-tab" id="itab1" onclick="switchImgTab(1)">🗂️ 라이브러리</div>
         <div class="imgm-tab" id="itab2" onclick="switchImgTab(2)">🔗 URL 입력</div>
+        <div class="imgm-tab" id="itab3" onclick="switchImgTab(3)" style="color:#6366F1;font-weight:700;">🤖 AI 생성</div>
       </div>
       <div class="imgm-pane on" id="ipane0">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;height:100%;">
@@ -2590,6 +2591,17 @@ function gateLogin(){
               <div>URL 입력 시<br>미리보기 표시</div>
             </div>
             <img id="imgUrlPreviewImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:contain;padding:8px;" onerror="this.style.display='none';document.getElementById('imgUrlEmpty').style.display='block'">
+          </div>
+        </div>
+      </div>
+      <div class="imgm-pane" id="ipane3">
+        <div style="height:100%;display:flex;flex-direction:column;gap:12px;">
+          <div style="font-size:14px;font-weight:700;color:#6366F1;">🤖 AI 생성 이미지에서 선택</div>
+          <div id="imgAiGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;overflow-y:auto;flex:1;"></div>
+          <div id="imgAiEmpty" style="display:none;text-align:center;padding:32px;color:var(--mu);font-size:13px;">
+            <div style="font-size:36px;margin-bottom:8px;">🤖</div>
+            AI 생성 이미지가 없습니다.<br>
+            <button onclick="closeImgModal();go('aistudio')" style="margin-top:12px;padding:7px 16px;background:#6366F1;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">AI스튜디오에서 생성하기 →</button>
           </div>
         </div>
       </div>
@@ -3610,7 +3622,7 @@ async function saveBuilder() {
     const r = await fetch(SUPABASE_URL + '/rest/v1/sites?id=eq.' + currentSiteId, {
       method: 'PATCH',
       headers,
-      body: JSON.stringify({ name, config: configData, seo: seoData, updated_at: new Date().toISOString() })
+      body: JSON.stringify({ name, config: configData, seo: seoData })
     });
     if(!r.ok) {
       const err = await r.text();
@@ -4697,7 +4709,7 @@ function renderPreview(){
         <div style="width:20px;height:2px;background:rgba(255,255,255,.8);border-radius:1px;"></div>
       </div>
       <div style="display:none;position:absolute;top:52px;left:0;right:0;background:#060D1F;padding:8px 0;z-index:100;">
-        ${bdrState.modules.filter(m=>m.on&&m.id!=='hero').map(m=>`<div style="padding:13px 20px;font-size:14px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background=''" onclick="this.parentElement.style.display='none';var c=document.getElementById('bdrMobilePreview');var s=c&&c.querySelector('#pvs-${m.id}');if(s&&c)c.scrollTop=s.offsetTop-52;">${m.n}</div>`).join('')}
+        ${bdrState.modules.filter(m=>m.on&&m.id!=='hero').map(m=>`<div style="padding:13px 20px;font-size:14px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background=''" onclick="(function(el){el.parentElement.style.display='none';var c=document.getElementById('bdrMobilePreview');var s=c&&c.querySelector('#pvs-${m.id}');if(s&&c){c.scrollTop=s.offsetTop-60;}else if(s){s.scrollIntoView({behavior:'smooth'});}})(this);">${m.n}</div>`).join('')}
       </div>
     </div>`;
     bdrState.modules.forEach(m => {
@@ -4910,11 +4922,49 @@ function closeImgModal(){
 }
 
 function switchImgTab(n){
-  [0,1,2].forEach(i=>{
-    document.getElementById(`itab${i}`).classList.toggle('on',i===n);
-    document.getElementById(`ipane${i}`).classList.toggle('on',i===n);
+  [0,1,2,3].forEach(i=>{
+    const t=document.getElementById(`itab${i}`);
+    const p=document.getElementById(`ipane${i}`);
+    if(t) t.classList.toggle('on',i===n);
+    if(p) p.classList.toggle('on',i===n);
   });
   if(n===1){ loadLibraryForUser(); renderLibGrid(); }
+  if(n===3){ loadAiImagesForPicker(); }
+}
+
+function loadAiImagesForPicker() {
+  const grid = document.getElementById('imgAiGrid');
+  const empty = document.getElementById('imgAiEmpty');
+  if(!grid) return;
+
+  // 보정 이미지 내역 로드
+  let images = [];
+  try { images = JSON.parse(localStorage.getItem(aisStorageKey('ais_retouch_history')) || '[]'); } catch(e){}
+
+  if(!images.length) {
+    grid.style.display = 'none';
+    if(empty) empty.style.display = 'block';
+    return;
+  }
+
+  grid.style.display = 'grid';
+  if(empty) empty.style.display = 'none';
+
+  grid.innerHTML = images.map(img => `
+    <div class="lib-img-item${selectedImgUrl===img.url?' sel':''}" onclick="selectAiImg('${img.url.replace(/'/g,"\\'")}',this)"
+      style="cursor:pointer;border-radius:8px;overflow:hidden;border:2px solid transparent;transition:all .15s;aspect-ratio:1;background:#f5f5f5;">
+      <img src="${img.url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.style.display='none'">
+      ${img.source==='gemini'?'<div style="position:absolute;top:4px;left:4px;background:#6366F1;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;">AI</div>':''}
+    </div>`).join('');
+}
+
+function selectAiImg(url, el) {
+  selectedImgUrl = url;
+  document.querySelectorAll('#imgAiGrid .lib-img-item').forEach(e => {
+    e.classList.remove('sel'); e.style.borderColor='transparent';
+  });
+  el.classList.add('sel'); el.style.borderColor='#6366F1';
+  document.getElementById('imgApplyBtn').disabled = false;
 }
 
 // ══════════════════════════════════════════
@@ -5628,49 +5678,43 @@ async function applyImg(){
   const {mi,fi}=imgTarget;
   let finalUrl = selectedImgUrl;
 
-  // base64 이미지인 경우 Storage 업로드 시도
-  if(selectedImgUrl.startsWith('data:image/') && SUPABASE_READY){
+  // dataURL(base64) or blob URL → Supabase Storage 업로드
+  const needsUpload = selectedImgUrl.startsWith('data:image/') || selectedImgUrl.startsWith('blob:');
+
+  if(needsUpload && SUPABASE_READY){
     try {
       showToast('이미지 업로드 중...');
-      let token=null, uid=currentUser?.id;
+      let token=null, uid=null;
       try{
         const {data:{session}}=await sb.auth.getSession();
         if(session){ token=session.access_token; uid=session.user.id; }
       }catch(e){}
 
-      if(!token){
-        // 비로그인: base64 그대로 사용 (로컬 저장)
-        showToast('이미지가 로컬에 저장됩니다 (로그인 후 클라우드 저장)');
-      } else {
-        const file = _selectedFile;
-        const blob = file || await fetch(selectedImgUrl).then(r=>r.blob());
+      // 로그인 여부 관계없이 Storage 업로드 시도 (무료 플랜 포함)
+      const blob = _selectedFile || await fetch(selectedImgUrl).then(r=>r.blob()).catch(()=>null);
+      if(blob){
         const mime = blob.type || 'image/jpeg';
-        const ext = mime.split('/')[1].replace('jpeg','jpg').split('+')[0];
-        const path = `sites/${uid}/${Date.now()}.${ext}`;
+        const ext = mime.split('/')[1].replace('jpeg','jpg').split('+')[0] || 'jpg';
+        const folder = uid ? `sites/${uid}` : `sites/anonymous`;
+        const path = `${folder}/${Date.now()}.${ext}`;
 
         let uploaded = false;
-        // 방법 1: REST API 직접 호출
+        const authHeader = token ? 'Bearer ' + token : 'Bearer ' + SUPABASE_KEY;
+
+        // 방법 1: REST API
         try {
           const up = await fetch(`${SUPABASE_URL}/storage/v1/object/images/${path}`, {
             method: 'POST',
-            headers: {
-              'Authorization': 'Bearer ' + token,
-              'apikey': SUPABASE_KEY,
-              'Content-Type': mime,
-              'x-upsert': 'true'
-            },
+            headers: { 'Authorization': authHeader, 'apikey': SUPABASE_KEY, 'Content-Type': mime, 'x-upsert': 'true' },
             body: blob
           });
           if(up.ok){
             finalUrl = `${SUPABASE_URL}/storage/v1/object/public/images/${path}`;
             uploaded = true;
-          } else {
-            const et = await up.text();
-            console.warn('Storage REST 실패:', up.status, et);
           }
         } catch(e){ console.warn('Storage REST 오류:', e); }
 
-        // 방법 2: SDK 사용
+        // 방법 2: SDK
         if(!uploaded){
           try {
             const {error:upErr} = await sb.storage.from('images').upload(path, blob, {contentType:mime, upsert:true});
@@ -5678,8 +5722,6 @@ async function applyImg(){
               const {data:urlData} = sb.storage.from('images').getPublicUrl(path);
               finalUrl = urlData.publicUrl;
               uploaded = true;
-            } else {
-              console.warn('Storage SDK 실패:', upErr.message);
             }
           } catch(e){ console.warn('Storage SDK 오류:', e); }
         }
@@ -5688,8 +5730,7 @@ async function applyImg(){
           _selectedFile = null;
           showToast('이미지 업로드 완료 ✓');
         } else {
-          // fallback: base64 그대로 사용
-          showToast('Storage 미설정 — 이미지를 로컬에 저장합니다');
+          showToast('이미지를 로컬에 저장합니다 (Storage 미설정)');
         }
       }
     } catch(e){
@@ -6391,14 +6432,16 @@ kakao.maps.load(()=>{
 
   _currentPubUrl = pubUrl;
 
-  // URL 표시 - 로그인 시에는 slug URL, 비로그인은 안내 메시지
+  // URL 표시 - 로그인 시 깔끔한 슬러그 주소 표시
   const urlBox = document.getElementById('pubUrlText');
   if(urlBox){
     if(currentUser){
-      urlBox.textContent = pubUrl;
+      urlBox.textContent = `https://www.moduweb.co.kr/viewer.html?slug=${slug}`;
       urlBox.style.color = '';
+      // 내부 링크로 열리도록 pubUrl 도 업데이트
+      _currentPubUrl = `${location.origin}/viewer.html?slug=${slug}`;
     } else {
-      urlBox.textContent = '로그인 후 배포하면 moduweb.co.kr/' + slug + ' 주소가 생성됩니다';
+      urlBox.textContent = '로그인 후 배포하면 www.moduweb.co.kr/viewer.html?slug=' + slug + ' 주소가 생성됩니다';
       urlBox.style.color = '#888';
     }
   }
