@@ -1660,36 +1660,89 @@ function gateLogin(){
             <button onclick="aisSelStyle(this,'dark')" style="padding:9px 14px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;color:#555;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;text-align:left;">🌃 다크 무드</button>
           </div>
         </div>
-
-        <!-- 업로드 버튼 -->
         <button onclick="aisUpload()" style="width:100%;padding:14px;background:#1A1A1A;color:#FFB500;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:-.2px;">📸 사진 업로드 → AI 보정</button>
         <input type="file" id="aisFileInput" accept="image/*" style="display:none" onchange="aisHandleFile(event)">
-
-        <!-- 다운로드 -->
-        <button onclick="showToast('보정 이미지 저장 완료 ✓')" style="width:100%;padding:11px;background:#fff;color:#555;border:1.5px solid #e5e5e5;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">⬇️ 보정 이미지 저장</button>
+        <button onclick="aisSaveRetouchedImg()" style="width:100%;padding:11px;background:#fff;color:#111;border:2px solid #1A1A1A;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">⬇️ 보정 이미지 저장 → 내역에 추가</button>
       </div>
     </div>
 
-    <!-- 가격 CTA -->
-    <div style="background:#1A1A1A;border-radius:16px;padding:22px 28px;margin-bottom:36px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
-      <div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-          <div style="background:#FFB500;color:#111;font-size:11px;font-weight:800;padding:2px 10px;border-radius:100px;">Save 96%</div>
-          <div style="font-size:13px;color:#666;text-decoration:line-through;">800,000 KRW</div>
+    <!-- 보정 이미지 저장 내역 + 2가지 크기 미리보기 -->
+    <div id="aisRetouchSection" style="display:none;margin-bottom:40px;padding:28px;background:#F9F9F9;border-radius:16px;border:1.5px solid #E5E5E5;">
+      <div style="font-size:18px;font-weight:900;margin-bottom:6px;">📐 홈페이지 적용 미리보기</div>
+      <div style="font-size:13px;color:#888;margin-bottom:24px;">보정된 이미지가 홈페이지에 어떻게 보이는지 2가지 크기로 확인하세요</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+        <!-- 웹 헤더 미리보기 -->
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px;">🖥️ 웹 상단 헤더 이미지 (1920×400)</div>
+          <div style="border-radius:10px;overflow:hidden;border:1.5px solid #E5E5E5;background:#1A1A1A;">
+            <!-- 가짜 브라우저 탑바 -->
+            <div style="background:#F5F5F5;padding:6px 10px;display:flex;align-items:center;gap:5px;border-bottom:1px solid #E5E5E5;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#FF5F57;"></div>
+              <div style="width:8px;height:8px;border-radius:50%;background:#FEBC2E;"></div>
+              <div style="width:8px;height:8px;border-radius:50%;background:#28C840;"></div>
+              <div style="flex:1;height:16px;background:#E8E8E8;border-radius:4px;margin:0 6px;"></div>
+            </div>
+            <!-- 헤더 영역 -->
+            <div style="position:relative;height:100px;overflow:hidden;">
+              <img id="aisWebHeaderImg" src="" alt="웹 헤더" style="width:100%;height:100%;object-fit:cover;display:block;">
+              <div style="position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;">
+                <div style="text-align:center;">
+                  <div style="font-size:14px;font-weight:900;color:#fff;margin-bottom:4px;">내 홈페이지 제목</div>
+                  <div style="font-size:11px;color:rgba(255,255,255,.7);">슬로건 문구가 여기 표시됩니다</div>
+                </div>
+              </div>
+            </div>
+            <!-- 콘텐츠 영역 스텁 -->
+            <div style="padding:10px;background:#fff;">
+              <div style="height:6px;background:#F0F0F0;border-radius:3px;margin-bottom:5px;width:70%;"></div>
+              <div style="height:6px;background:#F0F0F0;border-radius:3px;width:50%;"></div>
+            </div>
+          </div>
         </div>
-        <div style="font-size:13px;color:#aaa;margin-bottom:4px;">Business Pro Plan</div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <span style="font-size:12px;color:#888;">✓ AI 보정 월 20컷</span>
-          <span style="font-size:12px;color:#888;">✓ 광고배너 자동생성</span>
-          <span style="font-size:12px;color:#888;">✓ 도메인 연결</span>
+        <!-- 모바일 헤더 미리보기 -->
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px;">📱 모바일 헤더 이미지 (375×200)</div>
+          <div style="display:flex;justify-content:center;">
+            <div style="width:200px;border-radius:20px;overflow:hidden;border:3px solid #1A1A1A;background:#1A1A1A;box-shadow:0 8px 28px rgba(0,0,0,.2);">
+              <!-- 모바일 탑 -->
+              <div style="background:#1A1A1A;padding:8px 16px 4px;display:flex;justify-content:space-between;align-items:center;">
+                <div style="font-size:9px;color:rgba(255,255,255,.6);">9:41</div>
+                <div style="font-size:9px;color:rgba(255,255,255,.6);">●●●</div>
+              </div>
+              <!-- 모바일 헤더 이미지 -->
+              <div style="position:relative;height:90px;overflow:hidden;">
+                <img id="aisMobHeaderImg" src="" alt="모바일 헤더" style="width:100%;height:100%;object-fit:cover;display:block;">
+                <div style="position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                  <div style="font-size:11px;font-weight:900;color:#fff;margin-bottom:3px;">내 홈페이지</div>
+                  <div style="background:#FFB500;color:#111;font-size:8px;font-weight:800;padding:2px 8px;border-radius:3px;">시작하기 →</div>
+                </div>
+              </div>
+              <!-- 모바일 콘텐츠 스텁 -->
+              <div style="padding:8px;background:#fff;">
+                <div style="height:5px;background:#F0F0F0;border-radius:2px;margin-bottom:4px;width:80%;"></div>
+                <div style="height:5px;background:#F0F0F0;border-radius:2px;width:60%;"></div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div style="text-align:right;flex-shrink:0;">
-        <div style="font-size:30px;font-weight:900;color:#FFB500;line-height:1;">29,800<span style="font-size:13px;color:#888;font-weight:500;"> KRW/월</span></div>
-        <button onclick="openPayModal('plan')" style="margin-top:10px;padding:12px 24px;background:#FFB500;color:#111;border:none;border-radius:9px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">지금 시작하기 →</button>
       </div>
     </div>
-    <div style="text-align:center;font-size:12px;color:#bbb;margin-bottom:48px;">✓ 7일 환불 보장 · ✓ 언제든 해지 · ✓ 신용카드 불필요</div>
+
+    <!-- 보정 이미지 저장 내역 -->
+    <div style="margin-bottom:40px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <div style="font-size:18px;font-weight:900;letter-spacing:-.4px;">🖼️ 보정 이미지 저장 내역</div>
+          <div style="font-size:13px;color:#888;margin-top:3px;">저장된 보정 이미지를 클릭하면 불러올 수 있습니다</div>
+        </div>
+        <button onclick="aisClearRetouchHistory()" style="padding:6px 14px;border:1.5px solid #E5E5E5;border-radius:7px;background:#fff;color:#aaa;font-size:12px;cursor:pointer;font-family:inherit;">전체 삭제</button>
+      </div>
+      <div id="aisRetouchHistory" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">
+        <div style="text-align:center;padding:28px 16px;color:#bbb;font-size:13px;grid-column:1/-1;">
+          아직 저장된 이미지가 없습니다.<br>보정 후 "이미지 저장" 버튼을 누르세요
+        </div>
+      </div>
+    </div>
 
     <!-- AI 광고 배너 생성 섹션 -->
     <div style="border-top:2px solid #F0F0F0;padding-top:40px;">
@@ -1817,6 +1870,30 @@ function gateLogin(){
         <div id="aisBannerHistory" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;">
           <div style="text-align:center;padding:32px 16px;color:#bbb;font-size:13px;grid-column:1/-1;">
             아직 저장된 배너가 없습니다.<br>배너를 만들고 저장해보세요 💾
+          </div>
+        </div>
+      </div>
+
+      <!-- 비즈니스 플랜 가격 (맨 하단) -->
+      <div style="margin-top:56px;padding-top:40px;border-top:2px solid #F0F0F0;">
+        <div style="background:#1A1A1A;border-radius:20px;padding:32px 36px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <div style="background:#FFB500;color:#111;font-size:12px;font-weight:800;padding:3px 12px;border-radius:100px;">Save 96%</div>
+              <div style="font-size:14px;color:#666;text-decoration:line-through;">800,000 KRW</div>
+            </div>
+            <div style="font-size:14px;color:#aaa;margin-bottom:8px;">Business Pro Plan</div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;">
+              <span style="font-size:13px;color:#888;">✓ AI 사진보정 월 20컷</span>
+              <span style="font-size:13px;color:#888;">✓ 광고배너 자동생성 무제한</span>
+              <span style="font-size:13px;color:#888;">✓ 도메인 연결</span>
+              <span style="font-size:13px;color:#888;">✓ 홈페이지 빌더 전체 기능</span>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:36px;font-weight:900;color:#FFB500;line-height:1;margin-bottom:4px;">29,800<span style="font-size:14px;color:#888;font-weight:500;"> KRW/월</span></div>
+            <button onclick="openPayModal('plan')" style="margin-top:12px;padding:14px 28px;background:#FFB500;color:#111;border:none;border-radius:10px;font-size:16px;font-weight:900;cursor:pointer;font-family:inherit;">지금 시작하기 →</button>
+            <div style="font-size:12px;color:rgba(255,255,255,.3);margin-top:8px;">✓ 7일 환불 보장 · ✓ 언제든 해지</div>
           </div>
         </div>
       </div>
@@ -2735,21 +2812,36 @@ let currentSiteId  = null;  // 현재 편집 중인 site UUID
 // 1. 앱 시작 시 세션 즉시 확인
 (async function initAuth() {
   if (!SUPABASE_READY || !sb) return;
+
+  // 빠른 nav 복원: localStorage에 이전 로그인 이메일이 있으면 즉시 로그인 버튼 숨김
+  // (실제 세션 확인 전 플리커 방지)
+  try {
+    const cachedEmail = localStorage.getItem('mw_user_email');
+    if(cachedEmail) {
+      const loginLink = document.getElementById('navLoginLink');
+      if(loginLink) loginLink.style.display = 'none';
+    }
+  } catch(e){}
+
   try {
     const { data: { session } } = await sb.auth.getSession();
     if (session?.user) {
       currentUser = session.user;
-      // profiles 실패해도 nav 업데이트는 반드시 실행
       try {
         const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
         currentProfile = data;
-      } catch(e) { console.warn('profiles 조회 실패 (무시):', e); }
-      updateNavAuth(); // 항상 실행 - 로그인→로그아웃 버튼 전환
+      } catch(e) {}
+      updateNavAuth();
       const name = currentProfile?.name || currentUser.email?.split('@')[0] || '';
-      showWelcomeBar(name);
+      try { showWelcomeBar(name); } catch(e){}
       try { await loadOrCreateSite(); } catch(e){ console.warn('사이트 로드 실패:', e); }
       const h = location.hash.replace('#','');
       if(h === 'dashboard') { _dashLoaded=false; initDashboard(); }
+    } else {
+      // 세션 없음 → 캐시 제거 + 로그인 버튼 표시
+      try { localStorage.removeItem('mw_user_email'); } catch(e){}
+      const loginLink = document.getElementById('navLoginLink');
+      if(loginLink) { loginLink.style.cssText = ''; loginLink.style.display = 'flex'; }
     }
   } catch(e) { console.warn('initAuth 오류:', e); }
 })();
@@ -2801,32 +2893,40 @@ function updateNavAuth() {
   const loginLink = document.getElementById('navLoginLink');
   const userInfo  = document.getElementById('navUserInfo');
   if (!loginLink || !userInfo) return;
+
   if (currentUser) {
-    // 로그인 버튼 → 숨김
-    loginLink.style.display = 'none';
+    // 로그인 상태 localStorage 캐시 (새로고침 후 빠른 복원용)
+    try { localStorage.setItem('mw_user_email', currentUser.email||''); } catch(e){}
+
+    loginLink.style.cssText = 'display:none!important';
     userInfo.style.display  = 'flex';
+
     const name = currentProfile?.name || currentUser.email?.split('@')[0] || '사용자';
-    // 아바타 이니셜
-    const _na=document.getElementById('navUserAvatar');
-    if(_na) { _na.textContent = name.charAt(0).toUpperCase(); _na.title = name + ' 님'; }
-    // 크레딧
-    const creditEl = document.getElementById('navCreditAmt');
-    if(creditEl) creditEl.textContent = currentProfile?.credits || 0;
-    refreshCredits();
+    try {
+      const _na=document.getElementById('navUserAvatar');
+      if(_na) { _na.textContent = name.charAt(0).toUpperCase(); _na.title = name + ' 님'; }
+      const creditEl = document.getElementById('navCreditAmt');
+      if(creditEl) creditEl.textContent = currentProfile?.credits || 0;
+    } catch(e){}
+
+    // refreshCredits 비동기 - 실패해도 절대 UI에 영향 없음
+    try { refreshCredits().catch(()=>{}); } catch(e){}
+
     // 테스트 배너 숨김
-    const banner = document.getElementById('demoBanner');
-    if(banner) banner.style.display = 'none';
-    // 수정하기 버튼 표시
-    const editBtn = document.getElementById('navEditSiteBtn');
-    if(editBtn) editBtn.style.display = 'flex';
-    // 환영 메시지 바 (항상 표시)
-    showWelcomeBar(name);
-    // 로그인 버튼 완전 숨김 보장
-    if(loginLink) loginLink.style.display = 'none';
+    try {
+      const banner = document.getElementById('demoBanner');
+      if(banner) banner.style.display = 'none';
+      const editBtn = document.getElementById('navEditSiteBtn');
+      if(editBtn) editBtn.style.display = 'flex';
+    } catch(e){}
+
+    try { showWelcomeBar(name); } catch(e){}
   } else {
-    // 로그인 버튼 복원
+    // 로그아웃: 캐시 제거
+    try { localStorage.removeItem('mw_user_email'); } catch(e){}
     loginLink.textContent = '로그인';
     loginLink.onclick = ()=>go('login');
+    loginLink.style.cssText = '';
     loginLink.style.display = 'flex';
     userInfo.style.display  = 'none';
   }
@@ -6917,6 +7017,7 @@ function initAiStudio() {
   aisInitSlider();
   aisUpdateBanner();
   aisRenderHistory();
+  aisRenderRetouchHistory();
 }
 
 function aisUpdateTicket() {
@@ -6934,11 +7035,14 @@ function aisUpload() {
   document.getElementById('aisFileInput')?.click();
 }
 
+let _aisRetouchedUrl = null; // 현재 보정된 이미지 URL
+
 function aisHandleFile(e) {
   const file = e.target.files[0];
   if(!file) return;
   if(_aisRemain <= 0){ showToast('무료 체험권이 모두 소진됐습니다!'); return; }
   const url = URL.createObjectURL(file);
+  _aisRetouchedUrl = url; // 저장용 보관
   const bi = document.querySelector('#aisBefore img');
   const ai = document.querySelector('#aisAfterInner img');
   if(bi){ bi.src = url; }
@@ -6946,7 +7050,107 @@ function aisHandleFile(e) {
   _aisRemain--;
   aisUpdateTicket();
   showToast('AI 보정 처리 중... ✨ 잠시만 기다려주세요');
-  setTimeout(()=>{ showToast('AI 보정 완료! 슬라이더를 드래그해서 비교해보세요 ✓'); }, 1800);
+  setTimeout(()=>{
+    showToast('AI 보정 완료! 슬라이더를 드래그해서 비교해보세요 ✓');
+    // 2가지 크기 미리보기 자동 업데이트
+    const webImg = document.getElementById('aisWebHeaderImg');
+    const mobImg = document.getElementById('aisMobHeaderImg');
+    if(webImg) webImg.src = url;
+    if(mobImg) mobImg.src = url;
+    const section = document.getElementById('aisRetouchSection');
+    if(section) section.style.display = 'block';
+  }, 1800);
+}
+
+// 보정 이미지 저장 → 내역에 추가
+function aisSaveRetouchedImg() {
+  const url = _aisRetouchedUrl;
+  if(!url){ showToast('먼저 사진을 업로드하고 보정해주세요'); return; }
+  const record = {
+    id: Date.now(),
+    url,
+    date: new Date().toLocaleDateString('ko-KR'),
+    time: new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}),
+  };
+  try {
+    const history = JSON.parse(localStorage.getItem('ais_retouch_history')||'[]');
+    history.unshift(record);
+    if(history.length > 20) history.pop();
+    localStorage.setItem('ais_retouch_history', JSON.stringify(history));
+  } catch(e){}
+  aisRenderRetouchHistory();
+  showToast('보정 이미지가 저장됐습니다 ✓ 내역에서 확인하세요');
+  // 내역 섹션으로 부드럽게 스크롤
+  setTimeout(()=>{
+    document.getElementById('aisRetouchHistory')?.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 400);
+}
+
+// 보정 이미지 내역 렌더링
+function aisRenderRetouchHistory() {
+  const container = document.getElementById('aisRetouchHistory');
+  if(!container) return;
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('ais_retouch_history')||'[]'); } catch(e){}
+  if(!history.length){
+    container.innerHTML='<div style="text-align:center;padding:28px 16px;color:#bbb;font-size:13px;grid-column:1/-1;">아직 저장된 이미지가 없습니다.<br>보정 후 "이미지 저장" 버튼을 누르세요</div>';
+    return;
+  }
+  container.innerHTML = history.map(r=>`
+    <div style="border:1.5px solid #E5E5E5;border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s;"
+      onmouseover="this.style.borderColor='#FFB500';this.style.transform='translateY(-3px)'"
+      onmouseout="this.style.borderColor='#E5E5E5';this.style.transform=''">
+      <div style="height:100px;overflow:hidden;background:#F5F5F5;">
+        <img src="${r.url}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none'">
+      </div>
+      <div style="padding:8px 10px;background:#fff;">
+        <div style="font-size:11px;color:#888;margin-bottom:5px;">${r.date} ${r.time}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+          <button onclick="aisLoadRetouched('${r.id}')" style="padding:4px;border:1.5px solid #FFB500;border-radius:5px;background:#FFB500;color:#111;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;">불러오기</button>
+          <button onclick="aisDeleteRetouch(${r.id})" style="padding:4px;border:1.5px solid #E5E5E5;border-radius:5px;background:#fff;color:#999;font-size:10px;cursor:pointer;font-family:inherit;">삭제</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// 보정 이미지 불러오기
+function aisLoadRetouched(id) {
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('ais_retouch_history')||'[]'); } catch(e){}
+  const r = history.find(x=>String(x.id)===String(id));
+  if(!r) return;
+  _aisRetouchedUrl = r.url;
+  const bi = document.querySelector('#aisBefore img');
+  const ai = document.querySelector('#aisAfterInner img');
+  const webImg = document.getElementById('aisWebHeaderImg');
+  const mobImg = document.getElementById('aisMobHeaderImg');
+  if(bi) bi.src = r.url;
+  if(ai) ai.src = r.url;
+  if(webImg) webImg.src = r.url;
+  if(mobImg) mobImg.src = r.url;
+  const section = document.getElementById('aisRetouchSection');
+  if(section) section.style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+  showToast('이미지를 불러왔습니다 ✓');
+}
+
+// 보정 이미지 개별 삭제
+function aisDeleteRetouch(id) {
+  try {
+    let h = JSON.parse(localStorage.getItem('ais_retouch_history')||'[]');
+    h = h.filter(x=>x.id!==id);
+    localStorage.setItem('ais_retouch_history', JSON.stringify(h));
+  } catch(e){}
+  aisRenderRetouchHistory();
+  showToast('삭제됐습니다');
+}
+
+// 보정 이미지 내역 전체 삭제
+function aisClearRetouchHistory() {
+  if(!confirm('저장된 보정 이미지를 모두 삭제할까요?')) return;
+  localStorage.removeItem('ais_retouch_history');
+  aisRenderRetouchHistory();
+  showToast('전체 삭제됐습니다');
 }
 
 function aisSelStyle(el, key) {
