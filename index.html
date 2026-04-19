@@ -1639,23 +1639,10 @@ function gateLogin(){
         <h2 style="font-size:22px;font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:-.5px;">텍스트로 이미지 생성</h2>
         <p style="font-size:14px;color:rgba(255,255,255,.6);margin-bottom:20px;">원하는 이미지를 설명하면 Gemini AI가 즉시 생성합니다</p>
 
-        <!-- API 키 설정 (접힘) -->
-        <div id="geminiKeySection" style="margin-bottom:16px;">
-          <div onclick="toggleGeminiKeyInput()" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;">
-            <div id="geminiKeyStatus" style="width:8px;height:8px;border-radius:50%;background:#EF4444;flex-shrink:0;"></div>
-            <span style="font-size:12px;color:rgba(255,255,255,.6);" id="geminiKeyStatusText">Gemini API 키 미설정 — 클릭해서 입력</span>
-            <span style="font-size:10px;color:rgba(255,255,255,.3);">▼</span>
-          </div>
-          <div id="geminiKeyInput" style="display:none;gap:8px;">
-            <input type="password" id="geminiApiKeyField" placeholder="AIzaSy..." 
-              style="flex:1;padding:9px 12px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:8px;font-size:13px;color:#fff;outline:none;font-family:inherit;"
-              onfocus="this.style.borderColor='rgba(99,102,241,.8)'" onblur="this.style.borderColor='rgba(255,255,255,.2)'"
-              oninput="checkGeminiKey()">
-            <button onclick="saveGeminiKey()" style="padding:9px 16px;background:#6366F1;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">저장</button>
-          </div>
-          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;" id="geminiKeyHint">
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#6366F1;text-decoration:none;">Google AI Studio</a>에서 무료 발급 → 여기에 붙여넣기
-          </div>
+        <!-- API 키 불필요 - Supabase Edge Function으로 안전하게 처리 -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:8px 12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#22C55E;flex-shrink:0;"></div>
+          <span style="font-size:12px;color:rgba(255,255,255,.7);">Supabase Edge Function 연결됨 — API 키가 서버에서 안전하게 보호됩니다 🔒</span>
         </div>
 
         <!-- 프롬프트 입력 -->
@@ -7503,13 +7490,6 @@ function geminiQuickPrompt(text) {
 
 // 실제 Gemini API 호출 (브라우저 직접 호출)
 async function geminiGenerate() {
-  if(!GEMINI_KEY) {
-    showToast('Gemini API 키를 먼저 입력해주세요');
-    document.getElementById('geminiKeyInput').style.display = 'flex';
-    document.getElementById('geminiApiKeyField')?.focus();
-    return;
-  }
-
   const prompt = document.getElementById('geminiPrompt')?.value?.trim();
   if(!prompt) { showToast('이미지 설명을 입력해주세요'); return; }
 
@@ -7533,26 +7513,17 @@ async function geminiGenerate() {
   }, 3000);
 
   try {
-    // Gemini API 엔드포인트 - 이미지 생성 지원 모델
-    // gemini-2.0-flash-preview-image-generation: 텍스트→이미지 지원
-    const model = 'gemini-2.0-flash-preview-image-generation';
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`;
+    // Supabase Edge Function을 통해 안전하게 호출 (API 키 서버에서만 사용)
+    const EDGE_URL = `${SUPABASE_URL}/functions/v1/hyper-task`;
 
-    // 비율에 따른 프롬프트 보강
-    const ratioDesc = { '16:9':'가로형 와이드 화면', '1:1':'정사각형', '9:16':'세로형 세로 화면', '4:3':'일반 가로 화면' };
-    const fullPrompt = `${prompt}. ${ratioDesc[_geminiRatio] || ''} 구도. 전문 상업 사진 품질. 고해상도. 선명하고 깨끗한 배경.`;
-
-    const body = {
-      contents: [{ parts: [{ text: fullPrompt }] }],
-      generationConfig: {
-        responseModalities: ['IMAGE', 'TEXT'],
-      }
-    };
-
-    const res = await fetch(endpoint, {
+    const res = await fetch(EDGE_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      },
+      body: JSON.stringify({ prompt, ratio: _geminiRatio })
     });
 
     if(!res.ok) {
