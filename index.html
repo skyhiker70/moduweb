@@ -2629,6 +2629,7 @@ let currentSiteId  = null;  // 현재 편집 중인 site UUID
 
 // 2. 이후 인증 상태 변경 감지
 sb.auth.onAuthStateChange(async (event, session) => {
+  try {
   const prevUser = currentUser;
   currentUser = session?.user || null;
 
@@ -2643,13 +2644,11 @@ sb.auth.onAuthStateChange(async (event, session) => {
     showWelcomeBar(name);
 
     if (event === 'SIGNED_IN' && !prevUser) {
-      // 새 로그인 (이전에 로그인 안 된 상태)
       _dashLoaded = false;
-      await loadOrCreateSite();
-      // 빌더에서 로그인했으면 빌더로, 아니면 대시보드로
+      try { await loadOrCreateSite(); } catch(e){ console.warn('loadOrCreateSite 오류:', e); }
       const curHash = location.hash.replace('#','');
       if(curHash === 'builder' || document.getElementById('page-builder')?.classList.contains('active')){
-        bdrInited = false; // 빌더 재초기화로 저장 버튼 복구
+        bdrInited = false;
         go('builder');
         showToast('로그인 완료! 클라우드 저장이 활성화됐어요 ✓');
       } else {
@@ -2661,9 +2660,13 @@ sb.auth.onAuthStateChange(async (event, session) => {
     currentProfile = null;
     currentSiteId  = null;
     updateNavAuth();
-    // 환영 바 숨김
     const wb = document.getElementById('welcomeBar');
     if(wb) wb.style.display = 'none';
+  }
+  } catch(authErr) {
+    console.warn('onAuthStateChange 처리 오류:', authErr);
+    // 크래시해도 UI는 살아있어야 함
+    try { updateNavAuth(); } catch(e2){}
   }
 });
 
@@ -2970,7 +2973,7 @@ async function loadOrCreateSite() {
         }
         const nameInput = document.getElementById('bdrSiteName');
         if(nameInput && site.name) nameInput.value = site.name;
-        console.log('마지막 사이트 복원:', site.name);
+        _applyStoredSeo(site.seo);
         return;
       }
     } catch(e){ console.warn('마지막 사이트 로드 실패:', e); }
@@ -2988,31 +2991,39 @@ async function loadOrCreateSite() {
     const site = sites[0];
     currentSiteId = site.id;
     if (site.config) {
-      // 저장된 모듈 복원
       try {
         const cfg = typeof site.config === 'string' ? JSON.parse(site.config) : site.config;
         if (cfg.modules) bdrState.modules = cfg.modules;
         if (cfg.theme)   bdrState.theme   = cfg.theme;
       } catch(e) { console.warn('config 파싱 실패', e); }
     }
-    if (site.name) document.getElementById('bdrSiteName').value = site.name;
-    if (site.seo) {
-      try {
-        const seo = typeof site.seo === 'string' ? JSON.parse(site.seo) : site.seo;
-        if (seo.title)    { document.getElementById('seoTitle').value    = seo.title; }
-        if (seo.desc)     { document.getElementById('seoDesc').value     = seo.desc; }
-        if (seo.keywords) { document.getElementById('seoKeywords').value = seo.keywords; }
-        if (seo.ogTitle)  { document.getElementById('ogTitle').value     = seo.ogTitle; }
-        if (seo.ogDesc)   { document.getElementById('ogDesc').value      = seo.ogDesc; }
-        if (seo.ogImage)  { document.getElementById('ogImage').value     = seo.ogImage; }
-      } catch(e) {}
-    }
+    // null-safe: 빌더가 아직 초기화 안 됐을 수 있음
+    const nameEl = document.getElementById('bdrSiteName');
+    if(nameEl && site.name) nameEl.value = site.name;
+    _applyStoredSeo(site.seo);
     showToast('저장된 사이트를 불러왔습니다 ✓');
   } else {
     // 새 사이트 생성
-    const { data } = await sb.from('sites').insert({ user_id: currentUser.id, name: '내 회사 홈페이지', config: {}, seo: {} }).select().single();
-    if (data) currentSiteId = data.id;
+    try {
+      const { data } = await sb.from('sites').insert({ user_id: currentUser.id, name: '내 회사 홈페이지', config: {}, seo: {} }).select().single();
+      if (data) currentSiteId = data.id;
+    } catch(e){ console.warn('사이트 생성 실패:', e); }
   }
+}
+
+// SEO 필드 적용 (빌더가 초기화됐을 때만) - null-safe
+function _applyStoredSeo(seo){
+  if(!seo) return;
+  try{
+    const s = typeof seo === 'string' ? JSON.parse(seo) : seo;
+    const set = (id, val) => { const el=document.getElementById(id); if(el&&val) el.value=val; };
+    set('seoTitle', s.title);
+    set('seoDesc', s.desc);
+    set('seoKeywords', s.keywords);
+    set('ogTitle', s.ogTitle);
+    set('ogDesc', s.ogDesc);
+    set('ogImage', s.ogImage);
+  } catch(e){}
 }
 
 async function saveBuilder() {
@@ -4208,11 +4219,12 @@ function buildMobileSection(m, tc, sn){
   }
   if(m.id==='contact'){
     const addr = f('addr');
+    const mapId = 'pvLeafMob_' + Math.random().toString(36).slice(2,8);
     return `<div style="padding:24px 16px;">
       <div style="font-size:11px;font-weight:700;color:${tc};text-transform:uppercase;margin-bottom:4px;">연락처</div>
       <div style="font-size:18px;font-weight:900;margin-bottom:12px;">${f('title')}</div>
       <div style="font-size:13px;color:#666;line-height:2;">📍 ${f('addr')}<br>📞 ${f('tel').replace('tel:','')}<br>✉️ ${f('email').replace('mailto:','')}<br>🕐 ${f('hours')}</div>
-      ${addr ? `<div style="margin-top:14px;height:180px;border-radius:10px;overflow:hidden;background:#e8eff7;position:relative;"><div class="pv-leafmap" data-addr="${addr.replace(/"/g,'&quot;')}" style="position:absolute;inset:0;"></div></div>` : ''}
+      ${addr ? `<div style="margin-top:14px;height:180px;border-radius:10px;overflow:hidden;background:#e8eff7;position:relative;"><div id="${mapId}" class="pv-leafmap" data-addr="${addr.replace(/"/g,'&quot;')}" style="position:absolute;inset:0;"></div></div>` : ''}
     </div>`;
   }
   return `<div style="padding:24px 16px;border-bottom:1px solid #f0f0f0;">
@@ -6330,6 +6342,22 @@ async function loadShowcaseSites() {
 
 // 홈 랜딩 그리드 쇼케이스
 async function loadHomeShowcase() {
+  // 샘플 데이터 즉시 표시 (네트워크 기다리지 않고)
+  if(_showcaseData.length === 0) {
+    _showcaseData = [
+      { id:'s1', name:'블루밍 인테리어', cat:'realestate', emoji:'🏛️', desc:'공간의 가치를 높이는 프리미엄 인테리어', url:'#', tplId:'realestate-pro' },
+      { id:'s2', name:'온기 한식당', cat:'food', emoji:'🍱', desc:'정성으로 끓인 매일 당일 조리 한식', url:'#', tplId:'cafe-warm' },
+      { id:'s3', name:'서울 정형외과', cat:'medical', emoji:'⚕️', desc:'20년 경력 전문의의 정밀 진료', url:'#', tplId:'hospital-clean' },
+      { id:'s4', name:'Dev.School', cat:'it', emoji:'💻', desc:'실무 중심 3개월 풀스택 개발 과정', url:'#', tplId:'startup-it' },
+      { id:'s5', name:'MUSE 살롱', cat:'beauty', emoji:'✂️', desc:'트렌드를 선도하는 헤어&스킨케어', url:'#', tplId:'beauty-salon' },
+      { id:'s6', name:'The English', cat:'education', emoji:'📖', desc:'원어민 강사와 함께하는 영어 회화', url:'#', tplId:'academy-edu' },
+      { id:'s7', name:'Nexus 컨설팅', cat:'business', emoji:'📊', desc:'데이터 기반 B2B 마케팅 전략', url:'#', tplId:'corp-basic' },
+      { id:'s8', name:'도쿄라멘 본점', cat:'delivery', emoji:'🍜', desc:'직수입 재료로 매일 끓이는 정통 라멘', url:'#', tplId:'food-delivery' },
+      { id:'s9', name:'Studio K.', cat:'business', emoji:'🎨', desc:'브랜드 아이덴티티 전문 크리에이터', url:'#', tplId:'portfolio-creative' },
+    ];
+    renderScGrid('all'); // 즉시 표시
+  }
+  // 백그라운드에서 Supabase 데이터 로드 (공개 사이트가 있으면 교체)
   await loadShowcaseSites();
   renderScGrid('all');
 }
