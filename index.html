@@ -1095,6 +1095,12 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 </div>
 <script>
 (function(){
+  // /#superadmin 접근 시 siteGate 우회 → superadmin 자체 로그인 폼 표시
+  const hash = location.hash.replace('#','');
+  if(hash === 'superadmin'){
+    document.getElementById('siteGate').style.display = 'none';
+    return;
+  }
   // 세션 내 인증 기억
   if(sessionStorage.getItem('mw_gate')==='ok'){
     document.getElementById('siteGate').style.display='none';
@@ -1104,18 +1110,24 @@ function gateLogin(){
   const id=document.getElementById('gateId').value.trim();
   const pw=document.getElementById('gatePw').value;
   const err=document.getElementById('gateErr');
-  // 접속 가능 계정 목록
   const ACCOUNTS=[
-    {id:'admin',pw:'modusite2025'},
-    {id:'moduweb',pw:'moduweb2025*'},
+    {id:'admin',   pw:'modusite2025',  isAdmin:true},
+    {id:'moduweb', pw:'moduweb2025*',  isAdmin:false},
   ];
-  const ok=ACCOUNTS.some(a=>a.id===id&&a.pw===pw);
-  if(ok){
+  const found=ACCOUNTS.find(a=>a.id===id&&a.pw===pw);
+  if(found){
     sessionStorage.setItem('mw_gate','ok');
     const gate=document.getElementById('siteGate');
     gate.style.transition='opacity .3s';
     gate.style.opacity='0';
-    setTimeout(()=>gate.style.display='none',300);
+    setTimeout(()=>{
+      gate.style.display='none';
+      // 관리자 계정이면 superadmin 자동 진입
+      if(found.isAdmin){
+        saLoggedIn=true;
+        go('superadmin');
+      }
+    },300);
   } else {
     err.textContent='아이디 또는 비밀번호가 틀렸습니다';
     document.getElementById('gatePw').value='';
@@ -1257,6 +1269,8 @@ function gateLogin(){
           <div class="ind-card-emoji">📊</div>
           <div class="ind-card-name">비즈니스</div>
           <div class="ind-card-sub">기업·스타트업·컨설팅</div>
+          <div class="ind-card-admin-btn" onclick="event.stopPropagation();saIndImgUpload('business')" style="display:none;margin-top:7px;padding:4px 10px;background:#FFB500;color:#111;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📁 이미지 변경</div>
+          <input type="file" id="saIndFile-business-home" accept="image/*" style="display:none" onchange="saIndImgHandleFileHome(event,'business')">
         </div>
       </div>
 
@@ -1266,6 +1280,8 @@ function gateLogin(){
           <div class="ind-card-emoji">🍜</div>
           <div class="ind-card-name">음식/카페</div>
           <div class="ind-card-sub">식당·카페·베이커리</div>
+          <div class="ind-card-admin-btn" onclick="event.stopPropagation();saIndImgUpload('food')" style="display:none;margin-top:7px;padding:4px 10px;background:#FFB500;color:#111;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📁 이미지 변경</div>
+          <input type="file" id="saIndFile-food-home" accept="image/*" style="display:none" onchange="saIndImgHandleFileHome(event,'food')">
         </div>
       </div>
 
@@ -1275,6 +1291,8 @@ function gateLogin(){
           <div class="ind-card-emoji">🏥</div>
           <div class="ind-card-name">의료/병원</div>
           <div class="ind-card-sub">병원·클리닉·한의원</div>
+          <div class="ind-card-admin-btn" onclick="event.stopPropagation();saIndImgUpload('medical')" style="display:none;margin-top:7px;padding:4px 10px;background:#FFB500;color:#111;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📁 이미지 변경</div>
+          <input type="file" id="saIndFile-medical-home" accept="image/*" style="display:none" onchange="saIndImgHandleFileHome(event,'medical')">
         </div>
       </div>
 
@@ -1284,6 +1302,8 @@ function gateLogin(){
           <div class="ind-card-emoji">📚</div>
           <div class="ind-card-name">교육/학원</div>
           <div class="ind-card-sub">학원·어학원·과외</div>
+          <div class="ind-card-admin-btn" onclick="event.stopPropagation();saIndImgUpload('education')" style="display:none;margin-top:7px;padding:4px 10px;background:#FFB500;color:#111;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📁 이미지 변경</div>
+          <input type="file" id="saIndFile-education-home" accept="image/*" style="display:none" onchange="saIndImgHandleFileHome(event,'education')">
         </div>
       </div>
 
@@ -1293,6 +1313,8 @@ function gateLogin(){
           <div class="ind-card-emoji">💅</div>
           <div class="ind-card-name">뷰티/패션</div>
           <div class="ind-card-sub">헤어샵·네일·피부관리</div>
+          <div class="ind-card-admin-btn" onclick="event.stopPropagation();saIndImgUpload('beauty')" style="display:none;margin-top:7px;padding:4px 10px;background:#FFB500;color:#111;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📁 이미지 변경</div>
+          <input type="file" id="saIndFile-beauty-home" accept="image/*" style="display:none" onchange="saIndImgHandleFileHome(event,'beauty')">
         </div>
       </div>
 
@@ -1302,6 +1324,8 @@ function gateLogin(){
           <div class="ind-card-emoji">🏠</div>
           <div class="ind-card-name">부동산/건설</div>
           <div class="ind-card-sub">공인중개사·인테리어</div>
+          <div class="ind-card-admin-btn" onclick="event.stopPropagation();saIndImgUpload('realestate')" style="display:none;margin-top:7px;padding:4px 10px;background:#FFB500;color:#111;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📁 이미지 변경</div>
+          <input type="file" id="saIndFile-realestate-home" accept="image/*" style="display:none" onchange="saIndImgHandleFileHome(event,'realestate')">
         </div>
       </div>
 
@@ -1311,6 +1335,8 @@ function gateLogin(){
           <div class="ind-card-emoji">💻</div>
           <div class="ind-card-name">IT/스타트업</div>
           <div class="ind-card-sub">앱·SaaS·테크기업</div>
+          <div class="ind-card-admin-btn" onclick="event.stopPropagation();saIndImgUpload('it')" style="display:none;margin-top:7px;padding:4px 10px;background:#FFB500;color:#111;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📁 이미지 변경</div>
+          <input type="file" id="saIndFile-it-home" accept="image/*" style="display:none" onchange="saIndImgHandleFileHome(event,'it')">
         </div>
       </div>
 
@@ -1320,6 +1346,8 @@ function gateLogin(){
           <div class="ind-card-emoji">🛵</div>
           <div class="ind-card-name">음식/배달</div>
           <div class="ind-card-sub">배달전문점·포장판매</div>
+          <div class="ind-card-admin-btn" onclick="event.stopPropagation();saIndImgUpload('delivery')" style="display:none;margin-top:7px;padding:4px 10px;background:#FFB500;color:#111;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📁 이미지 변경</div>
+          <input type="file" id="saIndFile-delivery-home" accept="image/*" style="display:none" onchange="saIndImgHandleFileHome(event,'delivery')">
         </div>
       </div>
 
@@ -7009,7 +7037,7 @@ async function loadShowcaseSites() {
 
 // 홈 랜딩 그리드 쇼케이스
 async function loadHomeShowcase() {
-  // 관리자가 저장한 업종 이미지 적용 (localStorage → 즉시 반영)
+  // 저장된 업종 이미지 즉시 적용
   try {
     const saved = JSON.parse(localStorage.getItem('mw_ind_imgs') || '{}');
     Object.entries(saved).forEach(([cat, url]) => {
@@ -7017,6 +7045,18 @@ async function loadHomeShowcase() {
       if(el) el.style.backgroundImage = `url('${url}')`;
     });
   } catch(e){}
+
+  // 관리자 로그인 상태면 각 카드에 "이미지 변경" 버튼 표시
+  if(saLoggedIn) {
+    document.querySelectorAll('.ind-card-admin-btn').forEach(btn => {
+      btn.style.display = 'block';
+    });
+  }
+}
+
+// 홈 화면에서 직접 업로드 (관리자 전용)
+async function saIndImgHandleFileHome(e, cat) {
+  await saIndImgHandleFile(e, cat); // 기존 관리자 업로드 함수 재사용
 }
 
 function renderScGrid(cat) {
@@ -8890,7 +8930,11 @@ function renderSaIndustryImgs() {
 }
 
 function saIndImgUpload(cat) {
-  document.getElementById('saIndFile-' + cat)?.click();
+  // 관리자 페이지 파일 input 또는 홈 카드 파일 input 트리거
+  const adminInput = document.getElementById('saIndFile-' + cat);
+  const homeInput  = document.getElementById('saIndFile-' + cat + '-home');
+  if(adminInput) { adminInput.click(); return; }
+  if(homeInput)  { homeInput.click(); }
 }
 
 async function saIndImgHandleFile(e, cat) {
