@@ -3019,6 +3019,19 @@ const aiTimers={};
 // ══════════════════════════════════════════
 const SUPABASE_URL  = 'https://sxjaocleycbinewxdqhl.supabase.co';
 const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4amFvY2xleWNiaW5ld3hkcWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMjM5NDQsImV4cCI6MjA5MTg5OTk0NH0.GMe36ZClVD-q_vdhLMhSxjzgUAXfqu0bqa8NzOV8IcM';
+const AUTH_REDIRECT_FALLBACK_URL = 'https://moduweb-sandy.vercel.app/';
+
+function isLocalFileMode() {
+  return window.location.protocol === 'file:';
+}
+
+function getAuthRedirectUrl(hash = '') {
+  const isWeb = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+  const baseUrl = isWeb
+    ? new URL(window.location.pathname || '/', window.location.origin).toString()
+    : AUTH_REDIRECT_FALLBACK_URL;
+  return hash ? new URL(hash, baseUrl).toString() : baseUrl;
+}
 
 // Supabase가 설정되지 않은 경우 mock으로 대체 (오류 방지)
 // Claude AI API Key - 보안상 Supabase Edge Function으로 이전 예정
@@ -3307,9 +3320,13 @@ async function sbSignUp() {
 
 // Google OAuth
 async function sbGoogleAuth() {
+  const redirectTo = getAuthRedirectUrl();
+  if (isLocalFileMode()) {
+    showToast('로컬 파일에서는 Google 로그인이 moduweb.co.kr에서 이어집니다.');
+  }
   await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + '/' }
+    options: { redirectTo }
   });
 }
 
@@ -4207,11 +4224,18 @@ async function sbResetPassword(){
     msg.textContent='✓ 재설정 링크를 보냈습니다. (테스트 모드 — 실제 이메일 미발송)';
     return;
   }
+  const redirectTo = getAuthRedirectUrl('#reset-password');
+  if(isLocalFileMode()) showToast('비밀번호 재설정 링크는 moduweb.co.kr에서 열립니다.');
   const {error}=await sb.auth.resetPasswordForEmail(email,{
-    redirectTo:`${location.origin}${location.pathname}#reset-password`
+    redirectTo
   });
   if(error){msg.style.color='#DC2626';msg.textContent=error.message;}
-  else{msg.style.color='#16A34A';msg.textContent='✓ 재설정 링크를 이메일로 보냈습니다. 메일함을 확인해주세요.';}
+  else{
+    msg.style.color='#16A34A';
+    msg.textContent=isLocalFileMode()
+      ? '✓ 재설정 링크를 이메일로 보냈습니다. 링크는 moduweb.co.kr에서 열립니다.'
+      : '✓ 재설정 링크를 이메일로 보냈습니다. 메일함을 확인해주세요.';
+  }
 }
 function pwStr(v){
   let s=0;
