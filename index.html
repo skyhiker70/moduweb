@@ -2222,15 +2222,17 @@ function gateLogin(){
             style="width:100%;padding:9px 12px;border:1.5px solid var(--bd);border-radius:9px;font-size:13px;font-family:inherit;outline:none;margin-bottom:10px;">
           <div id="libCatBtns" style="display:flex;gap:5px;flex-wrap:wrap;">
             <button class="lib-cat on" onclick="setLibCat('all',this)">전체</button>
-            <button class="lib-cat" onclick="setLibCat('business',this)">프로</button>
-            <button class="lib-cat" onclick="setLibCat('nature',this)">자연</button>
-            <button class="lib-cat" onclick="setLibCat('home',this)">가정·인테리어</button>
-            <button class="lib-cat" onclick="setLibCat('landscape',this)">풍경</button>
-            <button class="lib-cat" onclick="setLibCat('food',this)">음식</button>
-            <button class="lib-cat" onclick="setLibCat('fashion',this)">패션·뷰티</button>
-            <button class="lib-cat" onclick="setLibCat('medical',this)">의료·건강</button>
-            <button class="lib-cat" onclick="setLibCat('technology',this)">IT·기술</button>
-            <button class="lib-cat" onclick="setLibCat('people',this)">사람</button>
+            <button class="lib-cat" onclick="setLibCat('business',this)">🏢 비즈니스</button>
+            <button class="lib-cat" onclick="setLibCat('food',this)">🍽️ 음식/카페</button>
+            <button class="lib-cat" onclick="setLibCat('medical',this)">🏥 의료/병원</button>
+            <button class="lib-cat" onclick="setLibCat('education',this)">📚 교육/학원</button>
+            <button class="lib-cat" onclick="setLibCat('fashion',this)">✂️ 뷰티/패션</button>
+            <button class="lib-cat" onclick="setLibCat('realestate',this)">🏠 부동산/건설</button>
+            <button class="lib-cat" onclick="setLibCat('technology',this)">💻 IT/스타트업</button>
+            <button class="lib-cat" onclick="setLibCat('delivery',this)">🚚 배달/물류</button>
+            <button class="lib-cat" onclick="setLibCat('nature',this)">🌿 자연/풍경</button>
+            <button class="lib-cat" onclick="setLibCat('home',this)">🛋️ 인테리어</button>
+            <button class="lib-cat" onclick="setLibCat('people',this)">👥 사람</button>
           </div>
         </div>
         <div id="libGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;overflow-y:auto;max-height:320px;padding-right:2px;margin-top:6px;"></div>
@@ -3849,25 +3851,29 @@ function initPvLeafMaps(){
       if(el._leafInit) return;
       el._leafInit = true;
       var addr = el.dataset.addr||'';
+      var elId = el.id; // ID 저장 — 비동기 완료 시 재탐색용
       if(!addr){el.innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:13px;">주소를 입력하세요</div>';return;}
-      // 부모 컨테이너에 position:relative 보장 (Leaflet이 absolute로 바뀌어도 뷰포트 탈출 방지)
+      // 부모 position:relative 보장
       var parent = el.parentElement;
       if(parent && getComputedStyle(parent).position === 'static'){
         parent.style.position = 'relative';
       }
       // 즉시 주소카드 표시
       renderAddrCard(el, addr);
-      // Leaflet으로 업그레이드 시도
+      // Leaflet 비동기 — 완료 후 DOM 재탐색으로 stale closure 방지
       fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(addr)+'&format=json&limit=1&accept-language=ko')
         .then(function(r){return r.json();}).then(function(d){
-          if(!d||!d[0]) return; // 주소카드 유지
+          if(!d||!d[0]) return;
+          // 비동기 완료 시점에 DOM 재탐색 (renderPreview로 교체됐을 수 있음)
+          var target = elId ? document.getElementById(elId) : null;
+          if(!target || !target.isConnected) return; // detached면 포기
           var lat=parseFloat(d[0].lat),lon=parseFloat(d[0].lon);
-          el.innerHTML='';
-          el.style.cssText='position:absolute;inset:0;';
-          var map=L.map(el,{zoomControl:true,scrollWheelZoom:false}).setView([lat,lon],15);
+          target.innerHTML='';
+          target.style.cssText='position:absolute;inset:0;';
+          var map=L.map(target,{zoomControl:true,scrollWheelZoom:false}).setView([lat,lon],15);
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(map);
           L.marker([lat,lon]).addTo(map);
-        }).catch(function(){}); // 실패해도 주소카드 유지
+        }).catch(function(){});
     });
   }
   if(window.L){doInit();return;}
@@ -3875,7 +3881,6 @@ function initPvLeafMaps(){
   if(!document.getElementById('leaflet-js')){
     var ls=document.createElement('script');ls.id='leaflet-js';ls.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
     ls.onload=doInit;document.head.appendChild(ls);
-    // 주소카드는 Leaflet 로딩 전에도 즉시 표시
     document.querySelectorAll('.pv-leafmap[data-addr]').forEach(function(el){
       var addr=el.dataset.addr||'';
       if(addr && !el._leafInit) renderAddrCard(el,addr);
@@ -4389,7 +4394,7 @@ function switchImgTab(n){
     document.getElementById(`itab${i}`).classList.toggle('on',i===n);
     document.getElementById(`ipane${i}`).classList.toggle('on',i===n);
   });
-  if(n===1) renderLibGrid();
+  if(n===1){ loadLibraryForUser(); renderLibGrid(); }
 }
 
 // ══════════════════════════════════════════
@@ -4525,6 +4530,25 @@ async function loadLibraryFromDB(){
     if(data&&data.length){
       customLibrary=[...data.map(d=>({id:d.id,cat:d.cat,title:d.title,url:d.url,isCustom:true}))];
       localStorage.setItem('modusite_library',JSON.stringify(customLibrary));
+    }
+  }catch(e){}
+}
+
+// 일반 사용자용 — 라이브러리 탭 열릴 때마다 DB에서 최신 이미지 로드
+let _libLoaded = false;
+async function loadLibraryForUser(){
+  if(!SUPABASE_READY) return;
+  if(_libLoaded) return; // 이미 로드했으면 스킵
+  try{
+    const {data, error} = await sb.from('library_images').select('id, cat, title, url').order('created_at',{ascending:false}).limit(200);
+    if(!error && data && data.length){
+      // 기존 customLibrary에서 DB 이미지를 최신 데이터로 교체
+      const dbIds = new Set(data.map(d=>String(d.id)));
+      customLibrary = customLibrary.filter(c => !dbIds.has(String(c.id))); // 중복 제거
+      customLibrary = [...data.map(d=>({id:d.id, cat:d.cat||'business', title:d.title||'', url:d.url, isCustom:true})), ...customLibrary];
+      localStorage.setItem('modusite_library', JSON.stringify(customLibrary));
+      _libLoaded = true;
+      renderLibGrid();
     }
   }catch(e){}
 }
@@ -7065,15 +7089,17 @@ function showToast(msg){
             <div style="padding:16px 20px 8px;">
               <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
                 <button class="lib-cat on" onclick="setAdminLibCat('all',this)">전체</button>
-                <button class="lib-cat" onclick="setAdminLibCat('business',this)">프로</button>
-                <button class="lib-cat" onclick="setAdminLibCat('nature',this)">자연</button>
-                <button class="lib-cat" onclick="setAdminLibCat('home',this)">가정·인테리어</button>
-                <button class="lib-cat" onclick="setAdminLibCat('landscape',this)">풍경</button>
-                <button class="lib-cat" onclick="setAdminLibCat('food',this)">음식</button>
-                <button class="lib-cat" onclick="setAdminLibCat('fashion',this)">패션·뷰티</button>
-                <button class="lib-cat" onclick="setAdminLibCat('medical',this)">의료·건강</button>
-                <button class="lib-cat" onclick="setAdminLibCat('technology',this)">IT·기술</button>
-                <button class="lib-cat" onclick="setAdminLibCat('people',this)">사람</button>
+                <button class="lib-cat" onclick="setAdminLibCat('business',this)">🏢 비즈니스</button>
+                <button class="lib-cat" onclick="setAdminLibCat('food',this)">🍽️ 음식/카페</button>
+                <button class="lib-cat" onclick="setAdminLibCat('medical',this)">🏥 의료/병원</button>
+                <button class="lib-cat" onclick="setAdminLibCat('education',this)">📚 교육/학원</button>
+                <button class="lib-cat" onclick="setAdminLibCat('fashion',this)">✂️ 뷰티/패션</button>
+                <button class="lib-cat" onclick="setAdminLibCat('realestate',this)">🏠 부동산/건설</button>
+                <button class="lib-cat" onclick="setAdminLibCat('technology',this)">💻 IT/스타트업</button>
+                <button class="lib-cat" onclick="setAdminLibCat('delivery',this)">🚚 배달/물류</button>
+                <button class="lib-cat" onclick="setAdminLibCat('nature',this)">🌿 자연/풍경</button>
+                <button class="lib-cat" onclick="setAdminLibCat('home',this)">🛋️ 인테리어</button>
+                <button class="lib-cat" onclick="setAdminLibCat('people',this)">👥 사람</button>
               </div>
               <!-- 업로드 폼 -->
               <div id="libUploadForm" style="display:none;background:var(--bg);border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px dashed var(--bd);">
@@ -7083,15 +7109,17 @@ function showToast(msg){
                   <div>
                     <label style="font-size:11px;font-weight:700;color:var(--mu);display:block;margin-bottom:4px;">카테고리</label>
                     <select id="libUploadCat" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;outline:none;">
-                      <option value="business">프로</option>
-                      <option value="nature">자연</option>
-                      <option value="home">가정·인테리어</option>
-                      <option value="landscape">풍경</option>
-                      <option value="food">음식</option>
-                      <option value="fashion">패션·뷰티</option>
-                      <option value="medical">의료·건강</option>
-                      <option value="technology">IT·기술</option>
-                      <option value="people">사람</option>
+                      <option value="business">🏢 비즈니스</option>
+                      <option value="food">🍽️ 음식/카페</option>
+                      <option value="medical">🏥 의료/병원</option>
+                      <option value="education">📚 교육/학원</option>
+                      <option value="fashion">✂️ 뷰티/패션</option>
+                      <option value="realestate">🏠 부동산/건설</option>
+                      <option value="technology">💻 IT/스타트업</option>
+                      <option value="delivery">🚚 배달/물류</option>
+                      <option value="nature">🌿 자연/풍경</option>
+                      <option value="home">🛋️ 인테리어</option>
+                      <option value="people">👥 사람</option>
                     </select>
                   </div>
                   <div>
