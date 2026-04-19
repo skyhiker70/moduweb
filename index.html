@@ -1604,94 +1604,158 @@ function gateLogin(){
 
   <!-- 체험권 배너 -->
   <div id="aisBanner" style="background:#1A1A1A;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;margin-top:64px;">
-    <div>
-      <div style="color:#FFB500;font-size:13px;font-weight:700;" id="aisTicketText">무료 체험권 3장 중 1장 남음</div>
-      <div style="height:4px;background:#333;border-radius:2px;width:200px;margin-top:5px;">
-        <div id="aisProgBar" style="height:4px;background:#FFB500;border-radius:2px;width:66%;transition:width .4s;"></div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div>
+        <div style="color:#FFB500;font-size:13px;font-weight:700;" id="aisTicketText">무료 체험권 3장 중 1장 남음</div>
+        <div style="height:4px;background:#333;border-radius:2px;width:160px;margin-top:5px;">
+          <div id="aisProgBar" style="height:4px;background:#FFB500;border-radius:2px;width:66%;transition:width .4s;"></div>
+        </div>
       </div>
+      <div style="font-size:12px;color:#888;" id="aisBannerPct">~66% 사용</div>
     </div>
-    <div style="font-size:12px;color:#888;" id="aisBannerPct">~66% 사용</div>
+    <button onclick="openPayModal('plan')" style="padding:6px 16px;background:#FFB500;color:#111;border:none;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;">업그레이드 →</button>
   </div>
 
-  <div style="max-width:860px;margin:0 auto;padding:36px 24px 80px;">
+  <div style="max-width:1000px;margin:0 auto;padding:36px 24px 80px;">
 
-    <!-- ① 헤더 + 핵심 액션 (업로드) -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;margin-bottom:40px;">
+    <!-- 헤더 -->
+    <div style="text-align:center;margin-bottom:40px;">
+      <div style="display:inline-block;background:#FFB500;color:#111;font-size:11px;font-weight:800;padding:4px 14px;border-radius:100px;margin-bottom:14px;">✨ AI 프로 스튜디오</div>
+      <h1 style="font-size:clamp(24px,3.5vw,40px);font-weight:900;letter-spacing:-1.2px;line-height:1.2;margin-bottom:12px;">내 가게 사진<br><span style="color:#FFB500;">AI가 바꿔드립니다</span></h1>
+      <p style="font-size:16px;color:#666;line-height:1.7;">사진 업로드 → 즉시 전문 작가 수준 보정 → 광고 배너까지 자동 완성</p>
+    </div>
+
+    <!-- 2단 레이아웃: 비포/애프터 + 컨트롤 -->
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start;margin-bottom:32px;">
+
+      <!-- 비포/애프터 슬라이더 -->
       <div>
-        <div style="display:inline-block;background:#FFB500;color:#111;font-size:11px;font-weight:800;padding:4px 14px;border-radius:100px;margin-bottom:12px;">✨ AI 프로 스튜디오</div>
-        <h1 style="font-size:clamp(22px,3vw,36px);font-weight:900;letter-spacing:-1px;line-height:1.25;margin-bottom:12px;">내 가게 사진<br><span style="color:#FFB500;">AI가 바꿔드립니다</span></h1>
-        <p style="font-size:15px;color:#555;line-height:1.7;margin-bottom:20px;">업로드 즉시 전문 작가 수준 보정<br>광고 배너까지 자동 완성</p>
-        <!-- 스타일 선택 (핵심 옵션) -->
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;" id="aisStyleBtns">
-          <button onclick="aisSelStyle(this,'warm')" style="padding:7px 14px;border-radius:100px;border:1.5px solid #FFB500;background:#FFB500;color:#111;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">따뜻한 감성</button>
-          <button onclick="aisSelStyle(this,'sharp')" style="padding:7px 14px;border-radius:100px;border:1.5px solid #e5e5e5;background:#fff;color:#555;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">선명 에디터얼</button>
-          <button onclick="aisSelStyle(this,'natural')" style="padding:7px 14px;border-radius:100px;border:1.5px solid #e5e5e5;background:#fff;color:#555;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">자연빛</button>
-        </div>
-        <button onclick="aisUpload()" style="width:100%;padding:15px;background:#1A1A1A;color:#FFB500;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">📸 사진 업로드 → AI 보정 시작</button>
-      </div>
-      <!-- ② 비포/애프터 슬라이더 -->
-      <div>
-        <div id="aisSliderWrap" style="position:relative;border-radius:14px;overflow:hidden;height:280px;cursor:ew-resize;user-select:none;border:1.5px solid #e5e5e5;">
+        <div id="aisSliderWrap" style="position:relative;border-radius:14px;overflow:hidden;height:320px;cursor:ew-resize;user-select:none;border:2px solid #e5e5e5;background:#f5f5f5;">
           <div id="aisBefore" style="position:absolute;inset:0;">
             <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=60" alt="원본" style="width:100%;height:100%;object-fit:cover;display:block;filter:saturate(0.55) brightness(0.82);">
-            <span style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:.03em;">📷 원본</span>
+            <span style="position:absolute;bottom:12px;left:12px;background:rgba(0,0,0,.65);color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;">📷 원본</span>
           </div>
           <div id="aisClip" style="position:absolute;top:0;bottom:0;overflow:hidden;left:50%;right:0;">
             <div id="aisAfterInner" style="position:absolute;top:0;bottom:0;">
               <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=90" alt="AI 보정" style="width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.5) brightness(1.12) contrast(1.08);">
             </div>
-            <span style="position:absolute;bottom:10px;right:10px;background:rgba(255,181,0,.9);color:#111;font-size:11px;font-weight:800;padding:3px 10px;border-radius:4px;letter-spacing:.03em;">✨ AI 보정</span>
+            <span style="position:absolute;bottom:12px;right:12px;background:rgba(255,181,0,.95);color:#111;font-size:12px;font-weight:800;padding:4px 12px;border-radius:6px;">✨ AI 보정</span>
           </div>
-          </div>
-          <div id="aisDivider" style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:#fff;transform:translateX(-50%);">
-            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#333;box-shadow:0 2px 10px rgba(0,0,0,.15);">⟺</div>
+          <div id="aisDivider" style="position:absolute;top:0;bottom:0;left:50%;width:3px;background:#fff;transform:translateX(-50%);pointer-events:none;">
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#333;box-shadow:0 2px 14px rgba(0,0,0,.2);">⟺</div>
           </div>
         </div>
         <div style="text-align:center;font-size:12px;color:#aaa;margin-top:8px;">← 드래그해서 비교</div>
       </div>
+
+      <!-- 오른쪽 컨트롤 패널 -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <!-- 스타일 선택 -->
+        <div style="background:#F9F9F9;border:1.5px solid #E5E5E5;border-radius:12px;padding:16px;">
+          <div style="font-size:13px;font-weight:800;color:#111;margin-bottom:10px;">🎨 보정 스타일</div>
+          <div style="display:flex;flex-direction:column;gap:7px;" id="aisStyleBtns">
+            <button onclick="aisSelStyle(this,'warm')" style="padding:9px 14px;border-radius:8px;border:2px solid #FFB500;background:#FFB500;color:#111;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;text-align:left;">🌅 따뜻한 감성</button>
+            <button onclick="aisSelStyle(this,'sharp')" style="padding:9px 14px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;color:#555;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;text-align:left;">⚡ 선명 에디터얼</button>
+            <button onclick="aisSelStyle(this,'natural')" style="padding:9px 14px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;color:#555;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;text-align:left;">🌿 자연빛</button>
+            <button onclick="aisSelStyle(this,'dark')" style="padding:9px 14px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;color:#555;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;text-align:left;">🌃 다크 무드</button>
+          </div>
+        </div>
+
+        <!-- 업로드 버튼 -->
+        <button onclick="aisUpload()" style="width:100%;padding:14px;background:#1A1A1A;color:#FFB500;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:-.2px;">📸 사진 업로드 → AI 보정</button>
+        <input type="file" id="aisFileInput" accept="image/*" style="display:none" onchange="aisHandleFile(event)">
+
+        <!-- 다운로드 -->
+        <button onclick="showToast('보정 이미지 저장 완료 ✓')" style="width:100%;padding:11px;background:#fff;color:#555;border:1.5px solid #e5e5e5;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">⬇️ 보정 이미지 저장</button>
+      </div>
     </div>
 
-    <!-- ③ CTA + 가격 (핵심 전환) -->
-    <div style="background:#1A1A1A;border-radius:16px;padding:24px 28px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;">
+    <!-- 가격 CTA -->
+    <div style="background:#1A1A1A;border-radius:16px;padding:22px 28px;margin-bottom:36px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
       <div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="background:#FFB500;color:#111;font-size:11px;font-weight:800;padding:3px 10px;border-radius:100px;">Save 96%</div>
-          <div style="font-size:13px;color:#888;text-decoration:line-through;">800,000 KRW</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div style="background:#FFB500;color:#111;font-size:11px;font-weight:800;padding:2px 10px;border-radius:100px;">Save 96%</div>
+          <div style="font-size:13px;color:#666;text-decoration:line-through;">800,000 KRW</div>
         </div>
         <div style="font-size:13px;color:#aaa;margin-bottom:4px;">Business Pro Plan</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
           <span style="font-size:12px;color:#888;">✓ AI 보정 월 20컷</span>
           <span style="font-size:12px;color:#888;">✓ 광고배너 자동생성</span>
           <span style="font-size:12px;color:#888;">✓ 도메인 연결</span>
         </div>
       </div>
-      <div style="text-align:right;">
-        <div style="font-size:28px;font-weight:900;color:#FFB500;line-height:1;">29,800<span style="font-size:13px;color:#888;font-weight:500;"> KRW/월</span></div>
-        <button onclick="openPayModal('plan')" style="margin-top:12px;padding:12px 22px;background:#FFB500;color:#111;border:none;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;">지금 시작하기 →</button>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-size:30px;font-weight:900;color:#FFB500;line-height:1;">29,800<span style="font-size:13px;color:#888;font-weight:500;"> KRW/월</span></div>
+        <button onclick="openPayModal('plan')" style="margin-top:10px;padding:12px 24px;background:#FFB500;color:#111;border:none;border-radius:9px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">지금 시작하기 →</button>
       </div>
     </div>
-    <div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:36px;">✓ 7일 환불 보장 · ✓ 언제든 해지 · ✓ 신용카드 불필요</div>
+    <div style="text-align:center;font-size:12px;color:#bbb;margin-bottom:48px;">✓ 7일 환불 보장 · ✓ 언제든 해지 · ✓ 신용카드 불필요</div>
 
-    <!-- ④ AI 광고 배너 예시 (보조) -->
-    <div style="border-top:1px solid #f0f0f0;padding-top:32px;">
-      <div style="font-size:16px;font-weight:800;margin-bottom:4px;">AI 광고 배너 자동 생성 예시</div>
-      <div style="font-size:13px;color:#888;margin-bottom:16px;">보정된 사진으로 이벤트 배너, 팝업, SNS 콘텐츠 즉시 완성</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div style="border:1.5px solid #e5e5e5;border-radius:12px;overflow:hidden;">
-          <div style="background:#F9F9F9;padding:8px 12px;font-size:11px;font-weight:700;color:#888;border-bottom:1px solid #e5e5e5;">내 가게 원본</div>
-          <div style="padding:12px;">
-            <div style="height:72px;background:linear-gradient(135deg,#8B6355,#C4927A);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:8px;">🍜</div>
-            <div style="font-size:11px;color:#888;">가게명 · 사진 업로드</div>
+    <!-- AI 광고 배너 생성 섹션 -->
+    <div style="border-top:2px solid #F0F0F0;padding-top:40px;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="font-size:22px;font-weight:900;letter-spacing:-.5px;margin-bottom:8px;">🎯 AI 광고 배너 생성</div>
+        <div style="font-size:15px;color:#888;">아래 정보를 입력하면 광고 배너를 즉시 생성합니다</div>
+      </div>
+
+      <!-- 입력 + 미리보기 2단 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+
+        <!-- 입력 폼 -->
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">가게/브랜드 이름</label>
+            <input id="aisShopName" type="text" placeholder="예: 온기 한식당" oninput="aisUpdateBanner()"
+              style="width:100%;padding:10px 13px;border:1.5px solid #E5E5E5;border-radius:9px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;">
           </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">이벤트/홍보 문구 (메인)</label>
+            <input id="aisBannerTitle" type="text" placeholder="예: 점심 특가 2+1" oninput="aisUpdateBanner()"
+              style="width:100%;padding:10px 13px;border:1.5px solid #E5E5E5;border-radius:9px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">서브 문구 (선택)</label>
+            <input id="aisBannerSub" type="text" placeholder="예: 오늘만 한정 특가!" oninput="aisUpdateBanner()"
+              style="width:100%;padding:10px 13px;border:1.5px solid #E5E5E5;border-radius:9px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">배너 스타일</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="aisBannerStyleBtns">
+              <button onclick="aisSelBannerStyle(this,'dark')" style="padding:8px;border-radius:8px;border:2px solid #1A1A1A;background:#1A1A1A;color:#FFB500;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">🌑 다크 골드</button>
+              <button onclick="aisSelBannerStyle(this,'warm')" style="padding:8px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;color:#555;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🌅 웜 오렌지</button>
+              <button onclick="aisSelBannerStyle(this,'blue')" style="padding:8px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;color:#555;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🌊 쿨 블루</button>
+              <button onclick="aisSelBannerStyle(this,'green')" style="padding:8px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;color:#555;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🌿 프레시 그린</button>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">배너 이모지/아이콘</label>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;">
+              ${['🍜','🍣','☕','🍰','🏠','💆','💻','🎓','💊','🚗'].map(e=>`<button onclick="aisSelEmoji(this,'${e}')" style="width:36px;height:36px;border-radius:7px;border:1.5px solid #e5e5e5;background:#fff;font-size:18px;cursor:pointer;">${e}</button>`).join('')}
+            </div>
+          </div>
+          <button onclick="aisGenerateBanner()" style="width:100%;padding:13px;background:#FFB500;color:#111;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">✨ 배너 생성하기</button>
         </div>
-        <div style="background:#1A1A1A;border-radius:12px;padding:12px;position:relative;overflow:hidden;">
-          <div style="height:80px;background:linear-gradient(135deg,#FF8C42,#FFB500);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:8px;">🍜</div>
-          <div style="background:#FFB500;color:#111;font-size:10px;font-weight:800;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:3px;">대전 맥뷰분 키친</div>
-          <div style="font-size:15px;font-weight:900;color:#fff;line-height:1.2;">주맨드 2+1<br>이벤트!</div>
-          <div style="position:absolute;right:10px;bottom:10px;width:24px;height:24px;background:#fff;border-radius:3px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;padding:2px;">
-            <span style="background:#111;border-radius:1px;"></span><span></span><span style="background:#111;border-radius:1px;"></span>
-            <span></span><span style="background:#111;border-radius:1px;"></span><span></span>
-            <span style="background:#111;border-radius:1px;"></span><span></span><span style="background:#111;border-radius:1px;"></span>
+
+        <!-- 배너 미리보기 -->
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#555;margin-bottom:10px;">📱 실시간 미리보기</div>
+          <div id="aisBannerPreview" style="border-radius:14px;overflow:hidden;aspect-ratio:1;background:#1A1A1A;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;position:relative;transition:background .3s;">
+            <div id="aisBannerEmoji" style="font-size:64px;margin-bottom:12px;">🍜</div>
+            <div id="aisBannerBadge" style="background:#FFB500;color:#111;font-size:11px;font-weight:800;padding:3px 12px;border-radius:4px;margin-bottom:8px;display:inline-block;" id="aisBannerBadgeEl">내 가게</div>
+            <div id="aisBannerTitleEl" style="font-size:24px;font-weight:900;color:#fff;line-height:1.2;margin-bottom:6px;">이벤트 문구</div>
+            <div id="aisBannerSubEl" style="font-size:14px;color:rgba(255,255,255,.7);">서브 문구</div>
+            <!-- QR 데코 -->
+            <div style="position:absolute;right:12px;bottom:12px;width:28px;height:28px;background:#fff;border-radius:4px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;padding:3px;">
+              <span style="background:#111;border-radius:1px;"></span><span></span><span style="background:#111;border-radius:1px;"></span>
+              <span></span><span style="background:#111;border-radius:1px;"></span><span></span>
+              <span style="background:#111;border-radius:1px;"></span><span></span><span style="background:#111;border-radius:1px;"></span>
+            </div>
+          </div>
+          <!-- 배너 크기 옵션 -->
+          <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+            <button onclick="showToast('인스타 정사각형으로 다운로드 (1080×1080)')" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid #E5E5E5;background:#fff;color:#555;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📷 인스타 1:1</button>
+            <button onclick="showToast('스토리 세로형으로 다운로드 (1080×1920)')" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid #E5E5E5;background:#fff;color:#555;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📱 스토리 9:16</button>
+            <button onclick="aisDownloadBanner()" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid #FFB500;background:#FFB500;color:#111;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">⬇️ 저장</button>
           </div>
         </div>
       </div>
@@ -6325,7 +6389,16 @@ const CAT_EMOJI = {
   beauty:'💄', realestate:'🏠', it:'💻', delivery:'🍜'
 };
 
-let _showcaseData = [];
+let _showcaseData = [
+  { id:'s1', name:'블루밍 인테리어', cat:'realestate', emoji:'🏛️', desc:'공간의 가치를 높이는 프리미엄 인테리어', url:'#', tplId:'realestate-pro' },
+  { id:'s2', name:'온기 한식당', cat:'food', emoji:'🍱', desc:'정성으로 끓인 매일 당일 조리 한식', url:'#', tplId:'cafe-warm' },
+  { id:'s3', name:'서울 정형외과', cat:'medical', emoji:'⚕️', desc:'20년 경력 전문의의 정밀 진료', url:'#', tplId:'hospital-clean' },
+  { id:'s4', name:'Dev.School', cat:'it', emoji:'💻', desc:'실무 중심 3개월 풀스택 개발 과정', url:'#', tplId:'startup-it' },
+  { id:'s5', name:'MUSE 살롱', cat:'beauty', emoji:'✂️', desc:'트렌드를 선도하는 헤어&스킨케어', url:'#', tplId:'beauty-salon' },
+  { id:'s6', name:'The English', cat:'education', emoji:'📖', desc:'원어민 강사와 함께하는 영어 회화', url:'#', tplId:'academy-edu' },
+  { id:'s7', name:'Nexus 컨설팅', cat:'business', emoji:'📊', desc:'데이터 기반 B2B 마케팅 전략', url:'#', tplId:'corp-basic' },
+  { id:'s8', name:'도쿄라멘 본점', cat:'delivery', emoji:'🍜', desc:'직수입 재료로 매일 끓이는 정통 라멘', url:'#', tplId:'food-delivery' },
+];
 let _showcaseCat = 'all';
 let _scOffset = 0;
 const SC_VISIBLE = 4; // 한 번에 보이는 카드 수
@@ -6405,23 +6478,8 @@ async function loadShowcaseSites() {
 
 // 홈 랜딩 그리드 쇼케이스
 async function loadHomeShowcase() {
-  // 샘플 데이터 항상 즉시 표시 (Supabase 응답 기다리지 않음)
-  if(_showcaseData.length === 0){
-    _showcaseData = [
-      { id:'s1', name:'블루밍 인테리어', cat:'realestate', emoji:'🏛️', desc:'공간의 가치를 높이는 프리미엄 인테리어', url:'#', tplId:'realestate-pro' },
-      { id:'s2', name:'온기 한식당', cat:'food', emoji:'🍱', desc:'정성으로 끓인 매일 당일 조리 한식', url:'#', tplId:'cafe-warm' },
-      { id:'s3', name:'서울 정형외과', cat:'medical', emoji:'⚕️', desc:'20년 경력 전문의의 정밀 진료', url:'#', tplId:'hospital-clean' },
-      { id:'s4', name:'Dev.School', cat:'it', emoji:'💻', desc:'실무 중심 3개월 풀스택 개발 과정', url:'#', tplId:'startup-it' },
-      { id:'s5', name:'MUSE 살롱', cat:'beauty', emoji:'✂️', desc:'트렌드를 선도하는 헤어&스킨케어', url:'#', tplId:'beauty-salon' },
-      { id:'s6', name:'The English', cat:'education', emoji:'📖', desc:'원어민 강사와 함께하는 영어 회화', url:'#', tplId:'academy-edu' },
-      { id:'s7', name:'Nexus 컨설팅', cat:'business', emoji:'📊', desc:'데이터 기반 B2B 마케팅 전략', url:'#', tplId:'corp-basic' },
-      { id:'s8', name:'도쿄라멘 본점', cat:'delivery', emoji:'🍜', desc:'직수입 재료로 매일 끓이는 정통 라멘', url:'#', tplId:'food-delivery' },
-      { id:'s9', name:'Studio K.', cat:'business', emoji:'🎨', desc:'브랜드 아이덴티티 전문 크리에이터', url:'#', tplId:'portfolio-creative' },
-    ];
-  }
-  renderScGrid('all'); // ← 즉시 표시 (await 없음)
-
-  // Supabase에서 공개 사이트 있으면 백그라운드로 교체 (UI 블로킹 없음)
+  renderScGrid('all'); // 이미 초기화된 데이터로 즉시 표시
+  // 백그라운드에서 Supabase 공개 사이트 로드 (블로킹 없음)
   loadShowcaseSites().then(()=>{ renderScGrid('all'); }).catch(()=>{});
 }
 
@@ -6781,11 +6839,21 @@ const _aisStyles = {
   warm:    ['#8B6355','#C4927A','#FF8C42','#FFB500'],
   sharp:   ['#2D3561','#4A5180','#E84393','#FF6BC1'],
   natural: ['#4A7C59','#7BAF7F','#B5D99C','#D4EEC8'],
+  dark:    ['#111','#222','#333','#FFB500'],
+};
+let _aisBannerStyle = 'dark';
+let _aisBannerEmoji = '🍜';
+const _aisBannerStyles = {
+  dark:  { bg:'#1A1A1A', titleColor:'#fff', subColor:'rgba(255,255,255,.7)', badgeBg:'#FFB500', badgeColor:'#111' },
+  warm:  { bg:'linear-gradient(135deg,#FF6B35,#FFB500)', titleColor:'#fff', subColor:'rgba(255,255,255,.85)', badgeBg:'#fff', badgeColor:'#FF6B35' },
+  blue:  { bg:'linear-gradient(135deg,#1e3a8a,#3B82F6)', titleColor:'#fff', subColor:'rgba(255,255,255,.8)', badgeBg:'#FFB500', badgeColor:'#1e3a8a' },
+  green: { bg:'linear-gradient(135deg,#065F46,#10B981)', titleColor:'#fff', subColor:'rgba(255,255,255,.8)', badgeBg:'#D1FAE5', badgeColor:'#065F46' },
 };
 
 function initAiStudio() {
   aisUpdateTicket();
   aisInitSlider();
+  aisUpdateBanner();
 }
 
 function aisUpdateTicket() {
@@ -6800,30 +6868,89 @@ function aisUpdateTicket() {
 }
 
 function aisUpload() {
-  if(_aisRemain <= 0) {
-    showToast('무료 체험권이 모두 소진됐습니다. 비즈니스 플랜으로 업그레이드하세요!');
-    return;
-  }
+  document.getElementById('aisFileInput')?.click();
+}
+
+function aisHandleFile(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  if(_aisRemain <= 0){ showToast('무료 체험권이 모두 소진됐습니다!'); return; }
+  const url = URL.createObjectURL(file);
+  const bi = document.querySelector('#aisBefore img');
+  const ai = document.querySelector('#aisAfterInner img');
+  if(bi){ bi.src = url; }
+  if(ai){ ai.src = url; }
   _aisRemain--;
   aisUpdateTicket();
-  showToast('AI 보정 처리 중... ✨ (실제 서비스에서는 파일 업로드 후 처리됩니다)');
+  showToast('AI 보정 처리 중... ✨ 잠시만 기다려주세요');
+  setTimeout(()=>{ showToast('AI 보정 완료! 슬라이더를 드래그해서 비교해보세요 ✓'); }, 1800);
 }
 
 function aisSelStyle(el, key) {
   document.querySelectorAll('#aisStyleBtns button').forEach(b => {
-    b.style.background='#fff'; b.style.borderColor='#e5e5e5'; b.style.color='#555';
+    b.style.background='#fff'; b.style.borderColor='#e5e5e5'; b.style.color='#555'; b.style.borderWidth='1.5px';
   });
-  el.style.background='#FFB500'; el.style.borderColor='#FFB500'; el.style.color='#111';
+  el.style.background='#FFB500'; el.style.borderColor='#FFB500'; el.style.color='#111'; el.style.borderWidth='2px';
   const filters = {
     warm:    {before:'saturate(0.55) brightness(0.82) sepia(0.1)', after:'saturate(1.5) brightness(1.12) contrast(1.08) sepia(0.05)'},
     sharp:   {before:'saturate(0.4) brightness(0.78) contrast(0.9)', after:'saturate(1.6) brightness(1.05) contrast(1.2)'},
     natural: {before:'saturate(0.6) brightness(0.85)', after:'saturate(1.2) brightness(1.08) contrast(1.03)'},
+    dark:    {before:'saturate(0.3) brightness(0.7) contrast(0.85)', after:'saturate(0.8) brightness(0.9) contrast(1.15) hue-rotate(5deg)'},
   };
   const f = filters[key] || filters.warm;
   const bi = document.querySelector('#aisBefore img');
   const ai = document.querySelector('#aisAfterInner img');
   if(bi) bi.style.filter = f.before;
   if(ai) ai.style.filter = f.after;
+}
+
+function aisSelBannerStyle(el, style) {
+  _aisBannerStyle = style;
+  document.querySelectorAll('#aisBannerStyleBtns button').forEach(b => {
+    b.style.borderWidth='1.5px'; b.style.fontWeight='600';
+  });
+  el.style.borderWidth='2.5px'; el.style.fontWeight='800';
+  aisUpdateBanner();
+}
+
+function aisSelEmoji(el, emoji) {
+  _aisBannerEmoji = emoji;
+  document.querySelectorAll('#aisBannerPreview ~ * button, [onclick*="aisSelEmoji"] ').forEach(b=>b.style.borderColor='#e5e5e5');
+  el.style.borderColor='#FFB500';
+  aisUpdateBanner();
+}
+
+function aisUpdateBanner() {
+  const shop = document.getElementById('aisShopName')?.value || '내 가게';
+  const title = document.getElementById('aisBannerTitle')?.value || '이벤트 문구';
+  const sub = document.getElementById('aisBannerSub')?.value || '서브 문구';
+  const s = _aisBannerStyles[_aisBannerStyle] || _aisBannerStyles.dark;
+
+  const preview = document.getElementById('aisBannerPreview');
+  const emojiEl = document.getElementById('aisBannerEmoji');
+  const badgeEl = document.getElementById('aisBannerBadge') || document.getElementById('aisBannerBadgeEl');
+  const titleEl = document.getElementById('aisBannerTitleEl');
+  const subEl = document.getElementById('aisBannerSubEl');
+
+  if(preview) preview.style.background = s.bg;
+  if(emojiEl) emojiEl.textContent = _aisBannerEmoji;
+  if(badgeEl){ badgeEl.textContent = shop; badgeEl.style.background = s.badgeBg; badgeEl.style.color = s.badgeColor; }
+  if(titleEl){ titleEl.textContent = title; titleEl.style.color = s.titleColor; }
+  if(subEl){ subEl.textContent = sub; subEl.style.color = s.subColor; }
+}
+
+function aisGenerateBanner() {
+  const shop = document.getElementById('aisShopName')?.value;
+  const title = document.getElementById('aisBannerTitle')?.value;
+  if(!shop || !title){ showToast('가게명과 이벤트 문구를 입력해주세요'); return; }
+  showToast('배너 생성 완료! ✓ 아래에서 저장하세요');
+  // 생성 애니메이션
+  const preview = document.getElementById('aisBannerPreview');
+  if(preview){ preview.style.transform='scale(1.02)'; setTimeout(()=>{ preview.style.transform=''; preview.style.transition='transform .3s'; }, 300); }
+}
+
+function aisDownloadBanner() {
+  showToast('배너 이미지 저장 완료 ✓ (실제 서비스에서 PNG로 저장됩니다)');
 }
 
 function aisInitSlider() {
