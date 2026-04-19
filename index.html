@@ -2607,20 +2607,22 @@ let currentSiteId  = null;  // 현재 편집 중인 site UUID
 // AUTH - 완전히 재구성
 // ══════════════════════════════════════════
 
-// 1. 앱 시작 시 세션 즉시 확인 (동기적으로)
+// 1. 앱 시작 시 세션 즉시 확인
 (async function initAuth() {
   if (!SUPABASE_READY || !sb) return;
   try {
     const { data: { session } } = await sb.auth.getSession();
     if (session?.user) {
       currentUser = session.user;
-      const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-      currentProfile = data;
-      updateNavAuth();
+      // profiles 실패해도 nav 업데이트는 반드시 실행
+      try {
+        const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+        currentProfile = data;
+      } catch(e) { console.warn('profiles 조회 실패 (무시):', e); }
+      updateNavAuth(); // 항상 실행 - 로그인→로그아웃 버튼 전환
       const name = currentProfile?.name || currentUser.email?.split('@')[0] || '';
       showWelcomeBar(name);
-      await loadOrCreateSite();
-      // 현재 해시 확인
+      try { await loadOrCreateSite(); } catch(e){ console.warn('사이트 로드 실패:', e); }
       const h = location.hash.replace('#','');
       if(h === 'dashboard') { _dashLoaded=false; initDashboard(); }
     }
@@ -6092,9 +6094,9 @@ fetch("${SB_URL}/rest/v1/notices?site_id=eq.${SB_SITE}&order=pinned.desc,created
 }
 
 // ── Site name → URL ──
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded', ()=>{
   const sn=document.getElementById('bdrSiteName');
-  if(sn) sn.addEventListener('input',()=>{if(bdrState.activeEdit!==null||true) renderPreview();markUnsaved();});
+  if(sn) sn.addEventListener('input',()=>{ renderPreview(); markUnsaved(); });
 });
 
 // ── Toast ──
@@ -6403,8 +6405,8 @@ async function loadShowcaseSites() {
 
 // 홈 랜딩 그리드 쇼케이스
 async function loadHomeShowcase() {
-  // 샘플 데이터 즉시 표시 (네트워크 기다리지 않고)
-  if(_showcaseData.length === 0) {
+  // 샘플 데이터 항상 즉시 표시 (Supabase 응답 기다리지 않음)
+  if(_showcaseData.length === 0){
     _showcaseData = [
       { id:'s1', name:'블루밍 인테리어', cat:'realestate', emoji:'🏛️', desc:'공간의 가치를 높이는 프리미엄 인테리어', url:'#', tplId:'realestate-pro' },
       { id:'s2', name:'온기 한식당', cat:'food', emoji:'🍱', desc:'정성으로 끓인 매일 당일 조리 한식', url:'#', tplId:'cafe-warm' },
@@ -6416,11 +6418,11 @@ async function loadHomeShowcase() {
       { id:'s8', name:'도쿄라멘 본점', cat:'delivery', emoji:'🍜', desc:'직수입 재료로 매일 끓이는 정통 라멘', url:'#', tplId:'food-delivery' },
       { id:'s9', name:'Studio K.', cat:'business', emoji:'🎨', desc:'브랜드 아이덴티티 전문 크리에이터', url:'#', tplId:'portfolio-creative' },
     ];
-    renderScGrid('all'); // 즉시 표시
   }
-  // 백그라운드에서 Supabase 데이터 로드 (공개 사이트가 있으면 교체)
-  await loadShowcaseSites();
-  renderScGrid('all');
+  renderScGrid('all'); // ← 즉시 표시 (await 없음)
+
+  // Supabase에서 공개 사이트 있으면 백그라운드로 교체 (UI 블로킹 없음)
+  loadShowcaseSites().then(()=>{ renderScGrid('all'); }).catch(()=>{});
 }
 
 function renderScGrid(cat) {
