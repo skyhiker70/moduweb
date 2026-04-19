@@ -7,6 +7,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://js.tosspayments.com/v1/payment"></script>
+  <script>
+window.saLoggedIn = sessionStorage.getItem('sa') === 'true';
+</script>
 <script>
 // 카카오맵 동적 로드 (앱키 설정 후 활성화)
 const KAKAO_APP_KEY = 'YOUR_KAKAO_APP_KEY'; // ← 카카오 개발자 콘솔 JavaScript 키
@@ -1136,7 +1139,8 @@ function gateLogin(){
       gate.style.display='none';
       // 관리자 계정이면 superadmin 자동 진입
       if(found.isAdmin){
-        saLoggedIn=true;
+      window.saLoggedIn = true;
+sessionStorage.setItem('sa','true');
         go('superadmin');
       }
     },300);
@@ -8848,32 +8852,32 @@ function showToast(msg){
 const SA_CRED={id:'admin',pw:'modusite2025'};
 let saLoggedIn=false;
 
-const saUsers=[
-  {name:'김철수',email:'kim@startup.kr',plan:'스타터',joinDate:'2025.01.15',sites:1,status:'활성'},
-  {name:'이영희',email:'lee@company.com',plan:'프로',joinDate:'2025.01.22',sites:2,status:'활성'},
-  {name:'박민준',email:'park@agency.co',plan:'에이전시',joinDate:'2025.02.03',sites:5,status:'활성'},
-  {name:'최지원',email:'choi@cafe24.kr',plan:'무료',joinDate:'2025.02.10',sites:1,status:'활성'},
-  {name:'정수아',email:'jung@beauty.kr',plan:'스타터',joinDate:'2025.02.18',sites:1,status:'정지'},
-  {name:'한동훈',email:'han@lawfirm.kr',plan:'프로',joinDate:'2025.03.05',sites:1,status:'활성'},
-  {name:'오세진',email:'oh@medical.kr',plan:'스타터',joinDate:'2025.03.12',sites:1,status:'활성'},
-  {name:'윤미래',email:'yoon@fashion.kr',plan:'무료',joinDate:'2025.03.20',sites:1,status:'활성'},
-];
-const saSites=[
-  {name:'스타트업코리아',url:'startup-korea.modusite.kr',owner:'김철수',plan:'스타터',status:'라이브',visitors:1240,modified:'2025.04.01'},
-  {name:'컴퍼니솔루션',url:'company-solution.modusite.kr',owner:'이영희',plan:'프로',status:'라이브',visitors:3820,modified:'2025.04.05'},
-  {name:'에이전시프로',url:'agency-pro.modusite.kr',owner:'박민준',plan:'에이전시',status:'라이브',visitors:7650,modified:'2025.04.08'},
-  {name:'카페스타일',url:'cafe-style.modusite.kr',owner:'최지원',plan:'무료',status:'라이브',visitors:420,modified:'2025.03.28'},
-  {name:'뷰티살롱',url:'beauty-salon.modusite.kr',owner:'정수아',plan:'스타터',status:'정지',visitors:0,modified:'2025.02.20'},
-  {name:'법률사무소한',url:'lawfirm-han.modusite.kr',owner:'한동훈',plan:'프로',status:'라이브',visitors:2100,modified:'2025.04.09'},
-];
-const saBilling=[
-  {date:'2025.04.01',user:'이영희',plan:'비즈니스 월간',amount:'₩29,900',status:'완료'},
-  {date:'2025.04.01',user:'박민준',plan:'에이전시 월간',amount:'협의',status:'완료'},
-  {date:'2025.04.01',user:'김철수',plan:'스타터 월간',amount:'₩19,900',status:'완료'},
-  {date:'2025.04.01',user:'한동훈',plan:'비즈니스 월간',amount:'₩29,900',status:'완료'},
-  {date:'2025.03.28',user:'정수아',plan:'스타터 월간',amount:'₩19,900',status:'환불'},
-  {date:'2025.03.15',user:'오세진',plan:'스타터 월간',amount:'₩19,900',status:'완료'},
-];
+//const saUsers=[
+ // {name:'김철수',email:'kim@startup.kr',plan:'스타터',joinDate:'2025.01.15',sites:1,status:'활성'},
+//  {name:'이영희',email:'lee@company.com',plan:'프로',joinDate:'2025.01.22',sites:2,status:'활성'},
+ // {name:'박민준',email:'park@agency.co',plan:'에이전시',joinDate:'2025.02.03',sites:5,status:'활성'},
+//  {name:'최지원',email:'choi@cafe24.kr',plan:'무료',joinDate:'2025.02.10',sites:1,status:'활성'},
+//  {name:'정수아',email:'jung@beauty.kr',plan:'스타터',joinDate:'2025.02.18',sites:1,status:'정지'},
+//  {name:'한동훈',email:'han@lawfirm.kr',plan:'프로',joinDate:'2025.03.05',sites:1,status:'활성'},
+ // {name:'오세진',email:'oh@medical.kr',plan:'스타터',joinDate:'2025.03.12',sites:1,status:'활성'},
+ // {name:'윤미래',email:'yoon@fashion.kr',plan:'무료',joinDate:'2025.03.20',sites:1,status:'활성'},
+//];
+//const saSites=[
+ // {name:'스타트업코리아',url:'startup-korea.modusite.kr',owner:'김철수',plan:'스타터',status:'라이브',visitors:1240,modified:'2025.04.01'},
+ // {name:'컴퍼니솔루션',url:'company-solution.modusite.kr',owner:'이영희',plan:'프로',status:'라이브',visitors:3820,modified:'2025.04.05'},
+ // {name:'에이전시프로',url:'agency-pro.modusite.kr',owner:'박민준',plan:'에이전시',status:'라이브',visitors:7650,modified:'2025.04.08'},
+ // {name:'카페스타일',url:'cafe-style.modusite.kr',owner:'최지원',plan:'무료',status:'라이브',visitors:420,modified:'2025.03.28'},
+//  {name:'뷰티살롱',url:'beauty-salon.modusite.kr',owner:'정수아',plan:'스타터',status:'정지',visitors:0,modified:'2025.02.20'},
+ // {name:'법률사무소한',url:'lawfirm-han.modusite.kr',owner:'한동훈',plan:'프로',status:'라이브',visitors:2100,modified:'2025.04.09'},
+//];
+//const saBilling=[
+//  {date:'2025.04.01',user:'이영희',plan:'비즈니스 월간',amount:'₩29,900',status:'완료'},
+//  {date:'2025.04.01',user:'박민준',plan:'에이전시 월간',amount:'협의',status:'완료'},
+//  {date:'2025.04.01',user:'김철수',plan:'스타터 월간',amount:'₩19,900',status:'완료'},
+//  {date:'2025.04.01',user:'한동훈',plan:'비즈니스 월간',amount:'₩29,900',status:'완료'},
+//  {date:'2025.03.28',user:'정수아',plan:'스타터 월간',amount:'₩19,900',status:'환불'},
+//  {date:'2025.03.15',user:'오세진',plan:'스타터 월간',amount:'₩19,900',status:'완료'},
+//];
 const saAiUsage=[
   {user:'박민준',plan:'에이전시',used:62,limit:100},
   {user:'이영희',plan:'프로',used:18,limit:20},
