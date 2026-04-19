@@ -36,13 +36,16 @@ body{font-size:16px;font-family:'Pretendard Variable','Pretendard',-apple-system
 a{text-decoration:none;}
 
 /* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 max(32px,calc((100vw - 1200px)/2));background:rgba(255,255,255,.94);border-bottom:1px solid transparent;transition:all .3s;backdrop-filter:blur(16px);}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 max(44px,calc((100vw - 1360px)/2));background:rgba(255,255,255,.94);border-bottom:1px solid transparent;transition:all .3s;backdrop-filter:blur(16px);}
 nav.scrolled{border-bottom-color:var(--bd);box-shadow:0 1px 20px rgba(0,0,0,.06);}
 nav.solid{background:#fff;border-bottom-color:var(--bd);}
-.ni{display:flex;align-items:center;height:64px;max-width:1200px;margin:0 auto;gap:8px;}
+.ni{display:flex;align-items:center;height:68px;max-width:1360px;margin:0 auto;gap:18px;}
 .logo{font-size:21px;font-weight:800;color:var(--fg);letter-spacing:-.5px;margin-right:20px;cursor:pointer;}
+nav .logo{font-size:28px;font-weight:300;letter-spacing:-.08em;margin-right:28px;white-space:nowrap;flex-shrink:0;line-height:1;}
 .logo span{color:var(--a);}
-.nl{display:flex;gap:4px;margin-left:auto;align-items:center;}
+.nl{display:flex;gap:6px;margin-left:auto;align-items:center;flex-wrap:nowrap;min-width:0;}
+.nl > *{flex-shrink:0;}
+.nl a,.nl button,.credit-badge{white-space:nowrap;}
 .nl a{color:var(--mu);font-size:15px;font-weight:600;padding:7px 13px;border-radius:8px;cursor:pointer;transition:all .15s;}
 .nl a:hover{color:var(--fg);background:#F3F4F6;}
 .nl a.active{color:var(--fg);font-weight:600;}
@@ -733,6 +736,18 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
   .rel-in{grid-template-columns:repeat(2,1fr);}
   .modgrid{grid-template-columns:repeat(3,1fr);}
 }
+@media(max-width:1480px){
+  nav{padding:0 28px;}
+  .ni{max-width:none;gap:12px;}
+  nav .logo{font-size:25px;margin-right:14px;}
+  .nl{gap:2px;}
+  .nl a{font-size:14px;padding:7px 10px;}
+  #navAdminLink{display:none;}
+}
+@media(max-width:1320px){
+  .nl a:not(.nlo):not(.nca):not(#navHamBtn):not(#navAdminLink){display:none;}
+  #navHamBtn{display:flex!important;}
+}
 @media(max-width:768px){
   body{font-size:16px;line-height:1.8;}
   .mg{grid-template-columns:repeat(2,1fr);}
@@ -741,9 +756,6 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
   .dpanel{width:100%;}
   .loginpage{grid-template-columns:1fr;}.lp{display:none;}
   .rp{padding:100px 24px 40px;}
-  /* 모바일 네비 — 텍스트 링크 숨기고 햄버거 표시 */
-  .nl a:not(.nlo):not(.nca):not(#navHamBtn):not(#navAdminLink){display:none;}
-  #navHamBtn{display:flex!important;}
   /* 어드민 사이드바 모바일 */
   .adm-side{transform:translateX(-100%);transition:transform .25s;}
   .adm-side.open{transform:translateX(0);}
@@ -777,7 +789,7 @@ footer{background:var(--fg);padding:72px max(32px,calc((100vw - 1200px)/2)) 40px
 .nav-mobile-menu{position:fixed;top:0;right:0;bottom:0;width:300px;background:#111;z-index:299;transform:translateX(100%);transition:transform .3s cubic-bezier(.25,.1,.25,1);flex-direction:column;display:flex;}
 .nav-mobile-menu.open{transform:translateX(0);}
 .nav-mobile-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid #222;}
-.nav-mobile-logo{font-size:15px;font-weight:900;color:#fff;letter-spacing:-.3px;}
+.nav-mobile-logo{font-size:21px;font-weight:300;color:#fff;letter-spacing:-.08em;}
 .nav-mobile-logo span{color:#FFB500;}
 .nav-mobile-close{width:34px;height:34px;border:1.5px solid #333;background:transparent;border-radius:8px;cursor:pointer;font-size:16px;color:#888;display:flex;align-items:center;justify-content:center;}
 .nav-mobile-close:hover{border-color:#FFB500;color:#FFB500;}
@@ -1141,7 +1153,7 @@ function gateLogin(){
 <!-- NAV -->
 <nav id="nav">
   <div class="ni">
-    <div class="logo" onclick="go('home')">moduweb<span>(모두의웹)</span></div>
+    <div class="logo" onclick="go('home')">모두의웹</div>
     <div class="nl">
       <a data-p="showcase" onclick="go('showcase')">업종별홈페이지</a>
       <a data-p="aistudio" onclick="go('aistudio')" style="color:#FFB500;">AI스튜디오</a>
@@ -1197,7 +1209,7 @@ function gateLogin(){
 <!-- 모바일 슬라이드 메뉴 -->
 <div class="nav-mobile-menu" id="navMobileMenu">
   <div class="nav-mobile-head">
-    <div class="nav-mobile-logo">moduweb<span>(모두의웹)</span></div>
+    <div class="nav-mobile-logo">모두의웹</div>
     <button class="nav-mobile-close" onclick="toggleMobileNav()">✕</button>
   </div>
   <div class="nav-mobile-body">
